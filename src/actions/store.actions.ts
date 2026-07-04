@@ -6,6 +6,17 @@ import { HAS_STORE_COOKIE, HAS_STORE_MAX_AGE } from "@/lib/hasStoreCookie";
 import { Store } from "@/types/store.types";
 import { revalidatePath } from "next/cache";
 
+async function revalidateStorefront() {
+  try {
+    const res = await httpClient.get<Store>("/stores/me");
+    if (res.data?.slug) {
+      revalidatePath(`/store/${res.data.slug}`);
+    }
+  } catch {
+    // Store may not exist yet during onboarding
+  }
+}
+
 export async function createStoreAction(data: {
   brandName: string;
   slug: string;
@@ -32,5 +43,9 @@ export async function getMyStoreAction() {
 export async function updateStoreAction(id: string, data: FormData | Record<string, unknown>) {
   const res = await httpClient.patch<Store>(`/stores/${id}`, data);
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/store");
+  revalidatePath("/dashboard/store/branding");
+  revalidatePath("/dashboard/store/appearance");
+  await revalidateStorefront();
   return res;
 }
