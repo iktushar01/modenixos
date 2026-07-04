@@ -96,6 +96,7 @@ function StorefrontHomeContent({ store, catalog, categories, collections, review
           collections={collections}
           ratings={ratings}
           onQuickView={setQuickViewProduct}
+          showFilters={false}
         />
       )}
 

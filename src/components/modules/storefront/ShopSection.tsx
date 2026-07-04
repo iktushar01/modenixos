@@ -28,6 +28,7 @@ interface ShopSectionProps {
   collections: Collection[];
   ratings: Record<string, number>;
   onQuickView: (product: Product) => void;
+  showFilters?: boolean;
 }
 
 export function ShopSection({
@@ -38,6 +39,7 @@ export function ShopSection({
   collections,
   ratings,
   onQuickView,
+  showFilters = true,
 }: ShopSectionProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -103,46 +105,52 @@ export function ShopSection({
           </p>
         </motion.div>
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              className="lg:hidden border-white/20 bg-white/5 text-white hover:bg-white/10"
-            >
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
-              Filters
-              {activeCount > 0 && (
-                <span className="ml-2 rounded-full bg-white px-1.5 py-0.5 text-[10px] font-bold text-black">
-                  {activeCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[min(100%,320px)] overflow-y-auto border-white/10 bg-zinc-950 text-white">
-            <SheetHeader>
-              <SheetTitle className="text-white">Filters</SheetTitle>
-            </SheetHeader>
-            <div className="mt-6">
-              <ShopFilterSidebar {...sidebarProps} />
-            </div>
-          </SheetContent>
-        </Sheet>
+        {showFilters && (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                className="lg:hidden border-white/20 bg-white/5 text-white hover:bg-white/10"
+              >
+                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                Filters
+                {activeCount > 0 && (
+                  <span className="ml-2 rounded-full bg-white px-1.5 py-0.5 text-[10px] font-bold text-black">
+                    {activeCount}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[min(100%,320px)] overflow-y-auto border-white/10 bg-zinc-950 text-white">
+              <SheetHeader>
+                <SheetTitle className="text-white">Filters</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6">
+                <ShopFilterSidebar {...sidebarProps} />
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
       </div>
 
-      <div className="flex gap-8 lg:gap-10">
-        <div className="hidden w-64 shrink-0 lg:block">
-          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-            <ShopFilterSidebar {...sidebarProps} />
+      <div className={showFilters ? "flex gap-8 lg:gap-10" : ""}>
+        {showFilters && (
+          <div className="hidden w-64 shrink-0 lg:block">
+            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+              <ShopFilterSidebar {...sidebarProps} />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="min-w-0 flex-1">
-          <ShopActiveFilters
-            filters={filters}
-            categories={categories}
-            collections={collections}
-            onChange={patchFilters}
-          />
+          {showFilters && (
+            <ShopActiveFilters
+              filters={filters}
+              categories={categories}
+              collections={collections}
+              onChange={patchFilters}
+            />
+          )}
 
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 py-20 text-center">
