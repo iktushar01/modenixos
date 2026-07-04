@@ -4,25 +4,40 @@ import { APP_NAME } from "@/lib/app-config";
 export const getClientSidebarData = async (): Promise<SidebarData> => {
   return {
     logo: {
-      src: "/logo.png",
+      src: "/logo.svg",
       alt: `${APP_NAME} logo`,
       title: APP_NAME,
       description: "Brand Dashboard",
     },
     navGroups: [
       {
-        title: "Main",
+        title: "Overview",
         items: [
-          {
-            label: "Dashboard",
-            icon: "LayoutDashboard",
-            href: "/dashboard",
-          },
-          {
-            label: "Settings",
-            icon: "Settings",
-            href: "/dashboard/settings",
-          },
+          { label: "Dashboard", icon: "LayoutDashboard", href: "/dashboard" },
+          { label: "Analytics", icon: "BarChart3", href: "/dashboard/analytics" },
+        ],
+      },
+      {
+        title: "Catalog",
+        items: [
+          { label: "Products", icon: "Package", href: "/dashboard/products" },
+          { label: "Categories", icon: "Tags", href: "/dashboard/categories" },
+          { label: "Collections", icon: "Layers", href: "/dashboard/collections" },
+        ],
+      },
+      {
+        title: "Commerce",
+        items: [
+          { label: "Orders", icon: "ShoppingCart", href: "/dashboard/orders" },
+          { label: "Customers", icon: "Users", href: "/dashboard/customers" },
+          { label: "Reviews", icon: "Star", href: "/dashboard/reviews" },
+          { label: "Coupons", icon: "Ticket", href: "/dashboard/coupons" },
+        ],
+      },
+      {
+        title: "System",
+        items: [
+          { label: "Settings", icon: "Settings", href: "/dashboard/settings" },
         ],
       },
     ],
