@@ -18,7 +18,7 @@ const schema = z.object({
   brandName: z.string().min(2, "Brand name is required"),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "Use lowercase letters, numbers, and hyphens"),
   country: z.string().min(2),
-  currency: z.string().length(3).default("USD"),
+  currency: z.string().length(3),
   description: z.string().optional(),
 });
 

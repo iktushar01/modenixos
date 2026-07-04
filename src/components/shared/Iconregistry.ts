@@ -11,6 +11,12 @@ import {
   CalendarDays,
   MessageSquare,
   Heart,
+  Package,
+  Tags,
+  Layers,
+  ShoppingCart,
+  Star,
+  Ticket,
   type LucideProps,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
@@ -27,7 +33,13 @@ export type IconName =
   | "BookOpen"
   | "CalendarDays"
   | "MessageSquare"
-  | "Heart";
+  | "Heart"
+  | "Package"
+  | "Tags"
+  | "Layers"
+  | "ShoppingCart"
+  | "Star"
+  | "Ticket";
 
 type LucideIcon = ForwardRefExoticComponent<
   Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
@@ -46,4 +58,10 @@ export const iconRegistry: Record<IconName, LucideIcon> = {
   CalendarDays,
   MessageSquare,
   Heart,
+  Package,
+  Tags,
+  Layers,
+  ShoppingCart,
+  Star,
+  Ticket,
 };

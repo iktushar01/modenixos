@@ -78,7 +78,7 @@ const AdminDashboardHome = () => {
   }
 
   const visibleLinks = quickLinks.filter((link) =>
-    link.roles.includes(user.role as "ADMIN" | "SUPER_ADMIN"),
+    (link.roles as readonly string[]).includes(user.role),
   );
 
   return (
