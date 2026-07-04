@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { PackageOpen } from "lucide-react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Collection, Category, Product, Review, Store } from "@/types/store.types";
 import { parseStorefrontTheme } from "@/lib/storefrontTheme";
+import { hasShopFilters, parseShopFilters } from "@/lib/shopFilters";
 import { StoreNavbar } from "./StoreNavbar";
 import { StoreHero } from "./StoreHero";
 import { CategoriesGrid } from "./CategoriesGrid";
 import { CollectionsGrid } from "./CollectionsGrid";
-import { ProductCard } from "./ProductCard";
+import { ShopSection } from "./ShopSection";
 import { TrendingScroll } from "./TrendingScroll";
 import { PromoBanner } from "./PromoBanner";
 import { BrandStory } from "./BrandStory";
@@ -20,12 +20,10 @@ import { QuickViewModal } from "./QuickViewModal";
 
 interface StorefrontHomeClientProps {
   store: Store;
-  products: Product[];
-  featuredProducts: Product[];
+  catalog: Product[];
   categories: Category[];
   collections: Collection[];
   reviews: Review[];
-  activeCategory?: string | null;
 }
 
 function buildRatingsMap(reviews: Review[]): Record<string, number> {
@@ -53,30 +51,16 @@ function buildPromoFallback(products: Product[]): string | undefined {
   return maxPct > 0 ? `Up to ${maxPct}% off — Limited time only` : undefined;
 }
 
-export function StorefrontHomeClient({
-  store,
-  products,
-  featuredProducts,
-  categories,
-  collections,
-  reviews,
-  activeCategory,
-}: StorefrontHomeClientProps) {
+function StorefrontHomeContent({ store, catalog, categories, collections, reviews }: StorefrontHomeClientProps) {
+  const searchParams = useSearchParams();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const theme = parseStorefrontTheme(store);
   const ratings = useMemo(() => buildRatingsMap(reviews), [reviews]);
+  const filters = useMemo(() => parseShopFilters(searchParams), [searchParams]);
+  const isShopFiltered = hasShopFilters(filters);
 
-  const displayFeatured = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 8);
-  const trendingProducts = useMemo(() => {
-    const featuredIds = new Set(displayFeatured.map((p) => p.id));
-    return products.filter((p) => !featuredIds.has(p.id)).slice(0, 12);
-  }, [products, displayFeatured]);
-
-  const promoFallback = buildPromoFallback(products);
-
-  const activeCategoryName = activeCategory
-    ? categories.find((c) => c.slug === activeCategory)?.name ?? activeCategory
-    : null;
+  const trendingProducts = useMemo(() => catalog.slice(0, 12), [catalog]);
+  const promoFallback = buildPromoFallback(catalog);
 
   return (
     <div
@@ -89,65 +73,33 @@ export function StorefrontHomeClient({
       }
     >
       <StoreNavbar store={store} theme={theme} />
-      <StoreHero store={store} theme={theme} />
+      {!isShopFiltered && <StoreHero store={store} theme={theme} />}
 
-      {theme.sections.promo && !activeCategory && (
+      {theme.sections.promo && !isShopFiltered && (
         <PromoBanner slug={store.slug} theme={theme} fallbackText={promoFallback} />
       )}
 
-      {theme.sections.categories && !activeCategory && (
+      {theme.sections.categories && !isShopFiltered && (
         <CategoriesGrid slug={store.slug} categories={categories} theme={theme} />
       )}
 
-      {theme.sections.collections && !activeCategory && (
+      {theme.sections.collections && !isShopFiltered && (
         <CollectionsGrid slug={store.slug} collections={collections} theme={theme} />
       )}
 
       {theme.sections.featured && (
-        <section id="shop" className="mx-auto max-w-7xl px-4 py-20 md:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-10"
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-white/50">Shop</p>
-            <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">
-              {activeCategoryName ? activeCategoryName : "Featured Products"}
-            </h2>
-            {activeCategoryName && (
-              <p className="mt-2 text-sm text-white/45">
-                Showing products in this category
-              </p>
-            )}
-          </motion.div>
-
-          {displayFeatured.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 py-20 text-center">
-              <PackageOpen className="mb-4 h-12 w-12 text-white/25" />
-              <p className="text-lg font-medium text-white/70">No products yet</p>
-              <p className="mt-2 max-w-sm text-sm text-white/40">
-                This store is setting up its catalog. Check back soon for new arrivals.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {displayFeatured.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  store={store}
-                  theme={theme}
-                  rating={ratings[p.id]}
-                  onQuickView={setQuickViewProduct}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+        <ShopSection
+          store={store}
+          theme={theme}
+          catalog={catalog}
+          categories={categories}
+          collections={collections}
+          ratings={ratings}
+          onQuickView={setQuickViewProduct}
+        />
       )}
 
-      {theme.sections.trending && trendingProducts.length > 0 && (
+      {theme.sections.trending && !isShopFiltered && trendingProducts.length > 0 && (
         <TrendingScroll
           store={store}
           products={trendingProducts}
@@ -157,11 +109,11 @@ export function StorefrontHomeClient({
         />
       )}
 
-      {theme.sections.brandStory && <BrandStory theme={theme} />}
+      {theme.sections.brandStory && !isShopFiltered && <BrandStory theme={theme} />}
 
-      {theme.sections.reviews && <ReviewsCarousel reviews={reviews} />}
+      {theme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
 
-      {theme.sections.newsletter && (
+      {theme.sections.newsletter && !isShopFiltered && (
         <NewsletterSection brandName={store.brandName} theme={theme} />
       )}
 
@@ -175,5 +127,29 @@ export function StorefrontHomeClient({
         onClose={() => setQuickViewProduct(null)}
       />
     </div>
+  );
+}
+
+function ShopFallback() {
+  return (
+    <div id="shop" className="mx-auto max-w-7xl animate-pulse px-4 py-20 md:px-6">
+      <div className="mb-8 h-10 w-48 rounded bg-white/10" />
+      <div className="flex gap-8">
+        <div className="hidden h-96 w-64 rounded-2xl bg-white/5 lg:block" />
+        <div className="grid flex-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="aspect-[3/4] rounded-2xl bg-white/5" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function StorefrontHomeClient(props: StorefrontHomeClientProps) {
+  return (
+    <Suspense fallback={<ShopFallback />}>
+      <StorefrontHomeContent {...props} />
+    </Suspense>
   );
 }

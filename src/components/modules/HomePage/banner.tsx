@@ -75,7 +75,7 @@ const features = [
 ];
 
 const stats = [
-  { to: 1, suffix: "", label: "Dashboard for everything", prefix: "All-in-" },
+  { to: 2, suffix: "", label: "Repos — server & client", prefix: "" },
   { to: 12, suffix: "+", label: "Demo products seeded", prefix: "" },
   { to: 4, suffix: "", label: "Steps to first sale", prefix: "" },
   { to: 100, suffix: "%", label: "Store-scoped data", prefix: "" },
