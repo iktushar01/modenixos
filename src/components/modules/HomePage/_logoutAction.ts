@@ -1,6 +1,7 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
+import { HAS_STORE_COOKIE } from "@/lib/hasStoreCookie";
 import { cookies } from "next/headers";
 
 export const logoutAction = async (): Promise<{ success: boolean }> => {
@@ -17,6 +18,7 @@ export const logoutAction = async (): Promise<{ success: boolean }> => {
     cookieStore.delete("better-auth.session_token");
     cookieStore.delete("better-auth.session_data");
     cookieStore.delete("user");
+    cookieStore.delete(HAS_STORE_COOKIE);
   }
 
   // ✅ Do NOT call redirect() here — it throws internally and kills onSuccess.

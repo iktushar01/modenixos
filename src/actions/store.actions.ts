@@ -1,6 +1,8 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
+import { setCookie } from "@/lib/cookieUtils";
+import { HAS_STORE_COOKIE, HAS_STORE_MAX_AGE } from "@/lib/hasStoreCookie";
 import { Store } from "@/types/store.types";
 import { revalidatePath } from "next/cache";
 
@@ -12,6 +14,7 @@ export async function createStoreAction(data: {
   description?: string;
 }) {
   const res = await httpClient.post<Store>("/stores", data);
+  await setCookie(HAS_STORE_COOKIE, "1", HAS_STORE_MAX_AGE);
   revalidatePath("/dashboard");
   revalidatePath("/onboarding");
   return res;

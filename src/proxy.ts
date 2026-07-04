@@ -17,7 +17,8 @@ import {
     refreshTokensFromRequest,
     validateSessionFromBackend,
 } from "./lib/middlewareRefresh";
-import { checkHasStoreFromRequest } from "./lib/middlewareStoreCheck";
+import { checkHasStoreFromRequest, applyHasStoreCookie } from "./lib/middlewareStoreCheck";
+import { readHasStoreCookie } from "./lib/hasStoreCookie";
 import { UserFromCookie } from "./types/auth.types";
 
 const readUserFromCookie = (request: NextRequest): UserFromCookie | null => {
@@ -270,16 +271,38 @@ export async function proxy(request: NextRequest) {
             }
         }
 
-        // Rule 8: Store owner onboarding guard
+        // Rule 8: Store owner onboarding guard (cached — no API on every dashboard click)
         if (userRole === "CLIENT") {
-            const hasStore = await checkHasStoreFromRequest(request);
+            const cachedHasStore = readHasStoreCookie(request.cookies);
 
-            if (!hasStore && pathname.startsWith("/dashboard")) {
-                return NextResponse.redirect(new URL("/onboarding", request.url));
+            if (pathname === "/onboarding") {
+                if (cachedHasStore === true) {
+                    return NextResponse.redirect(new URL("/dashboard", request.url));
+                }
+                if (cachedHasStore === null) {
+                    const hasStore = await checkHasStoreFromRequest(request);
+                    const response = createResponse(refreshResponse);
+                    applyHasStoreCookie(response, hasStore);
+                    if (hasStore) {
+                        return NextResponse.redirect(new URL("/dashboard", request.url));
+                    }
+                }
+                return createResponse(refreshResponse);
             }
 
-            if (hasStore && pathname === "/onboarding") {
-                return NextResponse.redirect(new URL("/dashboard", request.url));
+            if (pathname.startsWith("/dashboard")) {
+                if (cachedHasStore === true) {
+                    return createResponse(refreshResponse);
+                }
+
+                const hasStore = await checkHasStoreFromRequest(request);
+                if (!hasStore) {
+                    return NextResponse.redirect(new URL("/onboarding", request.url));
+                }
+
+                const response = createResponse(refreshResponse);
+                applyHasStoreCookie(response, true);
+                return response;
             }
         }
 

@@ -13,9 +13,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/modules/dashboard/Sidebar";
+import { DashboardHeader } from "@/components/modules/dashboard/DashboardHeader";
 import { getSidebarData } from "@/lib/getSidebarData";
 import { getCookie } from "@/lib/cookieUtils";
-import { getUserInfo } from "@/services/auth/auth.services";
 import { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
 
@@ -37,26 +37,6 @@ const Sidebar1 = async ({ className, children }: Sidebar1Props) => {
     }
   }
 
-  if (!user) {
-    const backendUser = await getUserInfo();
-
-    if (backendUser) {
-      const avatar =
-        backendUser.image ??
-        backendUser.client?.profilePhoto ??
-        backendUser.admin?.profilePhoto ??
-        null;
-
-      user = {
-        name: backendUser.name,
-        email: backendUser.email,
-        role: backendUser.role,
-        avatar,
-        image: backendUser.image ?? avatar,
-      };
-    }
-  }
-
   const userRole = user?.role ?? "CLIENT";
   const sidebarData = await getSidebarData(userRole as "ADMIN" | "CLIENT");
 
@@ -65,7 +45,7 @@ const Sidebar1 = async ({ className, children }: Sidebar1Props) => {
       <AppSidebar data={sidebarData} user={user} />
 
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <DashboardHeader>
           <SidebarTrigger className="-ml-1" />
           <Separator
             orientation="vertical"
@@ -84,7 +64,7 @@ const Sidebar1 = async ({ className, children }: Sidebar1Props) => {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-        </header>
+        </DashboardHeader>
 
         <div className="flex flex-1 flex-col gap-4 p-4">
           {children ?? (

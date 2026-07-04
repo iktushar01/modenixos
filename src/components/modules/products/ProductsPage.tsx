@@ -151,7 +151,7 @@ export default function ProductsPage() {
           title="No products yet"
           description="Add your first product with images, sizes, and pricing."
           actionLabel="Add product"
-          onAction={() => window.location.assign("/dashboard/products/new")}
+          actionHref="/dashboard/products/new"
           icon={Package}
         />
       ) : (

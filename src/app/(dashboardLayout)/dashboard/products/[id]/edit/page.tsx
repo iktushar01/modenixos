@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import ProductForm from "@/components/modules/products/ProductForm";
+import { ProductFormSkeleton } from "@/components/modules/products/ProductFormSkeleton";
 import { getProductAction } from "@/actions/catalog.actions";
 
 export default function EditProductPage() {
@@ -17,11 +17,7 @@ export default function EditProductPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <ProductFormSkeleton />;
   }
 
   if (isError || !product) {

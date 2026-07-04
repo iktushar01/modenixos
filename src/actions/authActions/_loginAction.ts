@@ -9,6 +9,7 @@ import {
 import { httpClient } from "@/lib/axios/httpClient";
 import { setTokenInCookies } from "@/lib/tokenUtils";
 import { setCookie } from "@/lib/cookieUtils";
+import { HAS_STORE_COOKIE, HAS_STORE_MAX_AGE } from "@/lib/hasStoreCookie";
 import { ApiErrorResponse } from "@/types/api.types";
 import { ILoginResponse } from "@/types/auth.types";
 import {
@@ -59,6 +60,17 @@ export const loginAction = async (
       24 * 60 * 60
     );
     await setCookie("user", JSON.stringify(user), 7 * 24 * 60 * 60, false);
+
+    if (normalizedRole === "CLIENT") {
+      try {
+        const storeRes = await httpClient.get("/stores/me");
+        if (storeRes.data) {
+          await setCookie(HAS_STORE_COOKIE, "1", HAS_STORE_MAX_AGE);
+        }
+      } catch {
+        // Store check deferred to middleware on first dashboard visit
+      }
+    }
 
     // 🔐 Force password change
     if (needPasswordChange) {

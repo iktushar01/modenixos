@@ -62,6 +62,7 @@ export const AppSidebar = ({ data, user }: AppSidebarProps) => {
       const res = await logoutAction();
       if (res.success) {
         deleteCookie("user");
+        deleteCookie("hasStore");
         deleteCookie("accessToken");
         deleteCookie("refreshToken");
         deleteCookie("better-auth.session_token");
@@ -74,6 +75,7 @@ export const AppSidebar = ({ data, user }: AppSidebarProps) => {
     } catch {
       toast.error("An error occurred during logout");
       deleteCookie("user");
+      deleteCookie("hasStore");
       deleteCookie("accessToken");
       deleteCookie("refreshToken");
       deleteCookie("better-auth.session_token");
