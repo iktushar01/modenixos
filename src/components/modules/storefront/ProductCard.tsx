@@ -144,7 +144,7 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
               <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
               {rating.toFixed(1)}
             </div>
-          ) : product.tags.includes("new") ? (
+          ) : product.tags?.includes("new") ? (
             <span className="text-[10px] uppercase tracking-wider text-white/40">New</span>
           ) : null}
         </div>
