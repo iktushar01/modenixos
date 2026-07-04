@@ -34,12 +34,12 @@ export default function Homepage() {
 
         {/* Title */}
         <h1 className="mt-8 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl max-w-4xl mx-auto leading-tight">
-          The Ultimate Starter for Role-Based Applications
+          The Operating System for Fashion Brands
         </h1>
 
         {/* Subtitle */}
         <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto sm:text-xl leading-relaxed">
-          A clean, production-ready foundation featuring advanced authentication, split Admin & Client dashboards, and fully-typed multi-tenancy middleware.
+          Launch, manage, and scale your fashion brand from one dashboard. Multi-tenant SaaS built for entrepreneurs.
         </p>
 
         {/* Call to Actions */}

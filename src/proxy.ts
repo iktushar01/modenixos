@@ -17,6 +17,7 @@ import {
     refreshTokensFromRequest,
     validateSessionFromBackend,
 } from "./lib/middlewareRefresh";
+import { checkHasStoreFromRequest } from "./lib/middlewareStoreCheck";
 import { UserFromCookie } from "./types/auth.types";
 
 const readUserFromCookie = (request: NextRequest): UserFromCookie | null => {
@@ -266,6 +267,19 @@ export async function proxy(request: NextRequest) {
                     userRole,
                     pathWithQuery,
                 );
+            }
+        }
+
+        // Rule 8: Store owner onboarding guard
+        if (userRole === "CLIENT") {
+            const hasStore = await checkHasStoreFromRequest(request);
+
+            if (!hasStore && pathname.startsWith("/dashboard")) {
+                return NextResponse.redirect(new URL("/onboarding", request.url));
+            }
+
+            if (hasStore && pathname === "/onboarding") {
+                return NextResponse.redirect(new URL("/dashboard", request.url));
             }
         }
 

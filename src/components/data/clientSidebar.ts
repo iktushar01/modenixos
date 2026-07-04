@@ -7,7 +7,7 @@ export const getClientSidebarData = async (): Promise<SidebarData> => {
       src: "/logo.png",
       alt: `${APP_NAME} logo`,
       title: APP_NAME,
-      description: "Student Panel",
+      description: "Brand Dashboard",
     },
     navGroups: [
       {
