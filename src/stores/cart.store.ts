@@ -74,6 +74,18 @@ export const useCartStore = create<CartState>()(
       getStoreTotal: (storeId) =>
         get().items.filter((i) => i.storeId === storeId).reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
-    { name: "modenixos-cart" },
+    {
+      name: "modenixos-cart",
+      onRehydrateStorage: () => (state) => {
+        if (!state?.items?.length) return;
+        state.items = state.items
+          .filter((item) => item && item.productId && item.storeId)
+          .map((item) => ({
+            ...item,
+            price: Number(item.price) || 0,
+            quantity: Math.max(1, Number(item.quantity) || 1),
+          }));
+      },
+    },
   ),
 );

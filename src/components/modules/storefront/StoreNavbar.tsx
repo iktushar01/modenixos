@@ -8,6 +8,7 @@ import { Search, ShoppingBag, Menu, X, User } from "lucide-react";
 import { Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
 import { useCartStore } from "@/stores/cart.store";
+import { useHydrated } from "@/hooks/useHydrated";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -26,10 +27,13 @@ interface StoreNavbarProps {
 }
 
 export function StoreNavbar({ store, theme }: StoreNavbarProps) {
+  const hydrated = useHydrated();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const cartCount = useCartStore((s) => s.getStoreItems(store.id).reduce((n, i) => n + i.quantity, 0));
+  const cartCount = useCartStore((s) =>
+    hydrated ? s.getStoreItems(store.id).reduce((n, i) => n + i.quantity, 0) : 0,
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);

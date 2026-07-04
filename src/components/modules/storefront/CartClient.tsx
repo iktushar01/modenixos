@@ -7,19 +7,40 @@ import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Store } from "@/types/store.types";
 import { useCartStore } from "@/stores/cart.store";
+import { useHydrated } from "@/hooks/useHydrated";
 import { formatPrice, parseStorefrontTheme } from "@/lib/storefrontTheme";
 import { StoreNavbar } from "./StoreNavbar";
 import { StoreFooter } from "./StoreFooter";
 
 export default function CartClient({ store }: { store: Store }) {
+  const hydrated = useHydrated();
   const theme = parseStorefrontTheme(store);
-  const items = useCartStore((s) => s.getStoreItems(store.id));
-  const total = useCartStore((s) => s.getStoreTotal(store.id));
+  const items = useCartStore((s) => (hydrated ? s.getStoreItems(store.id) : []));
+  const total = useCartStore((s) => (hydrated ? s.getStoreTotal(store.id) : 0));
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
 
   const itemCount = items.reduce((n, i) => n + i.quantity, 0);
   const base = `/store/${store.slug}`;
+
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <StoreNavbar store={store} theme={theme} />
+        <main className="mx-auto max-w-7xl animate-pulse px-4 py-14 md:px-6">
+          <div className="mb-10 h-10 w-48 rounded bg-white/10" />
+          <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
+            <div className="space-y-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="h-32 rounded-2xl bg-white/5" />
+              ))}
+            </div>
+            <div className="h-64 rounded-2xl bg-white/5" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div

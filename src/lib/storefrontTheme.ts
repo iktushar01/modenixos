@@ -64,10 +64,12 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
 }
 
 export function formatPrice(amount: number, currency = "USD") {
+  const value = Number(amount);
+  if (!Number.isFinite(value)) return "—";
   try {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
+    return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(value);
   } catch {
-    return `$${amount.toFixed(2)}`;
+    return `$${value.toFixed(2)}`;
   }
 }
 
