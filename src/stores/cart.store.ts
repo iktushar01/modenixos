@@ -12,12 +12,24 @@ interface CartItem extends OrderItem {
 interface CartState {
   items: CartItem[];
   addItem: (item: CartItem) => void;
-  removeItem: (productId: string, storeId: string) => void;
-  updateQuantity: (productId: string, storeId: string, quantity: number) => void;
+  removeItem: (productId: string, storeId: string, size?: string, color?: string) => void;
+  updateQuantity: (productId: string, storeId: string, quantity: number, size?: string, color?: string) => void;
   clearStore: (storeId: string) => void;
   getStoreItems: (storeId: string) => CartItem[];
   getStoreTotal: (storeId: string) => number;
 }
+
+const matchesLine = (
+  item: CartItem,
+  productId: string,
+  storeId: string,
+  size?: string,
+  color?: string,
+) =>
+  item.productId === productId &&
+  item.storeId === storeId &&
+  item.size === size &&
+  item.color === color;
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -39,17 +51,19 @@ export const useCartStore = create<CartState>()(
           set({ items: [...get().items, item] });
         }
       },
-      removeItem: (productId, storeId) => {
-        set({ items: get().items.filter((i) => !(i.productId === productId && i.storeId === storeId)) });
+      removeItem: (productId, storeId, size, color) => {
+        set({
+          items: get().items.filter((i) => !matchesLine(i, productId, storeId, size, color)),
+        });
       },
-      updateQuantity: (productId, storeId, quantity) => {
+      updateQuantity: (productId, storeId, quantity, size, color) => {
         if (quantity <= 0) {
-          get().removeItem(productId, storeId);
+          get().removeItem(productId, storeId, size, color);
           return;
         }
         set({
           items: get().items.map((i) =>
-            i.productId === productId && i.storeId === storeId ? { ...i, quantity } : i,
+            matchesLine(i, productId, storeId, size, color) ? { ...i, quantity } : i,
           ),
         });
       },
