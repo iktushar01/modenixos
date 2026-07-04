@@ -165,6 +165,20 @@ export async function getPublicProductAction(slug: string, id: string) {
   return json.data;
 }
 
+export async function getPublicCollectionsAction(slug: string, params?: Record<string, string>) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/collections?${qs}`, { next: { revalidate: 60 } });
+  if (!res.ok) return { data: [], meta: null };
+  return res.json();
+}
+
+export async function getPublicReviewsAction(slug: string, params?: Record<string, string>) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/reviews?${qs}`, { next: { revalidate: 60 } });
+  if (!res.ok) return { data: [], meta: null };
+  return res.json();
+}
+
 export async function placeOrderAction(slug: string, data: Record<string, unknown>) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/orders`, {
     method: "POST",
