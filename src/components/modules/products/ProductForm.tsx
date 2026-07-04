@@ -1,0 +1,401 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ProductImageUpload } from "./ProductImageUpload";
+import { TagInput } from "./TagInput";
+import {
+  createProductAction,
+  updateProductAction,
+  getCategoriesAction,
+  getCollectionsAction,
+} from "@/actions/catalog.actions";
+import { productFormSchema, ProductFormValues } from "@/zod/product.validation";
+import { Product } from "@/types/store.types";
+
+const SIZE_PRESETS = ["XS", "S", "M", "L", "XL", "XXL"];
+const COLOR_PRESETS = ["Black", "White", "Navy", "Beige", "Red", "Green", "Gray"];
+
+const defaultValues: ProductFormValues = {
+  name: "",
+  description: "",
+  price: 0,
+  discountPrice: "",
+  sku: "",
+  stock: 0,
+  status: "DRAFT",
+  categoryId: "",
+  collectionId: "",
+  sizes: [],
+  colors: [],
+  tags: [],
+};
+
+function buildFormData(
+  values: ProductFormValues,
+  existingUrls: string[],
+  newFiles: File[],
+  isEdit: boolean,
+): FormData {
+  const fd = new FormData();
+  fd.append("name", values.name);
+  if (values.description) fd.append("description", values.description);
+  fd.append("price", String(values.price));
+  if (typeof values.discountPrice === "number" && values.discountPrice > 0) {
+    fd.append("discountPrice", String(values.discountPrice));
+  }
+  if (values.sku) fd.append("sku", values.sku);
+  fd.append("stock", String(values.stock));
+  fd.append("status", values.status);
+  if (values.categoryId) fd.append("categoryId", values.categoryId);
+  if (values.collectionId) fd.append("collectionId", values.collectionId);
+  fd.append("sizes", JSON.stringify(values.sizes));
+  fd.append("colors", JSON.stringify(values.colors));
+  fd.append("tags", JSON.stringify(values.tags));
+  if (isEdit || existingUrls.length > 0) {
+    fd.append("images", JSON.stringify(existingUrls));
+  }
+  newFiles.forEach((file) => fd.append("images", file));
+  return fd;
+}
+
+function productToFormValues(product: Product): ProductFormValues {
+  return {
+    name: product.name,
+    description: product.description ?? "",
+    price: product.price,
+    discountPrice: product.discountPrice ?? "",
+    sku: product.sku ?? "",
+    stock: product.stock,
+    status: product.status,
+    categoryId: product.categoryId ?? "",
+    collectionId: product.collectionId ?? "",
+    sizes: product.sizes ?? [],
+    colors: product.colors ?? [],
+    tags: product.tags ?? [],
+  };
+}
+
+interface ProductFormProps {
+  mode: "create" | "edit";
+  product?: Product;
+}
+
+export default function ProductForm({ mode, product }: ProductFormProps) {
+  const router = useRouter();
+  const [values, setValues] = useState<ProductFormValues>(
+    product ? productToFormValues(product) : defaultValues,
+  );
+  const [existingUrls, setExistingUrls] = useState<string[]>(product?.images ?? []);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (product) {
+      setValues(productToFormValues(product));
+      setExistingUrls(product.images ?? []);
+    }
+  }, [product]);
+
+  const { data: categoriesRes } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategoriesAction({ limit: 100 }),
+  });
+  const { data: collectionsRes } = useQuery({
+    queryKey: ["collections"],
+    queryFn: () => getCollectionsAction({ limit: 100 }),
+  });
+
+  const categories = categoriesRes?.data ?? [];
+  const collections = collectionsRes?.data ?? [];
+
+  const salePercent =
+    typeof values.discountPrice === "number" &&
+    values.discountPrice > 0 &&
+    values.discountPrice < values.price
+      ? Math.round((1 - values.discountPrice / values.price) * 100)
+      : null;
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const fd = buildFormData(values, existingUrls, newFiles, mode === "edit");
+      if (mode === "create") {
+        return createProductAction(fd);
+      }
+      return updateProductAction(product!.id, fd);
+    },
+    onSuccess: () => {
+      toast.success(mode === "create" ? "Product created" : "Product updated");
+      router.push("/dashboard/products");
+      router.refresh();
+    },
+    onError: () => toast.error("Failed to save product"),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = productFormSchema.safeParse(values);
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      parsed.error.issues.forEach((issue) => {
+        const key = issue.path[0]?.toString() ?? "form";
+        fieldErrors[key] = issue.message;
+      });
+      setErrors(fieldErrors);
+      toast.error("Please fix the form errors");
+      return;
+    }
+    setErrors({});
+    mutation.mutate();
+  };
+
+  const set = <K extends keyof ProductFormValues>(key: K, val: ProductFormValues[K]) => {
+    setValues((prev) => ({ ...prev, [key]: val }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button type="button" variant="ghost" size="sm" asChild>
+          <Link href="/dashboard/products">
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Back
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold">
+            {mode === "create" ? "Add product" : "Edit product"}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {mode === "create"
+              ? "Add images, pricing, variants, and organize your catalog."
+              : `Editing ${product?.name}`}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Media</CardTitle>
+              <CardDescription>First image is used as the cover on your storefront.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProductImageUpload
+                existingUrls={existingUrls}
+                onExistingChange={setExistingUrls}
+                newFiles={newFiles}
+                onNewFilesChange={setNewFiles}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Basic information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Product name *</Label>
+                <Input
+                  id="name"
+                  value={values.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  placeholder="Classic White Tee"
+                />
+                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  rows={4}
+                  value={values.description ?? ""}
+                  onChange={(e) => set("description", e.target.value)}
+                  placeholder="Describe materials, fit, and care instructions..."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sku">SKU</Label>
+                <Input
+                  id="sku"
+                  value={values.sku ?? ""}
+                  onChange={(e) => set("sku", e.target.value)}
+                  placeholder="LT-1001"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Variants</CardTitle>
+              <CardDescription>Sizes and colors shoppers can choose on the product page.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <TagInput
+                label="Sizes"
+                value={values.sizes}
+                onChange={(v) => set("sizes", v)}
+                placeholder="Add size and press Enter"
+                presets={SIZE_PRESETS}
+              />
+              <TagInput
+                label="Colors"
+                value={values.colors}
+                onChange={(v) => set("colors", v)}
+                placeholder="Add color and press Enter"
+                presets={COLOR_PRESETS}
+              />
+              <TagInput
+                label="Tags"
+                value={values.tags}
+                onChange={(v) => set("tags", v)}
+                placeholder="e.g. summer, cotton, new"
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Pricing</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="price">Price *</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={values.price || ""}
+                  onChange={(e) => set("price", Number(e.target.value))}
+                />
+                {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="discountPrice">Sale price</Label>
+                <Input
+                  id="discountPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={typeof values.discountPrice === "number" ? values.discountPrice : ""}
+                  onChange={(e) =>
+                    set("discountPrice", e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  placeholder="Optional"
+                />
+                {salePercent !== null && (
+                  <p className="text-xs text-green-600">{salePercent}% off regular price</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Inventory</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="stock">Stock quantity</Label>
+                <Input
+                  id="stock"
+                  type="number"
+                  min="0"
+                  value={values.stock}
+                  onChange={(e) => set("stock", Number(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={values.status} onValueChange={(v) => set("status", v as ProductFormValues["status"])}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DRAFT">Draft — hidden from storefront</SelectItem>
+                    <SelectItem value="ACTIVE">Active — visible on storefront</SelectItem>
+                    <SelectItem value="ARCHIVED">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Organization</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select
+                  value={values.categoryId || "none"}
+                  onValueChange={(v) => set("categoryId", v === "none" ? "" : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No category</SelectItem>
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Collection</Label>
+                <Select
+                  value={values.collectionId || "none"}
+                  onValueChange={(v) => set("collectionId", v === "none" ? "" : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select collection" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No collection</SelectItem>
+                    {collections.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex flex-col gap-2">
+            <Button type="submit" disabled={mutation.isPending} className="w-full">
+              {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {mode === "create" ? "Create product" : "Save changes"}
+            </Button>
+            <Button type="button" variant="outline" asChild className="w-full">
+              <Link href="/dashboard/products">Cancel</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+}

@@ -48,6 +48,11 @@ export async function getProductsAction(params?: Record<string, unknown>) {
   return httpClient.get<Product[]>("/products", { params });
 }
 
+export async function getProductAction(id: string) {
+  const res = await httpClient.get<Product>(`/products/${id}`);
+  return res.data;
+}
+
 export async function createProductAction(data: FormData) {
   const res = await httpClient.post<Product>("/products", data);
   revalidatePath("/dashboard/products");
