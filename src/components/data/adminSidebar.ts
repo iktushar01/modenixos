@@ -15,13 +15,12 @@ export const adminSidebar: SidebarData = {
         { label: "Dashboard",      icon: "LayoutDashboard", href: "/admin/dashboard" },
       ],
     },
-    // {
-    //   title: "Management",
-    //   items: [
-    //     { label: "Users",               icon: "Users",       href: "/dashboard/admin/users" },
-    //     { label: "Roles & Permissions", icon: "ShieldCheck", href: "/dashboard/admin/roles" },
-    //   ],
-    // },
+    {
+      title: "Management",
+      items: [
+        { label: "Platform", icon: "ShieldCheck", href: "/admin/admin-management" },
+      ],
+    },
     {
       title: "System",
       items: [

@@ -78,9 +78,9 @@ export default function Homepage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
               <Shield className="size-5" />
             </div>
-            <h3 className="mt-4 font-semibold text-base">Better Auth Integration</h3>
+            <h3 className="mt-4 font-semibold text-base">Multi-Tenant Stores</h3>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              Secure cookie handling, session management, and integrated server actions straight out of the box.
+              Each brand owner gets an isolated store with products, orders, and analytics scoped by storeId.
             </p>
           </div>
 
@@ -89,9 +89,9 @@ export default function Homepage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500">
               <Users className="size-5" />
             </div>
-            <h3 className="mt-4 font-semibold text-base">Role-Based Ecosystem</h3>
+            <h3 className="mt-4 font-semibold text-base">Full Commerce Flow</h3>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              Pre-built layouts for Admin controls and standard Client portals guarded by efficient routing.
+              Public storefront, cart, checkout, order management, coupons, and customer tracking built in.
             </p>
           </div>
 
@@ -100,11 +100,48 @@ export default function Homepage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500">
               <Zap className="size-5" />
             </div>
-            <h3 className="mt-4 font-semibold text-base">Shadcn UI & Tailwind v4</h3>
+            <h3 className="mt-4 font-semibold text-base">Brand Dashboard</h3>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              Modern styling architecture leveraging native CSS imports and un-compromised custom utility sets.
+              Products, categories, collections, analytics, and store customization from one dashboard.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="container mx-auto max-w-5xl px-4 py-16 border-t border-border/60">
+        <h2 className="text-center text-3xl font-bold">Simple Pricing</h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {[
+            { name: "Free", price: "$0", features: ["1 store", "Up to 50 products", "Basic analytics"] },
+            { name: "Pro", price: "$29/mo", features: ["Unlimited products", "Custom theme", "Priority support"] },
+            { name: "Enterprise", price: "Custom", features: ["Multiple stores", "API access", "Dedicated support"] },
+          ].map((plan) => (
+            <div key={plan.name} className="rounded-2xl border border-border bg-card p-6 text-center">
+              <h3 className="text-lg font-semibold">{plan.name}</h3>
+              <p className="mt-2 text-3xl font-bold">{plan.price}</p>
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                {plan.features.map((f) => <li key={f}>{f}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="container mx-auto max-w-3xl px-4 py-16 border-t border-border/60">
+        <h2 className="text-center text-3xl font-bold">FAQ</h2>
+        <div className="mt-8 space-y-6">
+          {[
+            { q: "How do I create a fashion brand?", a: "Sign up, verify your email, and complete the brand onboarding form." },
+            { q: "Can customers checkout without an account?", a: "Yes. Storefront checkout works with guest name and email (COD for MVP)." },
+            { q: "Is my store data isolated?", a: "Yes. Every query is scoped by your storeId for multi-tenant security." },
+          ].map((item) => (
+            <div key={item.q} className="rounded-lg border p-4">
+              <h3 className="font-semibold">{item.q}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{item.a}</p>
+            </div>
+          ))}
         </div>
       </section>
 
