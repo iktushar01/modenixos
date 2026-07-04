@@ -15,7 +15,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import AnimatedContent from "@/components/AnimatedContent";
 import FadeContent from "@/components/FadeContent";
 import SpotlightCard from "@/components/SpotlightCard";
-import Magnet from "@/components/Magnet";
 
 const ownerSteps = [
   {
@@ -103,22 +102,18 @@ export default function TryProjectSection() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <Magnet magnetStrength={2.5} padding={50}>
-                    <Button asChild className="gap-2 rounded-xl">
-                      <Link href="/login">
-                        <UserPlus className="h-4 w-4" />
-                        Log in as demo owner
-                      </Link>
-                    </Button>
-                  </Magnet>
-                  <Magnet magnetStrength={2} padding={40}>
-                    <Button asChild variant="outline" className="gap-2 rounded-xl">
-                      <Link href="/store/luxe-threads" target="_blank">
-                        <ExternalLink className="h-4 w-4" />
-                        Visit demo storefront
-                      </Link>
-                    </Button>
-                  </Magnet>
+                  <Button asChild className="gap-2 rounded-xl">
+                    <Link href="/login">
+                      <UserPlus className="h-4 w-4" />
+                      Log in as demo owner
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="gap-2 rounded-xl">
+                    <Link href="/store/luxe-threads" target="_blank">
+                      <ExternalLink className="h-4 w-4" />
+                      Visit demo storefront
+                    </Link>
+                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Storefront slug: <code className="rounded bg-muted px-1">luxe-threads</code> · 12

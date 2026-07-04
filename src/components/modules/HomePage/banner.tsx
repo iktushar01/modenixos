@@ -17,17 +17,23 @@ import { Badge } from "@/components/ui/badge";
 import HowItWorksSection from "./HowItWorksSection";
 import TryProjectSection from "./TryProjectSection";
 import { APP_NAME } from "@/lib/app-config";
+import { motion } from "motion/react";
 import Aurora from "@/components/Aurora";
-import SplitText from "@/components/SplitText";
 import BlurText from "@/components/BlurText";
 import ShinyText from "@/components/ShinyText";
 import AnimatedContent from "@/components/AnimatedContent";
 import FadeContent from "@/components/FadeContent";
-import Magnet from "@/components/Magnet";
 import CountUp from "@/components/CountUp";
 import SpotlightCard from "@/components/SpotlightCard";
 import ScrollVelocity from "@/components/ScrollVelocity";
-import StarBorder from "@/components/StarBorder";
+
+const heroFade = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+};
+
+const heroBtnClass =
+  "h-12 rounded-xl px-8 transition-all duration-200 hover:opacity-90 active:scale-[0.98]";
 
 const features = [
   {
@@ -130,18 +136,18 @@ export default function Homepage() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 homepage-grid opacity-60" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/8 via-background/90 to-background" />
-          <div className="absolute inset-x-0 top-0 h-[70vh] opacity-40 dark:opacity-55">
+          <div className="absolute inset-x-0 top-0 h-[55vh] opacity-25 dark:opacity-35">
             <Aurora
               colorStops={["#f43f5e", "#8b5cf6", "#6366f1"]}
-              amplitude={1.15}
-              blend={0.55}
-              speed={0.8}
+              amplitude={0.9}
+              blend={0.45}
+              speed={0.6}
             />
           </div>
         </div>
 
         <div className="container relative mx-auto flex max-w-6xl flex-col items-center px-4 pb-24 pt-24 text-center md:pt-32">
-          <AnimatedContent distance={40} duration={0.7} threshold={0.2}>
+          <motion.div {...heroFade} transition={{ duration: 0.5 }}>
             <Badge
               variant="outline"
               className="homepage-glass mb-8 gap-2 px-4 py-1.5 text-sm shadow-sm"
@@ -155,22 +161,22 @@ export default function Homepage() {
                 speed={2.5}
               />
             </Badge>
-          </AnimatedContent>
+          </motion.div>
 
-          <SplitText
-            tag="h1"
-            text="The operating system for fashion brands"
-            className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl homepage-gradient-text"
-            splitType="words"
-            delay={60}
-            duration={0.9}
-            from={{ opacity: 0, y: 48, rotateX: 12 }}
-            to={{ opacity: 1, y: 0, rotateX: 0 }}
-            threshold={0.15}
-            rootMargin="-80px"
-          />
+          <motion.h1
+            {...heroFade}
+            transition={{ duration: 0.55, delay: 0.08 }}
+            className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+          >
+            The operating system for{" "}
+            <span className="homepage-gradient-text">fashion brands</span>
+          </motion.h1>
 
-          <div className="mx-auto mt-8 max-w-2xl">
+          <motion.div
+            {...heroFade}
+            transition={{ duration: 0.55, delay: 0.16 }}
+            className="mx-auto mt-8 max-w-2xl"
+          >
             <BlurText
               text={`${APP_NAME} lets entrepreneurs launch a fashion store, manage products and orders, and sell through a public storefront — all from one dashboard.`}
               className="justify-center text-lg leading-relaxed text-muted-foreground sm:text-xl"
@@ -178,75 +184,44 @@ export default function Homepage() {
               delay={35}
               stepDuration={0.4}
             />
-          </div>
+          </motion.div>
 
-          <AnimatedContent distance={50} duration={0.8} delay={0.15} threshold={0.2}>
-            <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Magnet magnetStrength={3} padding={80}>
-                <StarBorder
-                  as="div"
-                  color="#f43f5e"
-                  speed="5s"
-                  className="rounded-xl"
-                >
-                  <Button
-                    asChild
-                    size="lg"
-                    className="h-12 w-full rounded-xl border-0 bg-transparent px-8 shadow-none hover:bg-transparent sm:w-auto"
-                  >
-                    <Link href="/register" className="gap-2">
-                      Start free
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </StarBorder>
-              </Magnet>
+          <motion.div
+            {...heroFade}
+            transition={{ duration: 0.55, delay: 0.24 }}
+            className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          >
+            <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-md`}>
+              <Link href="/register">
+                Start free
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className={`${heroBtnClass} gap-2`}>
+              <Link href="/store/luxe-threads" target="_blank">
+                <ExternalLink className="h-4 w-4" />
+                Try demo store
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="ghost" className={`${heroBtnClass} px-6`}>
+              <a href="#try-project">Setup guide</a>
+            </Button>
+          </motion.div>
 
-              <Magnet magnetStrength={2.5} padding={60}>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="homepage-glass h-12 rounded-xl px-8 gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                >
-                  <Link href="/store/luxe-threads" target="_blank">
-                    <ExternalLink className="h-4 w-4" />
-                    Try demo store
-                  </Link>
-                </Button>
-              </Magnet>
-
-              <Magnet magnetStrength={2} padding={50}>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="ghost"
-                  className="h-12 rounded-xl px-6 transition-colors duration-300"
-                >
-                  <a href="#try-project">Setup guide</a>
-                </Button>
-              </Magnet>
-            </div>
-          </AnimatedContent>
-
-          <FadeContent blur duration={900} delay={300} threshold={0.2}>
-            <p className="mt-8 text-sm text-muted-foreground">
-              Demo login:{" "}
-              <code className="rounded-md bg-muted/80 px-2 py-0.5 text-xs font-mono">
-                demo@modenixos.com
-              </code>
-              {" / "}
-              <code className="rounded-md bg-muted/80 px-2 py-0.5 text-xs font-mono">
-                demo123456
-              </code>
-            </p>
-          </FadeContent>
-        </div>
-
-        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-40">
-          <div className="h-10 w-6 rounded-full border-2 border-muted-foreground/30 p-1">
-            <div className="mx-auto h-2 w-1 rounded-full bg-muted-foreground/50" />
-          </div>
+          <motion.p
+            {...heroFade}
+            transition={{ duration: 0.5, delay: 0.32 }}
+            className="mt-8 text-sm text-muted-foreground"
+          >
+            Demo login:{" "}
+            <code className="rounded-md bg-muted/80 px-2 py-0.5 text-xs font-mono">
+              demo@modenixos.com
+            </code>
+            {" / "}
+            <code className="rounded-md bg-muted/80 px-2 py-0.5 text-xs font-mono">
+              demo123456
+            </code>
+          </motion.p>
         </div>
       </section>
 
@@ -368,17 +343,15 @@ export default function Homepage() {
                       <li key={feature}>{feature}</li>
                     ))}
                   </ul>
-                  <Magnet magnetStrength={2} padding={40} className="mt-8">
-                    <Button
-                      asChild
-                      className="w-full transition-transform duration-300"
-                      variant={plan.highlight ? "default" : "outline"}
-                    >
-                      <Link href="/register">
-                        {plan.name === "Enterprise" ? "Contact us" : "Get started"}
-                      </Link>
-                    </Button>
-                  </Magnet>
+                  <Button
+                    asChild
+                    className="mt-8 w-full rounded-xl transition-opacity duration-200 hover:opacity-90"
+                    variant={plan.highlight ? "default" : "outline"}
+                  >
+                    <Link href="/register">
+                      {plan.name === "Enterprise" ? "Contact us" : "Get started"}
+                    </Link>
+                  </Button>
                 </SpotlightCard>
               </AnimatedContent>
             ))}
@@ -418,25 +391,16 @@ export default function Homepage() {
             <p className="mt-4 text-muted-foreground">
               Create an account or jump into the demo store — no credit card required.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Magnet magnetStrength={3} padding={70}>
-                <Button asChild size="lg" className="h-12 gap-2 rounded-xl px-8 shadow-lg">
-                  <Link href="/register">
-                    Create free account
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </Magnet>
-              <Magnet magnetStrength={2} padding={50}>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="homepage-glass h-12 rounded-xl px-8"
-                >
-                  <Link href="/login">Log in</Link>
-                </Button>
-              </Magnet>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-md`}>
+                <Link href="/register">
+                  Create free account
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className={heroBtnClass}>
+                <Link href="/login">Log in</Link>
+              </Button>
             </div>
           </div>
         </AnimatedContent>
