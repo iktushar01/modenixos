@@ -89,6 +89,12 @@ const Navbar = () => {
       <div className="container mx-auto flex h-14 items-center justify-between px-4 max-w-6xl">
         <Logo />
 
+        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+          <Link href="/#how-it-works" className="hover:text-foreground transition-colors">How it works</Link>
+          <Link href="/#try-project" className="hover:text-foreground transition-colors">Try it</Link>
+          <Link href="/store/luxe-threads" className="hover:text-foreground transition-colors">Demo store</Link>
+        </nav>
+
         <div className="flex items-center gap-2">
           <ModeToggle />
 
