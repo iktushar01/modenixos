@@ -1,8 +1,19 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
-import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview } from "@/types/store.types";
+import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, Store } from "@/types/store.types";
 import { revalidatePath } from "next/cache";
+
+async function revalidateStorefront() {
+  try {
+    const res = await httpClient.get<Store>("/stores/me");
+    if (res.data?.slug) {
+      revalidatePath(`/store/${res.data.slug}`);
+    }
+  } catch {
+    // Store may not exist yet during onboarding
+  }
+}
 
 // Categories
 export async function getCategoriesAction(params?: Record<string, unknown>) {
@@ -13,18 +24,21 @@ export async function getCategoriesAction(params?: Record<string, unknown>) {
 export async function createCategoryAction(data: FormData) {
   const res = await httpClient.post<Category>("/categories", data);
   revalidatePath("/dashboard/categories");
+  await revalidateStorefront();
   return res;
 }
 
 export async function updateCategoryAction(id: string, data: FormData) {
   const res = await httpClient.patch<Category>(`/categories/${id}`, data);
   revalidatePath("/dashboard/categories");
+  await revalidateStorefront();
   return res;
 }
 
 export async function deleteCategoryAction(id: string) {
   await httpClient.delete(`/categories/${id}`);
   revalidatePath("/dashboard/categories");
+  await revalidateStorefront();
 }
 
 // Collections
@@ -168,6 +182,13 @@ export async function getPublicProductAction(slug: string, id: string) {
 export async function getPublicCollectionsAction(slug: string, params?: Record<string, string>) {
   const qs = new URLSearchParams(params).toString();
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/collections?${qs}`, { next: { revalidate: 60 } });
+  if (!res.ok) return { data: [], meta: null };
+  return res.json();
+}
+
+export async function getPublicCategoriesAction(slug: string, params?: Record<string, string>) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/categories?${qs}`, { next: { revalidate: 60 } });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }

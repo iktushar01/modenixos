@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { PackageOpen } from "lucide-react";
-import { Collection, Product, Review, Store } from "@/types/store.types";
+import { Collection, Category, Product, Review, Store } from "@/types/store.types";
 import { parseStorefrontTheme } from "@/lib/storefrontTheme";
 import { StoreNavbar } from "./StoreNavbar";
 import { StoreHero } from "./StoreHero";
+import { CategoriesGrid } from "./CategoriesGrid";
 import { CollectionsGrid } from "./CollectionsGrid";
 import { ProductCard } from "./ProductCard";
 import { TrendingScroll } from "./TrendingScroll";
@@ -21,8 +22,10 @@ interface StorefrontHomeClientProps {
   store: Store;
   products: Product[];
   featuredProducts: Product[];
+  categories: Category[];
   collections: Collection[];
   reviews: Review[];
+  activeCategory?: string | null;
 }
 
 function buildRatingsMap(reviews: Review[]): Record<string, number> {
@@ -54,8 +57,10 @@ export function StorefrontHomeClient({
   store,
   products,
   featuredProducts,
+  categories,
   collections,
   reviews,
+  activeCategory,
 }: StorefrontHomeClientProps) {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const theme = parseStorefrontTheme(store);
@@ -68,6 +73,10 @@ export function StorefrontHomeClient({
   }, [products, displayFeatured]);
 
   const promoFallback = buildPromoFallback(products);
+
+  const activeCategoryName = activeCategory
+    ? categories.find((c) => c.slug === activeCategory)?.name ?? activeCategory
+    : null;
 
   return (
     <div
@@ -82,11 +91,15 @@ export function StorefrontHomeClient({
       <StoreNavbar store={store} theme={theme} />
       <StoreHero store={store} theme={theme} />
 
-      {theme.sections.promo && (
+      {theme.sections.promo && !activeCategory && (
         <PromoBanner slug={store.slug} theme={theme} fallbackText={promoFallback} />
       )}
 
-      {theme.sections.collections && (
+      {theme.sections.categories && !activeCategory && (
+        <CategoriesGrid slug={store.slug} categories={categories} theme={theme} />
+      )}
+
+      {theme.sections.collections && !activeCategory && (
         <CollectionsGrid slug={store.slug} collections={collections} theme={theme} />
       )}
 
@@ -99,7 +112,14 @@ export function StorefrontHomeClient({
             className="mb-10"
           >
             <p className="text-xs uppercase tracking-[0.2em] text-white/50">Shop</p>
-            <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">Featured Products</h2>
+            <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">
+              {activeCategoryName ? activeCategoryName : "Featured Products"}
+            </h2>
+            {activeCategoryName && (
+              <p className="mt-2 text-sm text-white/45">
+                Showing products in this category
+              </p>
+            )}
           </motion.div>
 
           {displayFeatured.length === 0 ? (

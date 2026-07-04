@@ -1,0 +1,73 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Category } from "@/types/store.types";
+import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
+
+interface CategoriesGridProps {
+  slug: string;
+  categories: Category[];
+  theme: StorefrontThemeConfig;
+}
+
+export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps) {
+  if (categories.length === 0) return null;
+
+  return (
+    <section id="categories" className="mx-auto max-w-7xl px-4 py-20 md:px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.5 }}
+        className="mb-10"
+      >
+        <p className="text-xs uppercase tracking-[0.2em] text-white/50">Browse by</p>
+        <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">Categories</h2>
+      </motion.div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {categories.map((cat, i) => (
+          <motion.div
+            key={cat.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.06 }}
+          >
+            <Link
+              href={`/store/${slug}?category=${cat.slug}#shop`}
+              className="group relative block aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900"
+            >
+              {cat.image ? (
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  unoptimized
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 opacity-50"
+                  style={{ background: `linear-gradient(135deg, ${theme.primaryColor}40, ${theme.secondaryColor}20)` }}
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+              <div
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ boxShadow: `inset 0 0 50px ${theme.secondaryColor}25` }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <p className="text-lg font-medium text-white">{cat.name}</p>
+                <p className="mt-1 text-xs uppercase tracking-wider text-white/45">Shop now</p>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}

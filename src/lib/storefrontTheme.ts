@@ -1,6 +1,7 @@
 import { Store } from "@/types/store.types";
 
 export interface StorefrontSections {
+  categories: boolean;
   collections: boolean;
   featured: boolean;
   trending: boolean;
@@ -30,6 +31,7 @@ export interface StorefrontThemeConfig {
 }
 
 const defaultSections: StorefrontSections = {
+  categories: true,
   collections: true,
   featured: true,
   trending: true,
