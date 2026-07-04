@@ -100,9 +100,19 @@ export const loginAction = async (
     // ❌ Real error only
     console.error("LOGIN ERROR:", error);
 
+    const status = error?.response?.status;
+    const serverMessage = error?.response?.data?.message;
+
+    if (status === 429) {
+      return {
+        success: false,
+        message: serverMessage ?? "Too many login attempts. Please wait a few minutes and try again.",
+      };
+    }
+
     return {
       success: false,
-      message: `Login failed: ${error.message}`,
+      message: serverMessage ?? `Login failed: ${error.message}`,
     };
   }
 };
