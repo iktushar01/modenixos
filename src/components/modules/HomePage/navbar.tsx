@@ -34,9 +34,10 @@ import type { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
+  { href: "/#product-tour", label: "Product" },
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#try-project", label: "Try it" },
-  { href: "/store/luxe-threads", label: "Demo store" },
+  { href: "/#features", label: "Features" },
+  { href: "/#pricing", label: "Pricing" },
 ];
 
 const Navbar = () => {
@@ -201,7 +202,9 @@ const Navbar = () => {
                     className="mt-1 w-40 rounded-xl"
                   >
                     <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link href="/login">Log In</Link>
+                      <Link href="/store/luxe-threads" target="_blank">
+                        Try demo
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer rounded-lg font-medium text-primary">
                       <Link href="/register">Sign Up</Link>
@@ -211,21 +214,19 @@ const Navbar = () => {
               </div>
 
               {/* Desktop Auth Actions */}
-              <div className="hidden items-center gap-1.5 sm:flex">
+              <div className="hidden items-center gap-2 sm:flex">
                 <Button
                   variant="ghost"
                   size="sm"
                   asChild
-                  className="font-medium h-9 text-muted-foreground hover:text-foreground"
+                  className="h-9 font-medium text-muted-foreground hover:text-foreground"
                 >
                   <Link href="/login">Log In</Link>
                 </Button>
-                <Button
-                  size="sm"
-                  asChild
-                  className="h-9 rounded-lg px-4 font-semibold shadow-sm"
-                >
-                  <Link href="/register">Sign Up</Link>
+                <Button size="sm" asChild className="h-9 rounded-lg px-4 font-semibold shadow-sm">
+                  <Link href="/store/luxe-threads" target="_blank">
+                    Try demo
+                  </Link>
                 </Button>
               </div>
             </>

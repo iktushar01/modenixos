@@ -1,1 +1,1 @@
-export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? "Starter App";
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? "ModenixOS";

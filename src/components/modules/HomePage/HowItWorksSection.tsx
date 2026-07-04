@@ -46,8 +46,8 @@ export default function HowItWorksSection() {
       <div className="container mx-auto max-w-6xl px-4">
         <AnimatedContent distance={50} duration={0.8}>
           <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              How it <span className="homepage-gradient-text">works</span>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              How it works
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
               From signup to first sale — a complete fashion-brand operating system in four steps.
