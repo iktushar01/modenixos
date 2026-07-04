@@ -1,6 +1,6 @@
-# Injentro Client
+# ModenixOS Client
 
-Next.js frontend for the full-stack starter. It provides role-based authentication, protected dashboards, and a modern UI built on the App Router.
+Next.js frontend for ModenixOS — fashion brand SaaS with store owner dashboard, public storefront, cart/checkout, and platform admin panel.
 
 ## Tech Stack
 
