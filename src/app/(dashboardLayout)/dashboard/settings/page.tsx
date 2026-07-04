@@ -1,7 +1,5 @@
-import ThemeSettingsPage from "@/components/modules/settings/ThemeSettingsPage";
+import StoreSettingsPage from "@/components/modules/settings/StoreSettingsPage";
 
-const ClientSettingsPage = () => {
-  return <ThemeSettingsPage scope="client" />;
-};
-
-export default ClientSettingsPage;
+export default function Page() {
+  return <StoreSettingsPage />;
+}
