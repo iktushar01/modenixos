@@ -28,12 +28,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { logoutAction } from "./_logoutAction";
 import { getCookie, deleteCookie } from "cookies-next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "@/components/shared/logo/logo";
 import type { UserFromCookie } from "@/types/auth.types";
+import { cn } from "@/lib/utils";
+
+const navLinks = [
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#try-project", label: "Try it" },
+  { href: "/store/luxe-threads", label: "Demo store" },
+];
 
 const Navbar = () => {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const [user, setUser] = useState<UserFromCookie | null>(() => {
     const userCookie = getCookie("user");
@@ -85,14 +100,28 @@ const Navbar = () => {
   });
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-14 items-center justify-between px-4 max-w-6xl">
+    <nav
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-500",
+        scrolled
+          ? "border-b border-border/60 bg-background/75 shadow-sm backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      )}
+    >
+      <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Logo />
 
-        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-          <Link href="/#how-it-works" className="hover:text-foreground transition-colors">How it works</Link>
-          <Link href="/#try-project" className="hover:text-foreground transition-colors">Try it</Link>
-          <Link href="/store/luxe-threads" className="hover:text-foreground transition-colors">Demo store</Link>
+        <nav className="hidden items-center gap-1 text-sm md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group relative rounded-lg px-3.5 py-2 text-muted-foreground transition-colors duration-300 hover:text-foreground"
+            >
+              {link.label}
+              <span className="absolute inset-x-3.5 -bottom-px h-px scale-x-0 bg-gradient-to-r from-rose-500 to-violet-500 transition-transform duration-300 group-hover:scale-x-100" />
+            </Link>
+          ))}
         </nav>
 
         <div className="flex items-center gap-2">
