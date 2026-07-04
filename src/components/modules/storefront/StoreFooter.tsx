@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram, Twitter, Facebook } from "lucide-react";
 import { Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
@@ -25,7 +26,11 @@ export function StoreFooter({ store, theme }: StoreFooterProps) {
       <div className="mx-auto max-w-7xl px-4 py-14 md:px-6">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <p className="text-lg font-medium text-white">{store.brandName}</p>
+            {store.logo ? (
+              <Image src={store.logo} alt={store.brandName} width={120} height={40} className="h-8 w-auto object-contain" unoptimized />
+            ) : (
+              <p className="text-lg font-medium text-white">{store.brandName}</p>
+            )}
             <p className="mt-2 max-w-xs text-sm text-white/50">{store.description}</p>
           </div>
           <div>

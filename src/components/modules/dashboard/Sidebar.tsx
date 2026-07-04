@@ -119,7 +119,10 @@ export const AppSidebar = ({ data, user }: AppSidebarProps) => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
-                  const isActive = pathname === item.href;
+                  const isActive =
+                    item.href === "/dashboard/store"
+                      ? pathname === "/dashboard/store"
+                      : pathname === item.href || pathname.startsWith(`${item.href}/`);
                   const Icon = iconRegistry[item.icon];
 
                   return (

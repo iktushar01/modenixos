@@ -38,9 +38,11 @@ const THEME_OPTIONS: Array<{
 const ThemeSettingsPage = ({
   scope,
   extraContent,
+  embedded = false,
 }: {
   scope: "client" | "admin";
   extraContent?: React.ReactNode;
+  embedded?: boolean;
 }) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const mounted = useSyncExternalStore(
@@ -52,18 +54,18 @@ const ThemeSettingsPage = ({
   const activeTheme = (theme as ThemeMode | undefined) ?? "system";
 
   return (
-    <div className={cn("min-h-screen p-4 sm:p-6 lg:p-8", scope === "admin" ? "admin-shell" : "bg-background")}>
-      <div className="mx-auto space-y-6">
-        {/* Header Metadata Section */}
-        <section className={cn("space-y-1.5", scope === "admin" && "admin-panel")}>
-          <h1 className="text-2xl font-semibold tracking-tight">Appearance</h1>
+    <div className={cn(embedded ? "space-y-6" : "min-h-screen p-4 sm:p-6 lg:p-8", !embedded && scope === "admin" ? "admin-shell" : !embedded ? "bg-background" : "")}>
+      <div className={cn(embedded ? "space-y-6" : "mx-auto space-y-6")}>
+        <section className={cn("space-y-1.5", scope === "admin" && !embedded && "admin-panel", embedded && "rounded-lg border bg-card p-6")}>
+          <h2 className={cn(embedded ? "text-lg font-semibold" : "text-2xl font-semibold tracking-tight")}>
+            Dashboard theme
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Manage your dashboard visual preferences and custom interfaces.
+            Light or dark mode for your admin dashboard — not your public storefront.
           </p>
         </section>
 
-        {/* Interactive Mode Grid */}
-        <section className={cn("space-y-4", scope === "admin" && "admin-panel")}>
+        <section className={cn("space-y-4", scope === "admin" && !embedded && "admin-panel", embedded && "rounded-lg border bg-card p-6")}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
             <div>
               <h2 className="text-sm font-medium text-foreground">Theme Mode</h2>

@@ -35,6 +35,14 @@ export const getClientSidebarData = async (): Promise<SidebarData> => {
         ],
       },
       {
+        title: "Shop",
+        items: [
+          { label: "Profile", icon: "Store", href: "/dashboard/store" },
+          { label: "Branding", icon: "Image", href: "/dashboard/store/branding" },
+          { label: "Appearance", icon: "Palette", href: "/dashboard/store/appearance" },
+        ],
+      },
+      {
         title: "System",
         items: [
           { label: "Settings", icon: "Settings", href: "/dashboard/settings" },

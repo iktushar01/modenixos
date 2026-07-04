@@ -1,5 +1,5 @@
-import StoreSettingsPage from "@/components/modules/settings/StoreSettingsPage";
+import AccountSettingsPage from "@/components/modules/settings/AccountSettingsPage";
 
 export default function Page() {
-  return <StoreSettingsPage />;
+  return <AccountSettingsPage />;
 }
