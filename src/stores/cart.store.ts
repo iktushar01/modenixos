@@ -9,6 +9,8 @@ interface CartItem extends OrderItem {
   storeSlug: string;
 }
 
+export type CartLineItem = CartItem;
+
 interface CartState {
   items: CartItem[];
   addItem: (item: CartItem) => void;
@@ -76,6 +78,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "modenixos-cart",
+      skipHydration: true,
       onRehydrateStorage: () => (state) => {
         if (!state?.items?.length) return;
         state.items = state.items
