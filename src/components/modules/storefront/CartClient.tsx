@@ -7,16 +7,17 @@ import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Store } from "@/types/store.types";
 import { useCartStore } from "@/stores/cart.store";
-import { useHydrated } from "@/hooks/useHydrated";
+import { useCartHydrated } from "@/hooks/useCartHydrated";
+import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice, parseStorefrontTheme } from "@/lib/storefrontTheme";
 import { StoreNavbar } from "./StoreNavbar";
 import { StoreFooter } from "./StoreFooter";
 
 export default function CartClient({ store }: { store: Store }) {
-  const hydrated = useHydrated();
+  const hydrated = useCartHydrated();
   const theme = parseStorefrontTheme(store);
-  const items = useCartStore((s) => (hydrated ? s.getStoreItems(store.id) : []));
-  const total = useCartStore((s) => (hydrated ? s.getStoreTotal(store.id) : 0));
+  const items = useStoreCartItems(store.id);
+  const total = useStoreCartTotal(store.id);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
 

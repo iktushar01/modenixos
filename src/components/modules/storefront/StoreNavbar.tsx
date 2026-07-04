@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { Search, ShoppingBag, Menu, X, User } from "lucide-react";
 import { Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
-import { useCartStore } from "@/stores/cart.store";
-import { useHydrated } from "@/hooks/useHydrated";
+import { useCartHydrated } from "@/hooks/useCartHydrated";
+import { useStoreCartCount } from "@/hooks/useStoreCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -27,13 +27,11 @@ interface StoreNavbarProps {
 }
 
 export function StoreNavbar({ store, theme }: StoreNavbarProps) {
-  const hydrated = useHydrated();
+  const hydrated = useCartHydrated();
+  const cartCount = useStoreCartCount(store.id);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const cartCount = useCartStore((s) =>
-    hydrated ? s.getStoreItems(store.id).reduce((n, i) => n + i.quantity, 0) : 0,
-  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -89,7 +87,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
           <Link href={`${base}/cart`}>
             <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/10 hover:text-white" aria-label="Cart">
               <ShoppingBag className="h-5 w-5" />
-              {cartCount > 0 && (
+              {hydrated && cartCount > 0 && (
                 <span
                   className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-black"
                   style={{ backgroundColor: theme.secondaryColor }}
