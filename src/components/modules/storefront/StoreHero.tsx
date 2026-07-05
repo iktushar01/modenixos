@@ -31,12 +31,12 @@ export function StoreHero({ store, theme }: StoreHeroProps) {
 
   if (slides.length === 0) {
     return (
-      <section className="relative h-[50vh] min-h-[320px] bg-gradient-to-br from-zinc-900 via-black to-zinc-950 md:h-[70vh]" />
+      <section className="relative h-[60vh] min-h-[280px] bg-gradient-to-br from-zinc-900 via-black to-zinc-950" />
     );
   }
 
   return (
-    <section className="relative h-[50vh] min-h-[320px] overflow-hidden md:h-[70vh] lg:h-[85vh]">
+    <section className="relative h-[60vh] min-h-[280px] overflow-hidden">
       {slides.map((src, i) => (
         <div
           key={`${src}-${i}`}
