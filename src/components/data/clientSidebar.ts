@@ -39,7 +39,7 @@ export const getClientSidebarData = async (): Promise<SidebarData> => {
         items: [
           { label: "Profile", icon: "Store", href: "/dashboard/store" },
           { label: "Branding", icon: "Image", href: "/dashboard/store/branding" },
-          { label: "Header", icon: "Menu", href: "/dashboard/store/header" },
+          { label: "Header", icon: "Layers", href: "/dashboard/store/header" },
           { label: "Appearance", icon: "Palette", href: "/dashboard/store/appearance" },
         ],
       },
