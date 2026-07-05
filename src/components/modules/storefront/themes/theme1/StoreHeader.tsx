@@ -114,7 +114,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   </option>
                 ))}
               </select>
-              <Button type="submit" className="sf-primary h-11 rounded-l-none px-4">
+              <Button type="submit" className="sf-btn-secondary h-11 rounded-l-none px-4">
                 <Search className="h-4 w-4" />
               </Button>
             </form>
@@ -185,7 +185,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   placeholder="Search..."
                   className="sf-input flex-1"
                 />
-                <Button type="submit" size="icon" className="sf-primary shrink-0">
+                <Button type="submit" size="icon" className="sf-btn-secondary shrink-0">
                   <Search className="h-4 w-4" />
                 </Button>
               </form>

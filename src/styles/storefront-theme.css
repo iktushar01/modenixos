@@ -86,6 +86,15 @@
   opacity: 0.9;
 }
 
+.storefront-theme .sf-btn-secondary {
+  background-color: var(--sf-secondary);
+  color: var(--sf-secondary-fg);
+}
+
+.storefront-theme .sf-btn-secondary:hover {
+  opacity: 0.9;
+}
+
 .storefront-theme .sf-btn-outline {
   border: 1px solid var(--sf-border);
   color: var(--sf-fg);
@@ -277,6 +286,20 @@
 
 .storefront-theme [data-slot="button"][data-variant="default"]:hover {
   opacity: 0.9;
+}
+
+.storefront-theme [data-slot="button"].sf-primary,
+.storefront-theme [data-slot="button"].sf-btn-primary {
+  background-color: var(--sf-primary);
+  color: var(--sf-primary-fg);
+  border-color: transparent;
+}
+
+.storefront-theme [data-slot="button"].sf-secondary,
+.storefront-theme [data-slot="button"].sf-btn-secondary {
+  background-color: var(--sf-secondary);
+  color: var(--sf-secondary-fg);
+  border-color: transparent;
 }
 
 .storefront-theme [data-slot="button"][data-variant="ghost"] {
