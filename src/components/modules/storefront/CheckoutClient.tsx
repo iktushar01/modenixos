@@ -7,23 +7,42 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Store } from "@/types/store.types";
+import { Category, Store } from "@/types/store.types";
 import { useCartStore } from "@/stores/cart.store";
+import { useCartHydrated } from "@/hooks/useCartHydrated";
+import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
+import { formatPrice } from "@/lib/storefrontTheme";
 import { placeOrderAction, validateCouponAction } from "@/actions/catalog.actions";
-import { StorefrontHeader } from "./StorefrontHeader";
+import { StorefrontPageShell } from "./StorefrontPageShell";
 
-export default function CheckoutClient({ store }: { store: Store }) {
+export default function CheckoutClient({
+  store,
+  categories = [],
+}: {
+  store: Store;
+  categories?: Category[];
+}) {
   const router = useRouter();
-  const items = useCartStore((s) => s.getStoreItems(store.id));
-  const total = useCartStore((s) => s.getStoreTotal(store.id));
+  const hydrated = useCartHydrated();
+  const items = useStoreCartItems(store.id);
+  const total = useStoreCartTotal(store.id);
   const clearStore = useCartStore((s) => s.clearStore);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ customerName: "", customerEmail: "", customerPhone: "", line1: "", city: "", postalCode: "", country: "US" });
+  const [form, setForm] = useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    line1: "",
+    city: "",
+    postalCode: "",
+    country: "US",
+  });
 
   const shipping = 5;
   const finalTotal = total + shipping - discount;
+  const base = `/store/${store.slug}`;
 
   const applyCoupon = async () => {
     try {
@@ -44,7 +63,12 @@ export default function CheckoutClient({ store }: { store: Store }) {
         customerName: form.customerName,
         customerEmail: form.customerEmail,
         customerPhone: form.customerPhone,
-        shippingAddress: { line1: form.line1, city: form.city, postalCode: form.postalCode, country: form.country },
+        shippingAddress: {
+          line1: form.line1,
+          city: form.city,
+          postalCode: form.postalCode,
+          country: form.country,
+        },
         subtotal: total,
         shipping,
         discount,
@@ -54,7 +78,7 @@ export default function CheckoutClient({ store }: { store: Store }) {
       });
       clearStore(store.id);
       toast.success("Order placed successfully!");
-      router.push(`/store/${store.slug}`);
+      router.push(base);
     } catch {
       toast.error("Failed to place order");
     } finally {
@@ -62,47 +86,138 @@ export default function CheckoutClient({ store }: { store: Store }) {
     }
   };
 
+  if (!hydrated) {
+    return (
+      <StorefrontPageShell store={store} categories={categories}>
+        <main className="sf-section w-full animate-pulse py-14">
+          <div className="sf-skeleton mx-auto h-10 w-48 rounded" />
+          <div className="sf-skeleton mx-auto mt-8 h-96 max-w-2xl rounded-2xl" />
+        </main>
+      </StorefrontPageShell>
+    );
+  }
+
   if (items.length === 0) {
     return (
-      <div>
-        <StorefrontHeader store={store} />
-        <div className="container mx-auto px-4 py-16 text-center">
-          <p>Your cart is empty.</p>
-          <Button asChild className="mt-4"><Link href={`/store/${store.slug}`}>Continue Shopping</Link></Button>
-        </div>
-      </div>
+      <StorefrontPageShell store={store} categories={categories}>
+        <main className="sf-section w-full py-16 text-center">
+          <p className="sf-muted-fg">Your cart is empty.</p>
+          <Button asChild className="sf-btn-primary mt-4">
+            <Link href={base}>Continue shopping</Link>
+          </Button>
+        </main>
+      </StorefrontPageShell>
     );
   }
 
   return (
-    <div>
-      <StorefrontHeader store={store} />
-      <div className="container mx-auto max-w-2xl px-4 py-12">
-        <h1 className="mb-8 text-3xl font-bold">Checkout</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Name</Label><Input required value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} /></div>
-            <div><Label>Email</Label><Input type="email" required value={form.customerEmail} onChange={(e) => setForm({ ...form, customerEmail: e.target.value })} /></div>
-          </div>
-          <div><Label>Address</Label><Input required value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} /></div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>City</Label><Input required value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-            <div><Label>Postal Code</Label><Input required value={form.postalCode} onChange={(e) => setForm({ ...form, postalCode: e.target.value })} /></div>
-          </div>
-          <div className="flex gap-2">
-            <Input placeholder="Coupon code" value={coupon} onChange={(e) => setCoupon(e.target.value)} />
-            <Button type="button" variant="outline" onClick={applyCoupon}>Apply</Button>
-          </div>
-          <div className="rounded-lg border p-4 space-y-2">
-            <div className="flex justify-between"><span>Subtotal</span><span>${total.toFixed(2)}</span></div>
-            <div className="flex justify-between"><span>Shipping</span><span>${shipping.toFixed(2)}</span></div>
-            {discount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span>-${discount.toFixed(2)}</span></div>}
-            <div className="flex justify-between font-bold"><span>Total</span><span>${finalTotal.toFixed(2)}</span></div>
-            <p className="text-sm text-muted-foreground">Payment: Cash on Delivery</p>
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>{loading ? "Placing Order..." : "Place Order"}</Button>
-        </form>
-      </div>
-    </div>
+    <StorefrontPageShell store={store} categories={categories}>
+      <main className="sf-section w-full py-10 md:py-14">
+        <div className="mx-auto max-w-2xl">
+          <h1 className="mb-8 text-3xl font-light">Checkout</h1>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="customerName">Name</Label>
+                <Input
+                  id="customerName"
+                  required
+                  className="sf-input"
+                  value={form.customerName}
+                  onChange={(e) => setForm({ ...form, customerName: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customerEmail">Email</Label>
+                <Input
+                  id="customerEmail"
+                  type="email"
+                  required
+                  className="sf-input"
+                  value={form.customerEmail}
+                  onChange={(e) => setForm({ ...form, customerEmail: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customerPhone">Phone</Label>
+              <Input
+                id="customerPhone"
+                className="sf-input"
+                value={form.customerPhone}
+                onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="line1">Address</Label>
+              <Input
+                id="line1"
+                required
+                className="sf-input"
+                value={form.line1}
+                onChange={(e) => setForm({ ...form, line1: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  required
+                  className="sf-input"
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="postalCode">Postal code</Label>
+                <Input
+                  id="postalCode"
+                  required
+                  className="sf-input"
+                  value={form.postalCode}
+                  onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Coupon code"
+                className="sf-input"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+              />
+              <Button type="button" variant="outline" className="sf-btn-outline" onClick={applyCoupon}>
+                Apply
+              </Button>
+            </div>
+            <div className="sf-border sf-card space-y-2 rounded-lg border p-4">
+              <div className="flex justify-between text-sm">
+                <span className="sf-muted-fg">Subtotal</span>
+                <span>{formatPrice(total, store.currency)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="sf-muted-fg">Shipping</span>
+                <span>{formatPrice(shipping, store.currency)}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Discount</span>
+                  <span>-{formatPrice(discount, store.currency)}</span>
+                </div>
+              )}
+              <div className="sf-border flex justify-between border-t pt-2 font-semibold">
+                <span>Total</span>
+                <span>{formatPrice(finalTotal, store.currency)}</span>
+              </div>
+              <p className="text-sm sf-muted-fg">Payment: Cash on Delivery</p>
+            </div>
+            <Button type="submit" className="sf-btn-primary w-full" disabled={loading}>
+              {loading ? "Placing order..." : "Place order"}
+            </Button>
+          </form>
+        </div>
+      </main>
+    </StorefrontPageShell>
   );
 }
