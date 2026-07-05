@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Collection, Category, Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { hasShopFilters, parseShopFilters } from "@/lib/shopFilters";
-import { StorefrontThemeShell } from "../../StorefrontThemeShell";
+import { StorefrontThemeShell, useStorefrontTheme } from "../../StorefrontThemeShell";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { StoreHeader } from "./StoreHeader";
 import { Theme1Hero } from "./Theme1Hero";
@@ -54,14 +54,14 @@ function buildPromoFallback(products: Product[]): string | undefined {
   return maxPct > 0 ? `Up to ${maxPct}% off — Limited time only` : undefined;
 }
 
-export function Theme1Home({
+function Theme1HomeContent({
   store,
   catalog,
   categories,
   collections,
   reviews,
-  theme,
-}: Theme1HomeProps) {
+}: Omit<Theme1HomeProps, "theme">) {
+  const { activeTheme } = useStorefrontTheme();
   const searchParams = useSearchParams();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const ratings = useMemo(() => buildRatingsMap(reviews), [reviews]);
@@ -71,27 +71,27 @@ export function Theme1Home({
   const promoFallback = buildPromoFallback(catalog);
 
   return (
-    <StorefrontThemeShell theme={theme}>
-      <AnnouncementBar theme={theme} />
-      <StoreHeader store={store} theme={theme} categories={categories} />
-      {!isShopFiltered && <Theme1Hero store={store} theme={theme} />}
+    <>
+      <AnnouncementBar theme={activeTheme} />
+      <StoreHeader store={store} theme={activeTheme} categories={categories} />
+      {!isShopFiltered && <Theme1Hero store={store} theme={activeTheme} />}
 
-      {theme.sections.promo && !isShopFiltered && (
-        <PromoBanner slug={store.slug} theme={theme} fallbackText={promoFallback} />
+      {activeTheme.sections.promo && !isShopFiltered && (
+        <PromoBanner slug={store.slug} theme={activeTheme} fallbackText={promoFallback} />
       )}
 
-      {theme.sections.categories && !isShopFiltered && (
-        <CategoriesGrid slug={store.slug} categories={categories} theme={theme} />
+      {activeTheme.sections.categories && !isShopFiltered && (
+        <CategoriesGrid slug={store.slug} categories={categories} theme={activeTheme} />
       )}
 
-      {theme.sections.collections && !isShopFiltered && (
-        <CollectionsGrid slug={store.slug} collections={collections} theme={theme} />
+      {activeTheme.sections.collections && !isShopFiltered && (
+        <CollectionsGrid slug={store.slug} collections={collections} theme={activeTheme} />
       )}
 
-      {theme.sections.featured && (
+      {activeTheme.sections.featured && (
         <ShopSection
           store={store}
-          theme={theme}
+          theme={activeTheme}
           catalog={catalog}
           categories={categories}
           collections={collections}
@@ -101,33 +101,41 @@ export function Theme1Home({
         />
       )}
 
-      {theme.sections.trending && !isShopFiltered && trendingProducts.length > 0 && (
+      {activeTheme.sections.trending && !isShopFiltered && trendingProducts.length > 0 && (
         <TrendingScroll
           store={store}
           products={trendingProducts}
-          theme={theme}
+          theme={activeTheme}
           ratings={ratings}
           onQuickView={setQuickViewProduct}
         />
       )}
 
-      {theme.sections.brandStory && !isShopFiltered && <BrandStory theme={theme} />}
+      {activeTheme.sections.brandStory && !isShopFiltered && <BrandStory theme={activeTheme} />}
 
-      {theme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
+      {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
 
-      {theme.sections.newsletter && !isShopFiltered && (
-        <NewsletterSection brandName={store.brandName} theme={theme} />
+      {activeTheme.sections.newsletter && !isShopFiltered && (
+        <NewsletterSection brandName={store.brandName} theme={activeTheme} />
       )}
 
-      <StoreFooter store={store} theme={theme} />
+      <StoreFooter store={store} theme={activeTheme} />
 
       <QuickViewModal
         key={quickViewProduct?.id ?? "closed"}
         product={quickViewProduct}
         store={store}
-        theme={theme}
+        theme={activeTheme}
         onClose={() => setQuickViewProduct(null)}
       />
+    </>
+  );
+}
+
+export function Theme1Home({ theme, store, ...props }: Theme1HomeProps) {
+  return (
+    <StorefrontThemeShell theme={theme} storeSlug={store.slug}>
+      <Theme1HomeContent store={store} {...props} />
     </StorefrontThemeShell>
   );
 }

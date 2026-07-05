@@ -102,6 +102,21 @@ function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorM
   return mergePalette(base, legacyOverrides);
 }
 
+/** Resolve palette for a given mode (used by storefront light/dark toggle) */
+export function resolveColorsForMode(
+  theme: Pick<StorefrontThemeConfig, "palettePreset" | "customColors">,
+  colorMode: StorefrontColorMode,
+): StorefrontColorPalette {
+  const preset = getPresetById(theme.palettePreset) ?? STOREFRONT_PALETTE_PRESETS[0];
+  const base = colorMode === "dark" ? preset.dark : preset.light;
+
+  if (theme.palettePreset === "custom") {
+    return mergePalette(base, theme.customColors?.[colorMode]);
+  }
+
+  return { ...base };
+}
+
 export function resolveStorefrontNavLinks(
   theme: StorefrontThemeConfig,
   storeSlug: string,

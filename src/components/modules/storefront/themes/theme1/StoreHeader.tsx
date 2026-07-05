@@ -11,6 +11,7 @@ import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartCount } from "@/hooks/useStoreCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { StorefrontThemeToggle } from "./StorefrontThemeToggle";
 
 interface StoreHeaderProps {
   store: Store;
@@ -132,6 +133,8 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               </div>
             )}
 
+            <StorefrontThemeToggle />
+
             <Link href={`${base}/cart`} className="relative p-1">
               <ShoppingBag className="h-5 w-5" />
               {hydrated && cartCount > 0 && (
@@ -218,6 +221,10 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 {theme.contact.phone}
               </a>
             )}
+            <div className="flex items-center gap-2 border-t sf-border pt-3">
+              <span className="text-xs sf-muted-fg">Theme</span>
+              <StorefrontThemeToggle />
+            </div>
           </div>
         </div>
       )}
