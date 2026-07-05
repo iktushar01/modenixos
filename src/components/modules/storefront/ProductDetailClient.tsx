@@ -1,8 +1,8 @@
 "use client";
 
 import { Category, Product, Review, Store } from "@/types/store.types";
-import { StorefrontPageShell } from "../StorefrontPageShell";
-import { useStorefrontTheme } from "../StorefrontThemeShell";
+import { StorefrontPageShell } from "./StorefrontPageShell";
+import { useStorefrontTheme } from "./StorefrontThemeShell";
 import { Theme1ProductDetail } from "./themes/theme1/product/Theme1ProductDetail";
 
 interface ProductDetailClientProps {

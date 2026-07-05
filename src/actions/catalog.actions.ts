@@ -70,12 +70,14 @@ export async function getProductAction(id: string) {
 export async function createProductAction(data: FormData) {
   const res = await httpClient.post<Product>("/products", data);
   revalidatePath("/dashboard/products");
+  await revalidateStorefront();
   return res;
 }
 
 export async function updateProductAction(id: string, data: FormData) {
   const res = await httpClient.patch<Product>(`/products/${id}`, data);
   revalidatePath("/dashboard/products");
+  await revalidateStorefront();
   return res;
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Category, Product, Review, Store } from "@/types/store.types";
+import { Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { ProductBreadcrumbs } from "./ProductBreadcrumbs";
 import { ProductGallery } from "./ProductGallery";
