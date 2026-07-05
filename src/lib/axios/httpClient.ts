@@ -2,6 +2,7 @@
 import { getNewTokensWithRefreshToken } from '@/services/auth/auth.services';
 import { ApiResponse } from '@/types/api.types';
 import axios, { AxiosRequestConfig } from 'axios';
+import { cache } from 'react';
 import { cookies, headers } from 'next/headers';
 import { isTokenExpiringSoon } from '../tokenUtils';
 
@@ -32,10 +33,8 @@ async function tryRefreshToken(
     }
 }
 
-/**
- * Creates an Axios instance with dynamic server-side cookies and configurable options.
- */
-const axiosInstance = async (customConfig?: AxiosRequestConfig) => {
+/** Runs at most once per server request — avoids refresh storms on parallel dashboard actions. */
+const ensureFreshTokens = cache(async () => {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
@@ -43,6 +42,16 @@ const axiosInstance = async (customConfig?: AxiosRequestConfig) => {
     if (accessToken && refreshToken) {
         await tryRefreshToken(accessToken, refreshToken);
     }
+});
+
+/**
+ * Creates an Axios instance with dynamic server-side cookies and configurable options.
+ */
+const axiosInstance = async (customConfig?: AxiosRequestConfig) => {
+    await ensureFreshTokens();
+
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
 
     const cookieHeader = cookieStore
         .getAll()

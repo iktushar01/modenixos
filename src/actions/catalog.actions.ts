@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { httpClient } from "@/lib/axios/httpClient";
 import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, Store } from "@/types/store.types";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -228,48 +229,56 @@ export async function suspendStoreAction(id: string, isSuspended: boolean) {
 }
 
 // Public
-export async function getPublicStoreAction(slug: string) {
+export const getPublicStoreAction = cache(async (slug: string) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
     next: { revalidate: 60, tags: [`store-public-${slug}`] },
   });
   if (!res.ok) return null;
   const json = await res.json();
   return json.data;
-}
+});
 
 export async function getPublicProductsAction(slug: string, params?: Record<string, string>) {
   const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products?${qs}`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products?${qs}`, {
+    next: { revalidate: 60, tags: [`store-products-${slug}`] },
+  });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }
 
-export async function getPublicProductAction(slug: string, id: string) {
+export const getPublicProductAction = cache(async (slug: string, id: string) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products/${id}`, {
     next: { revalidate: 60, tags: [`store-product-${slug}-${id}`] },
   });
   if (!res.ok) return null;
   const json = await res.json();
   return json.data;
-}
+});
 
 export async function getPublicCollectionsAction(slug: string, params?: Record<string, string>) {
   const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/collections?${qs}`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/collections?${qs}`, {
+    next: { revalidate: 60, tags: [`store-collections-${slug}`] },
+  });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }
 
 export async function getPublicCategoriesAction(slug: string, params?: Record<string, string>) {
   const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/categories?${qs}`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/categories?${qs}`, {
+    next: { revalidate: 60, tags: [`store-categories-${slug}`] },
+  });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }
 
 export async function getPublicReviewsAction(slug: string, params?: Record<string, string>) {
   const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/reviews?${qs}`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/reviews?${qs}`, {
+    next: { revalidate: 120, tags: [`store-reviews-${slug}`] },
+  });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }

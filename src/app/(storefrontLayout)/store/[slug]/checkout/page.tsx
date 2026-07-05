@@ -5,10 +5,12 @@ import { Category } from "@/types/store.types";
 
 export default async function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const store = await getPublicStoreAction(slug);
+  const [store, categoriesRes] = await Promise.all([
+    getPublicStoreAction(slug),
+    getPublicCategoriesAction(slug, { limit: "50" }),
+  ]);
   if (!store) notFound();
 
-  const categoriesRes = await getPublicCategoriesAction(slug, { limit: "50" });
   const categories = (categoriesRes.data ?? []) as Category[];
 
   return <CheckoutClient store={store} categories={categories} />;

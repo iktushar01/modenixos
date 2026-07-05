@@ -1,16 +1,20 @@
 import { notFound, redirect } from "next/navigation";
 import { getPublicStoreAction, getPublicCategoriesAction } from "@/actions/catalog.actions";
 import { getStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
+import { hasStorefrontCustomerCookie } from "@/lib/storefrontCustomerApi";
 import StorefrontRegisterClient from "@/components/modules/storefront/account/StorefrontRegisterClient";
 import { Category } from "@/types/store.types";
 
 export default async function RegisterPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const store = await getPublicStoreAction(slug);
+  const hasCookie = await hasStorefrontCustomerCookie(slug);
+  const [store, categoriesRes, customer] = await Promise.all([
+    getPublicStoreAction(slug),
+    getPublicCategoriesAction(slug, { limit: "50" }),
+    hasCookie ? getStorefrontCustomerAction(slug) : Promise.resolve(null),
+  ]);
   if (!store) notFound();
-  const customer = await getStorefrontCustomerAction(slug);
   if (customer) redirect(`/store/${slug}/account/wishlist`);
-  const categoriesRes = await getPublicCategoriesAction(slug, { limit: "50" });
   const categories = (categoriesRes.data ?? []) as Category[];
   return <StorefrontRegisterClient store={store} categories={categories} />;
 }

@@ -3,6 +3,12 @@ const API = process.env.NEXT_PUBLIC_API_BASE_URL!;
 export const storefrontCustomerCookieName = (slug: string) =>
   `sf_customer_${slug.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 
+export async function hasStorefrontCustomerCookie(slug: string) {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  return Boolean(cookieStore.get(storefrontCustomerCookieName(slug))?.value);
+}
+
 export async function publicFetchWithStoreCookie(
   slug: string,
   path: string,

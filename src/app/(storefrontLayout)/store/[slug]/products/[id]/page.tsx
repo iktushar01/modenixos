@@ -5,10 +5,8 @@ import {
   getPublicCategoriesAction,
   getPublicProductsAction,
 } from "@/actions/catalog.actions";
-import {
-  checkWishlistAction,
-  getStorefrontCustomerAction,
-} from "@/actions/storefront-customer.actions";
+import { checkWishlistAction } from "@/actions/storefront-customer.actions";
+import { hasStorefrontCustomerCookie } from "@/lib/storefrontCustomerApi";
 import ProductDetailClient from "@/components/modules/storefront/ProductDetailClient";
 import { Category, Product } from "@/types/store.types";
 
@@ -20,26 +18,25 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
   const { slug, id } = await params;
-  const store = await getPublicStoreAction(slug);
-  const product = await getPublicProductAction(slug, id);
+  const loggedIn = await hasStorefrontCustomerCookie(slug);
+
+  const [store, product, categoriesRes, inWishlist] = await Promise.all([
+    getPublicStoreAction(slug),
+    getPublicProductAction(slug, id),
+    getPublicCategoriesAction(slug, { limit: "50" }),
+    loggedIn ? checkWishlistAction(slug, id) : Promise.resolve(false),
+  ]);
+
   if (!store || !product) notFound();
 
-  const [categoriesRes, relatedRes, customer] = await Promise.all([
-    getPublicCategoriesAction(slug, { limit: "50" }),
-    product.category?.slug
-      ? getPublicProductsAction(slug, { category: product.category.slug, limit: "8" })
-      : Promise.resolve({ data: [] }),
-    getStorefrontCustomerAction(slug),
-  ]);
+  const relatedRes = product.category?.slug
+    ? await getPublicProductsAction(slug, { category: product.category.slug, limit: "8" })
+    : { data: [] as Product[] };
 
   const categories = (categoriesRes.data ?? []) as Category[];
   const relatedProducts = ((relatedRes.data ?? []) as Product[])
     .filter((p) => p.id !== id)
     .slice(0, 4);
-
-  const inWishlist = customer
-    ? await checkWishlistAction(slug, id)
-    : false;
 
   return (
     <ProductDetailClient
@@ -47,7 +44,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       product={product}
       categories={categories}
       relatedProducts={relatedProducts}
-      isLoggedIn={!!customer}
+      isLoggedIn={loggedIn}
       inWishlist={inWishlist}
     />
   );
