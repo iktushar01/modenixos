@@ -79,19 +79,15 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
     onError: () => toast.error(isEdit ? "Failed to update category" : "Failed to create category"),
   });
 
-  const handleRemoveImage = () => {
-    setNewFile(null);
-    setExistingUrl(null);
-    setRemoveImage(true);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit category" : "New category"}</DialogTitle>
           <DialogDescription>
-            {isEdit ? "Update name, slug, or cover image." : "Add a category with an optional cover image for your storefront."}
+            {isEdit
+              ? "Update name, slug, or cover image (4:5 crop)."
+              : "Add a category with an optional cover image. Crop to 4:5 to match your storefront."}
           </DialogDescription>
         </DialogHeader>
 
@@ -151,7 +147,7 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
 /** Thumbnail for table rows */
 export function CategoryThumbnail({ category }: { category: Category }) {
   return (
-    <div className="relative h-10 w-10 overflow-hidden rounded-md border bg-muted">
+    <div className="relative h-12 w-10 overflow-hidden rounded-md border bg-muted">
       {category.image ? (
         <Image src={category.image} alt={category.name} fill className="object-cover" unoptimized />
       ) : (

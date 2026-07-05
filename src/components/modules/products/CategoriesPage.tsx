@@ -68,7 +68,7 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Categories"
-        description="Organize products by category. Images appear on your storefront."
+        description="Organize products by category. Images are cropped to 4:5 for your storefront."
         action={
           <Button onClick={openCreate}>
             <Plus className="mr-2 h-4 w-4" />

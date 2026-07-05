@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
+import { STOREFRONT_CATEGORY_ASPECT } from "@/lib/storefront/imageAspects";
 import { StorefrontSection } from "./ui";
 
 interface CategoriesGridProps {
@@ -33,7 +34,8 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
           >
             <Link
               href={`/store/${slug}?category=${cat.slug}#shop`}
-              className="sf-editorial-card sf-image-zoom group relative block aspect-[4/5] w-full overflow-hidden"
+              className="sf-editorial-card sf-image-zoom group relative block w-full overflow-hidden"
+              style={{ aspectRatio: `${STOREFRONT_CATEGORY_ASPECT}` }}
             >
               {cat.image ? (
                 <Image

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Collection } from "@/types/store.types";
+import { STOREFRONT_COLLECTION_ASPECT } from "@/lib/storefront/imageAspects";
 import { StorefrontCTA, StorefrontSection } from "./ui";
 
 interface CollectionsGridProps {
@@ -35,7 +36,8 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
           >
             <Link
               href={`/store/${slug}?collection=${col.slug}#shop`}
-              className="sf-editorial-card sf-image-zoom group relative block aspect-[3/4] overflow-hidden"
+              className="sf-editorial-card sf-image-zoom group relative block overflow-hidden"
+              style={{ aspectRatio: `${STOREFRONT_COLLECTION_ASPECT}` }}
             >
               {col.image ? (
                 <Image src={col.image} alt={col.name} fill className="object-cover" unoptimized />
