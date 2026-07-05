@@ -22,10 +22,6 @@ import { Sheet, StorefrontSheetContent } from "../../StorefrontSheet";
 import { StorefrontThemeToggle } from "./StorefrontThemeToggle";
 import { StorefrontAccountMenu } from "../../StorefrontAccountMenu";
 import { useOptionalStorefrontCustomer } from "../../StorefrontCustomerContext";
-import {
-  filterAuthUtilityLinks,
-  resolveStorefrontUtilityHref,
-} from "@/lib/storefront/utilityLinks";
 import { cn } from "@/lib/utils";
 
 interface StoreHeaderProps {
@@ -126,10 +122,6 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
   const base = `/store/${store.slug}`;
   const isLoggedIn = Boolean(customerCtx?.customer);
-  const utilityLinks = useMemo(
-    () => filterAuthUtilityLinks(theme.header.utilityLinks, isLoggedIn),
-    [theme.header.utilityLinks, isLoggedIn],
-  );
   const navLinks = useMemo(
     () => resolveStorefrontNavLinks(theme, store.slug, categories),
     [theme, store.slug, categories],
@@ -187,22 +179,6 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
           scrolled ? "sf-glass-nav" : "sf-border border-b",
         )}
       >
-        {utilityLinks.length > 0 && (
-          <div className="hidden border-b sf-border md:block">
-            <div className="sf-section flex h-9 items-center justify-end gap-5 text-xs">
-              {utilityLinks.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={resolveStorefrontUtilityHref(base, link.href)}
-                  className="sf-link transition-colors sf-hover-fg"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="sf-section border-b sf-border">
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 md:grid-cols-3 md:gap-6 md:py-4">
             <div className="flex items-center gap-2 md:justify-self-start">
@@ -455,16 +431,6 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   </Link>
                 </>
               )}
-              {utilityLinks.map((link) => (
-                <Link
-                  key={`mu-${link.label}-${link.href}`}
-                  href={resolveStorefrontUtilityHref(base, link.href)}
-                  className="block text-sm sf-link"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
               <div className="flex items-center gap-3">
                 <span className="sf-eyebrow">Theme</span>
                 <StorefrontThemeToggle />

@@ -1,6 +1,5 @@
 import { Store } from "@/types/store.types";
 import {
-  DEFAULT_UTILITY_LINKS,
   StorefrontBrandColors,
   StorefrontColorMode,
   StorefrontColorPalette,
@@ -64,7 +63,7 @@ function resolveHeader(raw: Record<string, unknown>, store: Store): StorefrontHe
       text: defaultAnnouncementText,
     },
     tagline: (headerRaw.tagline as string) ?? "",
-    utilityLinks: utilityLinks.length > 0 ? utilityLinks : DEFAULT_UTILITY_LINKS,
+    utilityLinks,
     navItems,
     navSource: ((headerRaw.navSource as StorefrontNavSource) ?? "categories") as StorefrontNavSource,
     showSearch: headerRaw.showSearch !== false,

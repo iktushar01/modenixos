@@ -125,6 +125,42 @@ export async function getCustomersAction(params?: Record<string, unknown>) {
   return httpClient.get<Customer[]>("/customers", { params });
 }
 
+export async function getCustomerAction(id: string) {
+  return httpClient.get<Customer>(`/customers/${id}`);
+}
+
+export async function createCustomerAction(data: {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+}) {
+  const res = await httpClient.post<Customer>("/customers", data);
+  revalidatePath("/dashboard/customers");
+  return res;
+}
+
+export async function updateCustomerAction(
+  id: string,
+  data: {
+    name?: string;
+    email?: string;
+    phone?: string | null;
+    password?: string;
+    removeAccount?: boolean;
+  },
+) {
+  const res = await httpClient.patch<Customer>(`/customers/${id}`, data);
+  revalidatePath("/dashboard/customers");
+  revalidatePath(`/dashboard/customers/${id}`);
+  return res;
+}
+
+export async function deleteCustomerAction(id: string) {
+  await httpClient.delete(`/customers/${id}`);
+  revalidatePath("/dashboard/customers");
+}
+
 // Reviews
 export async function getReviewsAction(params?: Record<string, unknown>) {
   return httpClient.get<Review[]>("/reviews", { params });

@@ -51,7 +51,7 @@ export default function StoreHeaderPage() {
       const header: StorefrontHeaderConfig = {
         announcement: form.announcement,
         tagline: form.tagline,
-        utilityLinks: form.utilityLinks.filter((l) => l.label && l.href),
+        utilityLinks: [],
         navItems: form.navItems.filter((l) => l.label && l.href),
         navSource: form.navSource,
         showSearch: form.showSearch,
@@ -86,7 +86,7 @@ export default function StoreHeaderPage() {
     <div className="space-y-6">
       <PageHeader
         title="Header & navigation"
-        description="Announcement bar, utility links, main menu, search, and phone for your storefront."
+        description="Announcement bar, main menu, search, and phone for your storefront."
       />
 
       <Card>
@@ -121,35 +121,20 @@ export default function StoreHeaderPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Utility row</CardTitle>
-          <CardDescription>Top-right links and left tagline below the announcement.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="tagline">Left tagline</Label>
-            <Input
-              id="tagline"
-              value={form.tagline}
-              onChange={(e) => setForm({ ...form, tagline: e.target.value })}
-              placeholder="Sailing Life"
-            />
-          </div>
-          <EditableLinkList
-            label="Utility links"
-            description="Shown top-right on desktop (Log In, About, Cart, etc.)"
-            links={form.utilityLinks}
-            onChange={(utilityLinks) => setForm({ ...form, utilityLinks })}
-            hrefPlaceholder="/login or #about"
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle>Main navigation</CardTitle>
           <CardDescription>Centered category menu below the logo row.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="tagline">Brand tagline</Label>
+            <Input
+              id="tagline"
+              value={form.tagline}
+              onChange={(e) => setForm({ ...form, tagline: e.target.value })}
+              placeholder="Life is good"
+            />
+            <p className="text-[11px] text-muted-foreground">Shown under your logo on the storefront.</p>
+          </div>
           <div className="space-y-2">
             <Label>Navigation source</Label>
             <div className="flex flex-wrap gap-2">
