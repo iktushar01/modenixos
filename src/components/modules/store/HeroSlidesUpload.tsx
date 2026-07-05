@@ -2,9 +2,11 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, GripVertical, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, GripVertical, Loader2, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { resolveImageForCrop } from "@/lib/resolveImageForCrop";
 import { CropEditorDialog } from "./CropEditorDialog";
 
 export type HeroSlideItem = {
@@ -12,6 +14,8 @@ export type HeroSlideItem = {
   url?: string;
   preview: string;
   file?: File;
+  /** Full-resolution source kept for re-crop (original upload or fetched server image) */
+  sourceDataUrl?: string;
 };
 
 interface HeroSlidesUploadProps {
@@ -39,47 +43,83 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
   const [cropOpen, setCropOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [editingSlideId, setEditingSlideId] = useState<string | null>(null);
+  const [loadingEditId, setLoadingEditId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  /** Stable ref so crop complete always knows which slide is being edited */
+  const editingSlideIdRef = useRef<string | null>(null);
+  /** Original file data URL for new uploads — used as re-crop source */
+  const pendingSourceRef = useRef<string | null>(null);
 
   const handleFile = (file: File) => {
+    editingSlideIdRef.current = null;
     setEditingSlideId(null);
     const reader = new FileReader();
     reader.onload = () => {
-      setImageSrc(reader.result as string);
+      const dataUrl = reader.result as string;
+      pendingSourceRef.current = dataUrl;
+      setImageSrc(dataUrl);
       setCropOpen(true);
     };
     reader.readAsDataURL(file);
   };
 
-  const startEditSlide = (slide: HeroSlideItem) => {
+  const startEditSlide = async (slide: HeroSlideItem) => {
+    editingSlideIdRef.current = slide.id;
     setEditingSlideId(slide.id);
-    setImageSrc(slide.preview);
-    setCropOpen(true);
+    setLoadingEditId(slide.id);
+    try {
+      const src =
+        slide.sourceDataUrl ?? (await resolveImageForCrop(slide.preview));
+      pendingSourceRef.current = src;
+      setImageSrc(src);
+      setCropOpen(true);
+    } catch (err) {
+      console.error("Failed to load slide for edit:", err);
+      toast.error("Could not load image for editing — try re-uploading the slide");
+      editingSlideIdRef.current = null;
+      setEditingSlideId(null);
+    } finally {
+      setLoadingEditId(null);
+    }
   };
 
   const handleCropComplete = (file: File) => {
     const preview = URL.createObjectURL(file);
+    const editId = editingSlideIdRef.current;
+    const sourceDataUrl = pendingSourceRef.current ?? undefined;
 
-    if (editingSlideId) {
+    if (editId) {
       onChange(
         slides.map((slide) => {
-          if (slide.id !== editingSlideId) return slide;
+          if (slide.id !== editId) return slide;
           revokePreviewIfBlob(slide.preview);
-          return { ...slide, preview, file };
+          return {
+            ...slide,
+            preview,
+            file,
+            sourceDataUrl: slide.sourceDataUrl ?? sourceDataUrl,
+          };
         }),
       );
     } else {
-      onChange([...slides, { id: newId(), preview, file }]);
+      onChange([
+        ...slides,
+        { id: newId(), preview, file, sourceDataUrl },
+      ]);
     }
 
+    editingSlideIdRef.current = null;
     setEditingSlideId(null);
+    pendingSourceRef.current = null;
     setImageSrc(null);
   };
 
   const handleCropOpenChange = (open: boolean) => {
     setCropOpen(open);
     if (!open) {
+      editingSlideIdRef.current = null;
       setEditingSlideId(null);
+      pendingSourceRef.current = null;
       setImageSrc(null);
     }
   };
@@ -97,6 +137,8 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
     [next[index], next[target]] = [next[target], next[index]];
     onChange(next);
   };
+
+  const isEditing = Boolean(editingSlideId);
 
   return (
     <div className="space-y-4">
@@ -122,7 +164,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
                     variant="secondary"
                     size="icon"
                     className="h-7 w-7"
-                    disabled={index === 0}
+                    disabled={index === 0 || loadingEditId === slide.id}
                     onClick={() => moveSlide(index, -1)}
                     aria-label="Move slide left"
                   >
@@ -133,7 +175,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
                     variant="secondary"
                     size="icon"
                     className="h-7 w-7"
-                    disabled={index === slides.length - 1}
+                    disabled={index === slides.length - 1 || loadingEditId === slide.id}
                     onClick={() => moveSlide(index, 1)}
                     aria-label="Move slide right"
                   >
@@ -146,16 +188,22 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
                     variant="secondary"
                     size="icon"
                     className="h-7 w-7"
+                    disabled={loadingEditId === slide.id}
                     onClick={() => startEditSlide(slide)}
                     aria-label="Edit slide crop"
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    {loadingEditId === slide.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Pencil className="h-3.5 w-3.5" />
+                    )}
                   </Button>
                   <Button
                     type="button"
                     variant="destructive"
                     size="icon"
                     className="h-7 w-7"
+                    disabled={loadingEditId === slide.id}
                     onClick={() => removeSlide(slide.id)}
                     aria-label="Remove slide"
                   >
@@ -173,9 +221,14 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
                   variant="ghost"
                   size="sm"
                   className="h-6 gap-1 px-2 text-xs md:hidden"
+                  disabled={loadingEditId === slide.id}
                   onClick={() => startEditSlide(slide)}
                 >
-                  <Pencil className="h-3 w-3" />
+                  {loadingEditId === slide.id ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Pencil className="h-3 w-3" />
+                  )}
                   Edit
                 </Button>
               </div>
@@ -212,7 +265,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
         open={cropOpen}
         onOpenChange={handleCropOpenChange}
         imageSrc={imageSrc}
-        title={editingSlideId ? "Edit hero slide" : "Crop hero slide"}
+        title={isEditing ? "Edit hero slide" : "Crop hero slide"}
         defaultAspect={21 / 9}
         ratioOptions={[...HERO_SLIDE_RATIOS]}
         allowShapeSelection={false}

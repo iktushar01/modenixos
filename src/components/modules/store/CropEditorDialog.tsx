@@ -11,6 +11,7 @@ import ReactCrop, {
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -203,13 +204,19 @@ export function CropEditorDialog({
     setProcessing(true);
     try {
       const blob = await exportCrop(img, px, rotation, shape);
-      if (blob.size === 0) return;
+      if (blob.size === 0) {
+        toast.error("Crop produced an empty image — try again");
+        return;
+      }
 
       const baseName = outputFileName.replace(/\.(jpg|jpeg|png|webp)$/i, "");
       const ext = shapeNeedsTransparency(shape) ? "png" : "jpg";
       const file = new File([blob], `${baseName}.${ext}`, { type: blob.type });
       onComplete(file);
       handleOpenChange(false);
+    } catch (err) {
+      console.error("Crop export failed:", err);
+      toast.error("Crop failed — the image could not be processed. Try re-uploading the file.");
     } finally {
       setProcessing(false);
     }
@@ -241,6 +248,7 @@ export function CropEditorDialog({
                 ref={imgRef}
                 src={imageSrc}
                 alt=""
+                crossOrigin={imageSrc?.startsWith("http") ? "anonymous" : undefined}
                 onLoad={onImageLoad}
                 className="max-h-[340px] w-auto max-w-full"
                 style={{ display: "block" }}
