@@ -42,7 +42,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set("q", searchQuery.trim());
+    if (searchQuery.trim()) params.set("search", searchQuery.trim());
     if (searchCategory) params.set("category", searchCategory);
     const qs = params.toString();
     router.push(`${base}#shop${qs ? `?${qs}` : ""}`);

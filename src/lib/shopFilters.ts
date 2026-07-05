@@ -38,7 +38,7 @@ export function parseShopFilters(params: URLSearchParams): ShopFilters {
     tag: params.get("tag") ?? undefined,
     sale: params.get("sale") === "true",
     sort: ["newest", "price-asc", "price-desc", "name"].includes(sort) ? sort : "newest",
-    search: params.get("search") ?? undefined,
+    search: params.get("search") ?? params.get("q") ?? undefined,
   };
 }
 

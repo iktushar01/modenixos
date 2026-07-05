@@ -212,5 +212,3 @@ export function buildThemePayload(form: {
   if (form.social !== undefined) out.social = form.social;
   return out;
 }
-
-export { CLASSIC_RETAIL_DARK as THEME1_DARK_DEFAULT } from "./presets";

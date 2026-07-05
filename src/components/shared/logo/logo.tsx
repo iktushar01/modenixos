@@ -2,16 +2,27 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { APP_NAME, LOGO_DARK, LOGO_LIGHT } from "@/lib/app-config";
 
 const Logo = () => {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  const src =
+    mounted && resolvedTheme === "dark" ? LOGO_DARK : LOGO_LIGHT;
+
   return (
     <Link href="/" className="flex items-center gap-2">
       <Image
-        src="/logo.png"
-        alt="Logo"
-        width={120}
-        height={32}
-        className="rounded-md"
+        src={src}
+        alt={`${APP_NAME} logo`}
+        width={36}
+        height={36}
+        className="h-9 w-9 rounded-md object-contain"
         priority
       />
     </Link>

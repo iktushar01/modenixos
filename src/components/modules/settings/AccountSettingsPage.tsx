@@ -32,6 +32,9 @@ export default function AccountSettingsPage() {
             <Link href="/dashboard/store/branding">Branding</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard/store/header">Header</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
             <Link href="/dashboard/store/appearance">Appearance</Link>
           </Button>
         </CardContent>

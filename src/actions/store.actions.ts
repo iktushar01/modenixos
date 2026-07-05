@@ -45,6 +45,7 @@ export async function updateStoreAction(id: string, data: FormData | Record<stri
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/store");
   revalidatePath("/dashboard/store/branding");
+  revalidatePath("/dashboard/store/header");
   revalidatePath("/dashboard/store/appearance");
   await revalidateStorefront();
   return res;

@@ -1,10 +1,10 @@
 import { SidebarData } from "@/types/sidebar";
-import { APP_NAME } from "@/lib/app-config";
+import { APP_NAME, LOGO_LIGHT } from "@/lib/app-config";
 
 export const getClientSidebarData = async (): Promise<SidebarData> => {
   return {
     logo: {
-      src: "/logo.svg",
+      src: LOGO_LIGHT,
       alt: `${APP_NAME} logo`,
       title: APP_NAME,
       description: "Brand Dashboard",
@@ -39,6 +39,7 @@ export const getClientSidebarData = async (): Promise<SidebarData> => {
         items: [
           { label: "Profile", icon: "Store", href: "/dashboard/store" },
           { label: "Branding", icon: "Image", href: "/dashboard/store/branding" },
+          { label: "Header", icon: "Menu", href: "/dashboard/store/header" },
           { label: "Appearance", icon: "Palette", href: "/dashboard/store/appearance" },
         ],
       },

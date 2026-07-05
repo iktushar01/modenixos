@@ -37,8 +37,8 @@ export default function StoreAppearancePage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     templateId: "theme1" as const,
-    colorMode: "dark" as StorefrontColorMode,
-    palettePreset: "luxury-dark",
+    colorMode: "light" as StorefrontColorMode,
+    palettePreset: "classic-retail",
     customColors: undefined as Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>> | undefined,
     heroHeadline: "",
     heroSubtext: "",
