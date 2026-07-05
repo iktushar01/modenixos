@@ -2,9 +2,7 @@
 .storefront-theme {
   background-color: var(--sf-bg);
   color: var(--sf-fg);
-  font-family: var(--sf-font-body), ui-sans-serif, system-ui, sans-serif;
-  --sf-font-display: "Cormorant Garamond", Georgia, serif;
-  --sf-font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--sf-font-body, "DM Sans"), ui-sans-serif, system-ui, sans-serif;
 }
 
 .storefront-theme .sf-font-display {

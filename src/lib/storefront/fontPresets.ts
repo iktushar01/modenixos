@@ -108,8 +108,12 @@ function toGoogleFontParam(family: string): string {
 }
 
 export function buildGoogleFontsHref(bodyFont: string, displayFont: string): string {
-  const families = [...new Set([bodyFont, displayFont])];
-  const params = families.map(toGoogleFontParam).join("&");
+  return buildGoogleFontsHrefForFamilies([bodyFont, displayFont]);
+}
+
+export function buildGoogleFontsHrefForFamilies(families: string[]): string {
+  const unique = [...new Set(families.map((family) => family.trim()).filter(Boolean))];
+  const params = unique.map(toGoogleFontParam).join("&");
   return `https://fonts.googleapis.com/css2?${params}&display=swap`;
 }
 

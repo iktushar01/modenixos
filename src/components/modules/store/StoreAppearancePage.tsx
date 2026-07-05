@@ -194,6 +194,21 @@ export default function StoreAppearancePage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Typography</CardTitle>
+          <CardDescription>
+            Choose font pairings for your public shop. Headlines and body text update across the full storefront.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <StoreTypographyEditor
+            typography={form.typography}
+            onTypographyChange={(typography) => setForm((prev) => ({ ...prev, typography }))}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Promo bar</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

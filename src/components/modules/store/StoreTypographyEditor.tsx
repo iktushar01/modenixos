@@ -16,6 +16,7 @@ import {
   STOREFRONT_FONT_PRESETS,
   StorefrontTypography,
   buildGoogleFontsHref,
+  buildGoogleFontsHrefForFamilies,
   getFontPresetById,
   resolveTypography,
 } from "@/lib/storefront";
@@ -24,6 +25,11 @@ interface StoreTypographyEditorProps {
   typography: StorefrontTypography;
   onTypographyChange: (typography: StorefrontTypography) => void;
 }
+
+const editorFontsHref = buildGoogleFontsHrefForFamilies([
+  ...STOREFRONT_FONT_PRESETS.flatMap((preset) => [preset.bodyFont, preset.displayFont]),
+  ...STOREFRONT_FONT_OPTIONS,
+]);
 
 function FontPreview({
   bodyFont,
@@ -79,6 +85,8 @@ export function StoreTypographyEditor({
 
   return (
     <div className="space-y-6">
+      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+      <link rel="stylesheet" href={editorFontsHref} />
       <div>
         <Label className="mb-3 block text-sm font-medium">Font pairings</Label>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
