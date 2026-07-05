@@ -23,7 +23,7 @@ export function StoreFooter({ store, theme }: StoreFooterProps) {
 
   return (
     <footer className="sf-border sf-footer border-t">
-      <div className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+      <div className="sf-section w-full py-14">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             {store.logo ? (

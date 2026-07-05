@@ -10,7 +10,7 @@ interface BrandStoryProps {
 
 export function BrandStory({ theme }: BrandStoryProps) {
   return (
-    <section id="about" className="mx-auto max-w-7xl px-4 py-20 md:px-6">
+    <section id="about" className="sf-section w-full py-20">
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <motion.div
           initial={{ opacity: 0, x: -24 }}

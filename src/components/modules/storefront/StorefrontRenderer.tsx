@@ -15,7 +15,7 @@ interface StorefrontRendererProps {
 
 function ShopFallback() {
   return (
-    <div id="shop" className="mx-auto max-w-7xl animate-pulse px-4 py-20 md:px-6">
+    <div id="shop" className="sf-section w-full animate-pulse py-20">
       <div className="sf-skeleton mb-8 h-10 w-48 rounded" />
       <div className="flex gap-8">
         <div className="sf-skeleton hidden h-96 w-64 rounded-2xl lg:block" />

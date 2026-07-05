@@ -16,7 +16,7 @@ export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps)
   if (categories.length === 0) return null;
 
   return (
-    <section id="categories" className="mx-auto max-w-7xl px-4 py-20 md:px-6">
+    <section id="categories" className="sf-section w-full py-20">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}

@@ -126,6 +126,31 @@
   color: var(--sf-secondary-fg);
 }
 
+.storefront-theme .sf-announcement {
+  background-color: var(--sf-announcement);
+  color: var(--sf-announcement-fg);
+}
+
+.storefront-theme .sf-section {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .storefront-theme .sf-section {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .storefront-theme .sf-section {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
 .storefront-theme .sf-hero-overlay {
   background-color: var(--sf-hero-overlay);
 }

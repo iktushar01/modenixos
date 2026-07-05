@@ -1,5 +1,30 @@
 export type StorefrontTemplateId = "theme1";
 export type StorefrontColorMode = "light" | "dark";
+export type StorefrontNavSource = "manual" | "categories" | "both";
+
+export interface StorefrontNavLink {
+  label: string;
+  href: string;
+}
+
+export interface StorefrontHeaderConfig {
+  announcement: { enabled: boolean; text: string };
+  tagline: string;
+  utilityLinks: StorefrontNavLink[];
+  navItems: StorefrontNavLink[];
+  navSource: StorefrontNavSource;
+  showSearch: boolean;
+  showPhone: boolean;
+}
+
+export interface StorefrontLayoutConfig {
+  fullWidth: boolean;
+  heroHeight: string;
+}
+
+export interface StorefrontContactConfig {
+  phone: string;
+}
 
 /** Full storefront color tokens — mapped to CSS variables on the shop shell */
 export interface StorefrontColorPalette {
@@ -19,6 +44,8 @@ export interface StorefrontColorPalette {
   card: string;
   cardForeground: string;
   heroOverlay: string;
+  announcement: string;
+  announcementForeground: string;
   navbar: string;
   navbarForeground: string;
   footer: string;
@@ -48,14 +75,13 @@ export interface StorefrontThemeConfig {
   templateId: StorefrontTemplateId;
   colorMode: StorefrontColorMode;
   palettePreset: string;
-  /** Active resolved palette for current colorMode */
   colors: StorefrontColorPalette;
-  /** Custom overrides when palettePreset === "custom" */
   customColors?: Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>>;
-  /** @deprecated use colors.primary — kept for backward compat */
   primaryColor: string;
-  /** @deprecated use colors.secondary */
   secondaryColor: string;
+  header: StorefrontHeaderConfig;
+  layout: StorefrontLayoutConfig;
+  contact: StorefrontContactConfig;
   heroSlides: string[];
   heroHeadline: string;
   heroSubtext: string;
@@ -72,6 +98,12 @@ export interface StorefrontThemeConfig {
     facebook?: string;
   };
 }
+
+export const DEFAULT_UTILITY_LINKS: StorefrontNavLink[] = [
+  { label: "Log In", href: "/login" },
+  { label: "About Us", href: "#about" },
+  { label: "Cart", href: "/cart" },
+];
 
 export const STOREFRONT_COLOR_FIELDS: Array<{ key: keyof StorefrontColorPalette; label: string; group: string }> = [
   { key: "background", label: "Page background", group: "Base" },
@@ -90,8 +122,10 @@ export const STOREFRONT_COLOR_FIELDS: Array<{ key: keyof StorefrontColorPalette;
   { key: "card", label: "Card background", group: "Components" },
   { key: "cardForeground", label: "Card text", group: "Components" },
   { key: "heroOverlay", label: "Hero overlay", group: "Components" },
-  { key: "navbar", label: "Navbar background", group: "Layout" },
-  { key: "navbarForeground", label: "Navbar text", group: "Layout" },
+  { key: "announcement", label: "Announcement bar", group: "Layout" },
+  { key: "announcementForeground", label: "Announcement text", group: "Layout" },
+  { key: "navbar", label: "Header background", group: "Layout" },
+  { key: "navbarForeground", label: "Header text", group: "Layout" },
   { key: "footer", label: "Footer background", group: "Layout" },
   { key: "footerForeground", label: "Footer text", group: "Layout" },
 ];

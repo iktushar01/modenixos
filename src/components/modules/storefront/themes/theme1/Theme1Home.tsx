@@ -6,8 +6,9 @@ import { Collection, Category, Product, Review, Store } from "@/types/store.type
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { hasShopFilters, parseShopFilters } from "@/lib/shopFilters";
 import { StorefrontThemeShell } from "../../StorefrontThemeShell";
-import { StoreNavbar } from "../../StoreNavbar";
-import { StoreHero } from "../../StoreHero";
+import { AnnouncementBar } from "./AnnouncementBar";
+import { StoreHeader } from "./StoreHeader";
+import { Theme1Hero } from "./Theme1Hero";
 import { CategoriesGrid } from "../../CategoriesGrid";
 import { CollectionsGrid } from "../../CollectionsGrid";
 import { ShopSection } from "../../ShopSection";
@@ -53,7 +54,6 @@ function buildPromoFallback(products: Product[]): string | undefined {
   return maxPct > 0 ? `Up to ${maxPct}% off — Limited time only` : undefined;
 }
 
-/** Theme 1 — luxury fashion storefront (default) */
 export function Theme1Home({
   store,
   catalog,
@@ -72,8 +72,9 @@ export function Theme1Home({
 
   return (
     <StorefrontThemeShell theme={theme}>
-      <StoreNavbar store={store} theme={theme} />
-      {!isShopFiltered && <StoreHero store={store} theme={theme} />}
+      <AnnouncementBar theme={theme} />
+      <StoreHeader store={store} theme={theme} categories={categories} />
+      {!isShopFiltered && <Theme1Hero store={store} theme={theme} />}
 
       {theme.sections.promo && !isShopFiltered && (
         <PromoBanner slug={store.slug} theme={theme} fallbackText={promoFallback} />

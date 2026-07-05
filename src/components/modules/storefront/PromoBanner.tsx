@@ -17,7 +17,7 @@ export function PromoBanner({ slug, theme, fallbackText }: PromoBannerProps) {
   const c = theme.colors;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6 md:px-6">
+    <section className="sf-section w-full py-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}

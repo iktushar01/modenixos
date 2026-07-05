@@ -16,7 +16,7 @@ export function CollectionsGrid({ slug, collections, theme }: CollectionsGridPro
   if (collections.length === 0) return null;
 
   return (
-    <section id="collections" className="mx-auto max-w-7xl px-4 py-20 md:px-6">
+    <section id="collections" className="sf-section w-full py-20">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}

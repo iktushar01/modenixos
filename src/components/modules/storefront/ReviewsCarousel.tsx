@@ -20,10 +20,10 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   const prev = () => setIndex((i) => (i - 1 + reviews.length) % reviews.length);
 
   return (
-    <section className="border-y border-white/10 bg-white/[0.02] py-20">
-      <div className="mx-auto max-w-3xl px-4 text-center md:px-6">
-        <p className="text-xs uppercase tracking-[0.2em] text-white/50">Testimonials</p>
-        <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">What Customers Say</h2>
+    <section className="sf-section w-full border-y sf-border sf-muted py-20">
+      <div className="mx-auto max-w-3xl text-center">
+        <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Testimonials</p>
+        <h2 className="mt-2 text-3xl font-light md:text-4xl">What Customers Say</h2>
 
         <div className="relative mt-12 min-h-[200px]">
           <AnimatePresence mode="wait">

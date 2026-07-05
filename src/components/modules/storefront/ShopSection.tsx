@@ -94,7 +94,7 @@ export function ShopSection({
   };
 
   return (
-    <section id="shop" className="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+    <section id="shop" className="sf-section w-full py-16 md:py-20">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs uppercase tracking-[0.2em] text-white/50">Shop</p>

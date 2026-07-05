@@ -27,7 +27,7 @@ export function TrendingScroll({ store, products, theme, ratings, onQuickView }:
 
   return (
     <section className="py-20">
-      <div className="mx-auto max-w-7xl px-4 md:px-6">
+      <div className="sf-section w-full">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}

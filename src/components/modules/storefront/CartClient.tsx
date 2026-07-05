@@ -5,19 +5,15 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Store } from "@/types/store.types";
+import { Category, Store } from "@/types/store.types";
 import { useCartStore } from "@/stores/cart.store";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice } from "@/lib/storefrontTheme";
-import { parseStorefrontTheme } from "@/lib/storefront";
-import { StoreNavbar } from "./StoreNavbar";
-import { StoreFooter } from "./StoreFooter";
-import { StorefrontThemeShell } from "./StorefrontThemeShell";
+import { StorefrontPageShell } from "./StorefrontPageShell";
 
-export default function CartClient({ store }: { store: Store }) {
+export default function CartClient({ store, categories = [] }: { store: Store; categories?: Category[] }) {
   const hydrated = useCartHydrated();
-  const theme = parseStorefrontTheme(store);
   const items = useStoreCartItems(store.id);
   const total = useStoreCartTotal(store.id);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
@@ -28,9 +24,8 @@ export default function CartClient({ store }: { store: Store }) {
 
   if (!hydrated) {
     return (
-      <StorefrontThemeShell theme={theme}>
-        <StoreNavbar store={store} theme={theme} />
-        <main className="mx-auto max-w-7xl animate-pulse px-4 py-14 md:px-6">
+      <StorefrontPageShell store={store} categories={categories}>
+        <main className="sf-section w-full animate-pulse py-14">
           <div className="sf-skeleton mb-10 h-10 w-48 rounded" />
           <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
             <div className="space-y-4">
@@ -41,20 +36,14 @@ export default function CartClient({ store }: { store: Store }) {
             <div className="sf-skeleton h-64 rounded-2xl" />
           </div>
         </main>
-      </StorefrontThemeShell>
+      </StorefrontPageShell>
     );
   }
 
   return (
-    <StorefrontThemeShell theme={theme}>
-      <StoreNavbar store={store} theme={theme} />
-
-      <main className="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-14">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
+    <StorefrontPageShell store={store} categories={categories}>
+      <main className="sf-section w-full py-10 md:py-14">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <Link
             href={base}
             className="sf-link mb-8 inline-flex items-center gap-2 text-sm transition-colors sf-hover-fg"
@@ -119,10 +108,7 @@ export default function CartClient({ store }: { store: Store }) {
 
                   <div className="flex min-w-0 flex-1 flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div className="min-w-0">
-                      <Link
-                        href={`${base}/products/${item.productId}`}
-                        className="font-medium transition-colors hover:opacity-80"
-                      >
+                      <Link href={`${base}/products/${item.productId}`} className="font-medium hover:opacity-80">
                         {item.name}
                       </Link>
                       {(item.size || item.color) && (
@@ -140,15 +126,9 @@ export default function CartClient({ store }: { store: Store }) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 rounded-full hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]"
+                          className="h-9 w-9 rounded-full"
                           onClick={() =>
-                            updateQuantity(
-                              item.productId,
-                              store.id,
-                              item.quantity - 1,
-                              item.size,
-                              item.color,
-                            )
+                            updateQuantity(item.productId, store.id, item.quantity - 1, item.size, item.color)
                           }
                           aria-label="Decrease quantity"
                         >
@@ -158,15 +138,9 @@ export default function CartClient({ store }: { store: Store }) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 rounded-full hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]"
+                          className="h-9 w-9 rounded-full"
                           onClick={() =>
-                            updateQuantity(
-                              item.productId,
-                              store.id,
-                              item.quantity + 1,
-                              item.size,
-                              item.color,
-                            )
+                            updateQuantity(item.productId, store.id, item.quantity + 1, item.size, item.color)
                           }
                           aria-label="Increase quantity"
                         >
@@ -181,7 +155,7 @@ export default function CartClient({ store }: { store: Store }) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 sf-muted-fg hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)] hover:text-red-400"
+                        className="h-9 w-9 sf-muted-fg hover:text-red-400"
                         onClick={() => removeItem(item.productId, store.id, item.size, item.color)}
                         aria-label="Remove item"
                       >
@@ -224,8 +198,6 @@ export default function CartClient({ store }: { store: Store }) {
           </div>
         )}
       </main>
-
-      <StoreFooter store={store} theme={theme} />
-    </StorefrontThemeShell>
+    </StorefrontPageShell>
   );
 }
