@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "../styles/storefront-theme.css";
+@import "../styles/marketing-shell.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -262,7 +263,7 @@
   }
 
   .homepage-gradient-text {
-    @apply bg-gradient-to-r from-rose-500 via-violet-500 to-indigo-500 bg-clip-text text-transparent;
+    color: #7047eb;
   }
 
   .homepage-glass {

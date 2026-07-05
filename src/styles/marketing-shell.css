@@ -1,0 +1,55 @@
+/* Marketing site shell — mirrors storefront header / section vibe */
+.marketing-shell {
+  --mkt-brand: #7047eb;
+  --mkt-brand-muted: color-mix(in srgb, var(--mkt-brand) 12%, transparent);
+}
+
+.marketing-shell .mkt-section {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .marketing-shell .mkt-section {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.marketing-shell .mkt-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.marketing-shell .mkt-nav-link {
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  transition: color 0.2s ease;
+}
+
+.marketing-shell .mkt-nav-link:hover {
+  color: var(--foreground);
+}
+
+.marketing-shell .mkt-card {
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--card) 90%, transparent);
+}
+
+.marketing-shell .mkt-accent-text {
+  color: var(--mkt-brand);
+}
+
+.marketing-shell .mkt-gradient-text {
+  color: var(--mkt-brand);
+}
+
+.marketing-shell .mkt-divider {
+  border-color: var(--border);
+}
