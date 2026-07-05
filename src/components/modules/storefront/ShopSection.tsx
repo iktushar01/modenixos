@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { SlidersHorizontal, PackageOpen } from "lucide-react";
 import { Category, Collection, Product, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
@@ -16,7 +17,13 @@ import {
 } from "@/lib/shopFilters";
 import { ShopFilterSidebar, ShopActiveFilters } from "./ShopFilterSidebar";
 import { ProductCard } from "./ProductCard";
-import { StorefrontSection } from "./ui";
+import {
+  StorefrontCarousel,
+  StorefrontCarouselHeaderAction,
+  StorefrontCarouselSlide,
+  StorefrontCarouselTrack,
+  StorefrontSection,
+} from "./ui";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetHeader, SheetTitle, SheetTrigger, StorefrontSheetContent } from "@/components/modules/storefront/StorefrontSheet";
 
@@ -29,6 +36,7 @@ interface ShopSectionProps {
   ratings: Record<string, number>;
   onQuickView: (product: Product) => void;
   showFilters?: boolean;
+  layout?: "grid" | "carousel";
 }
 
 export function ShopSection({
@@ -40,6 +48,7 @@ export function ShopSection({
   ratings,
   onQuickView,
   showFilters = true,
+  layout = "grid",
 }: ShopSectionProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -73,14 +82,18 @@ export function ShopSection({
   }, [pathname, router]);
 
   const title = useMemo(() => {
+    if (layout === "carousel" && !isFiltered) return "All products";
     if (filters.category) {
       return categories.find((c) => c.slug === filters.category)?.name ?? "Shop";
     }
     if (filters.collection) {
       return collections.find((c) => c.slug === filters.collection)?.name ?? "Shop";
     }
-    return isFiltered ? "Filtered results" : "The edit";
-  }, [filters, categories, collections, isFiltered]);
+    return isFiltered ? "Filtered results" : "All products";
+  }, [filters, categories, collections, isFiltered, layout]);
+
+  const displayProducts = layout === "carousel" && !isFiltered ? catalog : filtered;
+  const pieceLabel = `${displayProducts.length} ${displayProducts.length === 1 ? "piece" : "pieces"}`;
 
   const sidebarProps = {
     slug: store.slug,
@@ -117,13 +130,55 @@ export function ShopSection({
     </Sheet>
   ) : null;
 
+  if (layout === "carousel" && !isFiltered) {
+    if (catalog.length === 0) return null;
+
+    return (
+      <section id="shop" className="py-16 md:py-24">
+        <StorefrontCarousel>
+          <StorefrontSection
+            eyebrow="Shop"
+            title={title}
+            subtitle={pieceLabel}
+            action={
+              <StorefrontCarouselHeaderAction
+                viewAllHref={`/store/${store.slug}#shop`}
+                itemCount={catalog.length}
+              />
+            }
+          />
+
+          <StorefrontCarouselTrack>
+            {catalog.map((product) => (
+              <StorefrontCarouselSlide key={product.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <ProductCard
+                    product={product}
+                    store={store}
+                    theme={theme}
+                    rating={ratings[product.id]}
+                    onQuickView={onQuickView}
+                  />
+                </motion.div>
+              </StorefrontCarouselSlide>
+            ))}
+          </StorefrontCarouselTrack>
+        </StorefrontCarousel>
+      </section>
+    );
+  }
+
   return (
     <StorefrontSection
       id="shop"
       className="py-16 md:py-24"
       eyebrow="Shop"
       title={title}
-      subtitle={`${filtered.length} ${filtered.length === 1 ? "piece" : "pieces"}${isPending ? " · Updating…" : ""}`}
+      subtitle={`${displayProducts.length} ${displayProducts.length === 1 ? "piece" : "pieces"}${isPending ? " · Updating…" : ""}`}
       action={filterAction}
     >
       <div className={showFilters ? "flex gap-10 lg:gap-14" : ""}>
@@ -145,7 +200,7 @@ export function ShopSection({
             />
           )}
 
-          {filtered.length === 0 ? (
+          {displayProducts.length === 0 ? (
             <div className="sf-editorial-card flex flex-col items-center justify-center border-dashed py-24 text-center">
               <PackageOpen className="sf-muted-fg mb-6 h-14 w-14 opacity-40" strokeWidth={1} />
               <p className="sf-display-lg text-2xl">No pieces found</p>
@@ -158,7 +213,7 @@ export function ShopSection({
             </div>
           ) : (
             <div className={`grid gap-8 sm:grid-cols-2 xl:grid-cols-3 ${isPending ? "opacity-60" : ""}`}>
-              {filtered.map((p) => (
+              {displayProducts.map((p) => (
                 <ProductCard
                   key={p.id}
                   product={p}

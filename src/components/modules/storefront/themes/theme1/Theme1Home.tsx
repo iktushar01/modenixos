@@ -98,6 +98,7 @@ function Theme1HomeContent({
           ratings={ratings}
           onQuickView={setQuickViewProduct}
           showFilters={false}
+          layout={isShopFiltered ? "grid" : "carousel"}
         />
       )}
 

@@ -275,15 +275,21 @@ export function ProductPurchasePanel({
       {phone && theme.header.showPhone && (
         <a
           href={`tel:${phone.replace(/\s/g, "")}`}
-          className="sf-primary flex flex-col items-center gap-2 rounded px-4 py-4 text-center transition-opacity hover:opacity-95"
+          className="sf-border group flex w-full items-center gap-4 rounded-md border px-4 py-3.5 transition-colors hover:border-[color-mix(in_srgb,var(--sf-primary)_55%,var(--sf-border))] hover:bg-[color-mix(in_srgb,var(--sf-primary)_6%,var(--sf-surface))]"
         >
-          <div className="flex items-center gap-2">
-            <Phone className="h-5 w-5" />
-            <span className="rounded bg-[color-mix(in_srgb,var(--sf-primary-fg)_20%,transparent)] px-3 py-1 text-sm font-medium">
-              {phone}
-            </span>
-          </div>
-          <span className="text-xs font-semibold uppercase tracking-widest">Call Us Now</span>
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors group-hover:bg-[color-mix(in_srgb,var(--sf-primary)_14%,transparent)]"
+            style={{
+              backgroundColor: "color-mix(in srgb, var(--sf-primary) 10%, transparent)",
+              color: "var(--sf-primary)",
+            }}
+          >
+            <Phone className="h-4 w-4" strokeWidth={1.75} />
+          </span>
+          <span className="min-w-0 flex-1 text-left">
+            <span className="sf-eyebrow block text-[0.625rem]">Call us now</span>
+            <span className="mt-0.5 block text-base font-medium tracking-wide sf-fg">{phone}</span>
+          </span>
         </a>
       )}
 
