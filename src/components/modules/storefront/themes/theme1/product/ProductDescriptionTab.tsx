@@ -1,6 +1,6 @@
 "use client";
 
-import { Product, Store, StoreShippingConfig } from "@/types/store.types";
+import { Product } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 
 interface ProductDescriptionTabProps {

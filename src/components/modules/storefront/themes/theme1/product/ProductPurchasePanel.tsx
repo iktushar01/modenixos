@@ -32,6 +32,8 @@ interface ProductPurchasePanelProps {
   reviews: Review[];
   isLoggedIn: boolean;
   initialInWishlist?: boolean;
+  color: string;
+  onColorChange: (color: string) => void;
 }
 
 export function ProductPurchasePanel({
@@ -41,11 +43,12 @@ export function ProductPurchasePanel({
   reviews,
   isLoggedIn,
   initialInWishlist = false,
+  color,
+  onColorChange,
 }: ProductPurchasePanelProps) {
   const router = useRouter();
   const addItem = useCartStore((s) => s.addItem);
   const [size, setSize] = useState(product.sizes[0] ?? "");
-  const [color, setColor] = useState(product.colors[0] ?? "");
   const [qty, setQty] = useState(1);
   const [inWishlist, setInWishlist] = useState(initialInWishlist);
   const [wishlistLoading, setWishlistLoading] = useState(false);
@@ -162,7 +165,7 @@ export function ProductPurchasePanel({
                   key={c}
                   type="button"
                   title={c}
-                  onClick={() => setColor(c)}
+                  onClick={() => onColorChange(c)}
                   className={cn(
                     "relative h-12 w-12 overflow-hidden rounded border-2 transition-colors",
                     color === c
