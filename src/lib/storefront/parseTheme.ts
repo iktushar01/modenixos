@@ -17,7 +17,7 @@ import {
   mergePalette,
   STOREFRONT_PALETTE_PRESETS,
 } from "./presets";
-import { harmonizePalette, regenerateFromBrand } from "./palette";
+import { harmonizePalette } from "./palette";
 
 const defaultSections: StorefrontSections = {
   categories: true,
@@ -270,5 +270,3 @@ export function buildThemePayload(form: {
   if (form.social !== undefined) out.social = form.social;
   return out;
 }
-
-export { regenerateFromBrand, harmonizePalette };

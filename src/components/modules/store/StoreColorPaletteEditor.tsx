@@ -718,7 +718,6 @@ export function StoreColorPaletteEditor({
                 </div>
               )}
 
-              <DualPreviewStrip light={previewLight} dark={previewDark} />
             </div>
           )}
 

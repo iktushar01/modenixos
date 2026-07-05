@@ -5,12 +5,20 @@ import { useCartStore } from "@/stores/cart.store";
 
 /** Waits for Zustand persist to rehydrate cart from localStorage. */
 export function useCartHydrated() {
-  const [hydrated, setHydrated] = useState(() => useCartStore.persist.hasHydrated());
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const unsub = useCartStore.persist.onFinishHydration(() => setHydrated(true));
-    if (!useCartStore.persist.hasHydrated()) {
-      void useCartStore.persist.rehydrate();
+    const persist = useCartStore.persist;
+    if (!persist) {
+      setHydrated(true);
+      return;
+    }
+
+    setHydrated(persist.hasHydrated());
+
+    const unsub = persist.onFinishHydration(() => setHydrated(true));
+    if (!persist.hasHydrated()) {
+      void persist.rehydrate();
     }
     return unsub;
   }, []);
