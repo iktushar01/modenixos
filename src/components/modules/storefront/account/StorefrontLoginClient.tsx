@@ -17,9 +17,11 @@ import { AccountAuthLayout } from "./AccountAuthLayout";
 export default function StorefrontLoginClient({
   store,
   categories = [],
+  nextPath,
 }: {
   store: Store;
   categories?: Category[];
+  nextPath?: string;
 }) {
   const router = useRouter();
   const { setCustomer } = useStorefrontCustomer();
@@ -35,7 +37,11 @@ export default function StorefrontLoginClient({
       const customer = await loginStorefrontCustomerAction(store.slug, { email, password });
       setCustomer(customer);
       toast.success("Welcome back!");
-      router.push(`${base}/account/wishlist`);
+      router.push(
+        nextPath
+          ? `${base}${nextPath.startsWith("/") ? nextPath : `/${nextPath}`}`
+          : `${base}/account/orders`,
+      );
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed");
@@ -49,7 +55,7 @@ export default function StorefrontLoginClient({
       <main className="sf-section w-full py-12 md:py-16">
         <AccountAuthLayout
           title="Log in"
-          subtitle={`Sign in to ${store.brandName} to access your wishlist.`}
+          subtitle={`Sign in to ${store.brandName} to view orders and your wishlist.`}
         >
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

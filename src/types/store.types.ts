@@ -105,6 +105,8 @@ export interface Order {
   discount: number;
   total: number;
   couponCode?: string | null;
+  trackingNumber?: string | null;
+  trackingCarrier?: string | null;
   createdAt: string;
 }
 

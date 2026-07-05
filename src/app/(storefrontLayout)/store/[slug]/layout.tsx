@@ -1,6 +1,11 @@
-import { StorefrontCustomerProvider } from "@/components/modules/storefront/StorefrontCustomerContext";
-import { getStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
-import { hasStorefrontCustomerCookie } from "@/lib/storefrontCustomerApi";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import {
+  getPublicStoreAction,
+  getPublicCategoriesAction,
+} from "@/actions/catalog.actions";
+import { StorefrontContextProvider } from "@/components/modules/storefront/StorefrontContext";
+import { Category } from "@/types/store.types";
 
 export default async function StoreSlugLayout({
   children,
@@ -10,13 +15,19 @@ export default async function StoreSlugLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const customer = (await hasStorefrontCustomerCookie(slug))
-    ? await getStorefrontCustomerAction(slug)
-    : null;
+
+  const [store, categoriesRes] = await Promise.all([
+    getPublicStoreAction(slug),
+    getPublicCategoriesAction(slug, { limit: "50" }),
+  ]);
+
+  if (!store) notFound();
+
+  const categories = (categoriesRes.data ?? []) as Category[];
 
   return (
-    <StorefrontCustomerProvider slug={slug} initialCustomer={customer}>
-      {children}
-    </StorefrontCustomerProvider>
+    <StorefrontContextProvider slug={slug} store={store} categories={categories}>
+      <Suspense fallback={null}>{children}</Suspense>
+    </StorefrontContextProvider>
   );
 }

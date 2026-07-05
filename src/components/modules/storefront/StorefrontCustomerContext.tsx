@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { StorefrontCustomer } from "@/types/store.types";
 import { logoutStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
+import { useOptionalStorefront } from "./StorefrontContext";
 
 interface StorefrontCustomerContextValue {
   slug: string;
@@ -21,6 +22,7 @@ interface StorefrontCustomerContextValue {
 
 const StorefrontCustomerContext = createContext<StorefrontCustomerContextValue | null>(null);
 
+/** Legacy provider — prefer StorefrontContextProvider in the slug layout. */
 export function StorefrontCustomerProvider({
   slug,
   initialCustomer,
@@ -52,14 +54,57 @@ export function StorefrontCustomerProvider({
 }
 
 export function useStorefrontCustomer() {
-  const ctx = useContext(StorefrontCustomerContext);
-  if (!ctx) {
+  const storefront = useOptionalStorefront();
+  const legacy = useContext(StorefrontCustomerContext);
+  const router = useRouter();
+
+  const logout = useCallback(async () => {
+    const slug = storefront?.slug ?? legacy?.slug;
+    if (!slug) return;
+    await logoutStorefrontCustomerAction(slug);
+    storefront?.setCustomer(null);
+    legacy?.setCustomer(null);
+    router.refresh();
+  }, [storefront, legacy, router]);
+
+  if (storefront) {
+    return {
+      slug: storefront.slug,
+      customer: storefront.customer,
+      setCustomer: storefront.setCustomer,
+      logout,
+    };
+  }
+
+  if (!legacy) {
     throw new Error("useStorefrontCustomer must be used within StorefrontCustomerProvider");
   }
-  return ctx;
+
+  return { ...legacy, logout };
 }
 
-/** Safe hook for shared components that may render outside the slug layout. */
 export function useOptionalStorefrontCustomer() {
-  return useContext(StorefrontCustomerContext);
+  const storefront = useOptionalStorefront();
+  const legacy = useContext(StorefrontCustomerContext);
+  const router = useRouter();
+
+  const logout = useCallback(async () => {
+    const slug = storefront?.slug ?? legacy?.slug;
+    if (!slug) return;
+    await logoutStorefrontCustomerAction(slug);
+    storefront?.setCustomer(null);
+    legacy?.setCustomer(null);
+    router.refresh();
+  }, [storefront, legacy, router]);
+
+  if (storefront) {
+    return {
+      slug: storefront.slug,
+      customer: storefront.customer,
+      setCustomer: storefront.setCustomer,
+      logout,
+    };
+  }
+
+  return legacy;
 }

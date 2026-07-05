@@ -115,8 +115,12 @@ export async function getOrdersAction(params?: Record<string, unknown>) {
   return httpClient.get<Order[]>("/orders", { params });
 }
 
-export async function updateOrderStatusAction(id: string, status: string) {
-  const res = await httpClient.patch<Order>(`/orders/${id}/status`, { status });
+export async function updateOrderStatusAction(
+  id: string,
+  status: string,
+  tracking?: { trackingNumber?: string | null; trackingCarrier?: string | null },
+) {
+  const res = await httpClient.patch<Order>(`/orders/${id}/status`, { status, ...tracking });
   revalidatePath("/dashboard/orders");
   return res;
 }
@@ -289,8 +293,9 @@ export async function placeOrderAction(slug: string, data: Record<string, unknow
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to place order");
-  return res.json();
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message ?? "Failed to place order");
+  return json.data as Order;
 }
 
 export async function validateCouponAction(slug: string, code: string, subtotal: number) {

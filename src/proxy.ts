@@ -21,6 +21,11 @@ import { checkHasStoreFromRequest, applyHasStoreCookie } from "./lib/middlewareS
 import { readHasStoreCookie } from "./lib/hasStoreCookie";
 import { UserFromCookie } from "./types/auth.types";
 
+const isSoftNavigationRequest = (request: NextRequest) =>
+    request.headers.get("RSC") === "1" ||
+    request.headers.get("Next-Router-Prefetch") === "1" ||
+    request.headers.has("Next-Router-State-Tree");
+
 const readUserFromCookie = (request: NextRequest): UserFromCookie | null => {
     const rawUserCookie = request.cookies.get("user")?.value;
 
@@ -84,9 +89,10 @@ const resolveAuthState = async (
 
     const shouldAttemptRefresh =
         refreshToken &&
+        !isSoftNavigationRequest(request) &&
         (!activeAccessToken ||
             !isValidAccessToken ||
-            (activeAccessToken && isTokenExpiringSoon(activeAccessToken)));
+            (activeAccessToken && isTokenExpiringSoon(activeAccessToken, 60)));
 
     if (shouldAttemptRefresh) {
         const refreshedTokens = await refreshTokensFromRequest(request);
@@ -145,11 +151,47 @@ export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const pathWithQuery = `${pathname}${request.nextUrl.search}`;
     const routeOwner = getRouteOwner(pathname);
+    const isAuth = isAuthRoute(pathname);
+
+    // Public routes (storefront, marketing, etc.) — skip auth entirely
+    if (routeOwner === null && !isAuth) {
+        return NextResponse.next();
+    }
 
     try {
         const accessToken = request.cookies.get("accessToken")?.value;
         const refreshToken = request.cookies.get("refreshToken")?.value;
         const cookieUser = readUserFromCookie(request);
+
+        // Fast path: valid JWT + user cookie on client-side navigations
+        if (isSoftNavigationRequest(request) && accessToken && cookieUser?.role) {
+            const secret = getAccessTokenSecret();
+            if (secret) {
+                const tokenResult = await verifyAccessToken(accessToken, secret);
+                if (tokenResult.success) {
+                    const userRole = normalizeUserRole(
+                        (tokenResult.data?.role as string | undefined) ?? cookieUser.role,
+                    );
+
+                    if (userRole === "CLIENT" && pathname.startsWith("/dashboard")) {
+                        const cachedHasStore = readHasStoreCookie(request.cookies);
+                        if (cachedHasStore === true) {
+                            return NextResponse.next();
+                        }
+                        if (cachedHasStore === false) {
+                            return NextResponse.redirect(new URL("/onboarding", request.url));
+                        }
+                    } else if (
+                        userRole &&
+                        (routeOwner === "COMMON" ||
+                            routeOwner === userRole ||
+                            (routeOwner === "ADMIN" && userRole === "ADMIN"))
+                    ) {
+                        return NextResponse.next();
+                    }
+                }
+            }
+        }
 
         const { isValidAccessToken, userRole, refreshResponse } =
             await resolveAuthState(
@@ -162,7 +204,6 @@ export async function proxy(request: NextRequest) {
         const createResponse = (response?: NextResponse | null) =>
             response ?? NextResponse.next();
 
-        const isAuth = isAuthRoute(pathname);
         const isAuthenticated = Boolean(isValidAccessToken && userRole);
 
         // Rule 1: Logged-in users should not access auth pages,

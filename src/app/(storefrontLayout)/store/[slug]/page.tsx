@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import {
   getPublicStoreAction,
@@ -7,6 +8,7 @@ import {
   getPublicReviewsAction,
 } from "@/actions/catalog.actions";
 import { StorefrontHomeClient } from "@/components/modules/storefront/StorefrontHomeClient";
+import { StorefrontHomeSkeleton } from "@/components/modules/storefront/skeletons";
 import { Category, Collection, Product, Review } from "@/types/store.types";
 
 const SHOP_FILTER_KEYS = [
@@ -39,16 +41,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function StorePage({
-  params,
+async function StoreHomeContent({
+  slug,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  slug: string;
+  searchParams: Record<string, string | string[] | undefined>;
 }) {
-  const { slug } = await params;
-  const resolvedSearchParams = await searchParams;
-  const filteredShop = hasActiveShopFilters(resolvedSearchParams);
+  const filteredShop = hasActiveShopFilters(searchParams);
 
   const [store, catalogRes, categoriesRes, collectionsRes, reviewsRes] = await Promise.all([
     getPublicStoreAction(slug),
@@ -56,12 +56,8 @@ export default async function StorePage({
       limit: filteredShop ? "100" : "36",
       sortBy: "createdAt",
       sortOrder: "desc",
-      ...(typeof resolvedSearchParams.category === "string"
-        ? { category: resolvedSearchParams.category }
-        : {}),
-      ...(typeof resolvedSearchParams.collection === "string"
-        ? { collection: resolvedSearchParams.collection }
-        : {}),
+      ...(typeof searchParams.category === "string" ? { category: searchParams.category } : {}),
+      ...(typeof searchParams.collection === "string" ? { collection: searchParams.collection } : {}),
     }),
     getPublicCategoriesAction(slug, { limit: "50" }),
     getPublicCollectionsAction(slug, { limit: "50" }),
@@ -83,5 +79,22 @@ export default async function StorePage({
       collections={collections}
       reviews={reviews}
     />
+  );
+}
+
+export default async function StorePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+
+  return (
+    <Suspense fallback={<StorefrontHomeSkeleton />}>
+      <StoreHomeContent slug={slug} searchParams={resolvedSearchParams} />
+    </Suspense>
   );
 }

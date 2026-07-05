@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, LogOut, User } from "lucide-react";
+import { Package, Heart, LogOut, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,9 +67,20 @@ export function StorefrontAccountMenu({ base, className }: StorefrontAccountMenu
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
+          <Link href={`/store/${slug}/account/orders`} className="gap-2">
+            <Package className="h-4 w-4" />
+            Orders
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href={`/store/${slug}/account/wishlist`} className="gap-2">
             <Heart className="h-4 w-4" />
             Wishlist
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={`/store/${slug}/track`} className="gap-2">
+            Track order
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

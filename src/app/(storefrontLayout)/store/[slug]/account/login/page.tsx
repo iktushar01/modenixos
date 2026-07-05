@@ -5,8 +5,15 @@ import { hasStorefrontCustomerCookie } from "@/lib/storefrontCustomerApi";
 import StorefrontLoginClient from "@/components/modules/storefront/account/StorefrontLoginClient";
 import { Category } from "@/types/store.types";
 
-export default async function LoginPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function LoginPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ next?: string }>;
+}) {
   const { slug } = await params;
+  const { next } = await searchParams;
   const hasCookie = await hasStorefrontCustomerCookie(slug);
   const [store, categoriesRes, customer] = await Promise.all([
     getPublicStoreAction(slug),
@@ -14,7 +21,9 @@ export default async function LoginPage({ params }: { params: Promise<{ slug: st
     hasCookie ? getStorefrontCustomerAction(slug) : Promise.resolve(null),
   ]);
   if (!store) notFound();
-  if (customer) redirect(`/store/${slug}/account/wishlist`);
+  if (customer) {
+    redirect(next ? `/store/${slug}${next.startsWith("/") ? next : `/${next}`}` : `/store/${slug}/account/orders`);
+  }
   const categories = (categoriesRes.data ?? []) as Category[];
-  return <StorefrontLoginClient store={store} categories={categories} />;
+  return <StorefrontLoginClient store={store} categories={categories} nextPath={next} />;
 }

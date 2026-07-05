@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
@@ -15,6 +15,7 @@ import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice } from "@/lib/storefrontTheme";
 import { placeOrderAction, validateCouponAction } from "@/actions/catalog.actions";
 import { StorefrontPageShell } from "./StorefrontPageShell";
+import { useOptionalStorefrontCustomer } from "./StorefrontCustomerContext";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Cart", "Details", "Confirm"];
@@ -27,6 +28,7 @@ export default function CheckoutClient({
   categories?: Category[];
 }) {
   const router = useRouter();
+  const customerCtx = useOptionalStorefrontCustomer();
   const hydrated = useCartHydrated();
   const items = useStoreCartItems(store.id);
   const total = useStoreCartTotal(store.id);
@@ -44,6 +46,17 @@ export default function CheckoutClient({
     postalCode: "",
     country: "US",
   });
+
+  useEffect(() => {
+    const customer = customerCtx?.customer;
+    if (!customer) return;
+    setForm((prev) => ({
+      ...prev,
+      customerName: prev.customerName || customer.name,
+      customerEmail: prev.customerEmail || customer.email,
+      customerPhone: prev.customerPhone || customer.phone || "",
+    }));
+  }, [customerCtx?.customer]);
 
   const shipping = 5;
   const finalTotal = total + shipping - discount;
@@ -64,7 +77,7 @@ export default function CheckoutClient({
     e.preventDefault();
     setLoading(true);
     try {
-      await placeOrderAction(store.slug, {
+      const order = await placeOrderAction(store.slug, {
         items,
         customerName: form.customerName,
         customerEmail: form.customerEmail,
@@ -84,7 +97,9 @@ export default function CheckoutClient({
       });
       clearStore(store.id);
       toast.success("Order placed successfully!");
-      router.push(base);
+      router.push(
+        `${base}/orders/confirmation?order=${encodeURIComponent(order.orderNumber)}&email=${encodeURIComponent(form.customerEmail)}`,
+      );
     } catch {
       toast.error("Failed to place order");
     } finally {

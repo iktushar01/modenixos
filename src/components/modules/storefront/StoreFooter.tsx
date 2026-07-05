@@ -74,6 +74,11 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                 </Link>
               </li>
               <li>
+                <Link href={`${base}/track`} className="sf-link text-sm sf-hover-fg">
+                  Track order
+                </Link>
+              </li>
+              <li>
                 <Link href={`${base}#contact`} className="sf-link text-sm sf-hover-fg">
                   Contact
                 </Link>

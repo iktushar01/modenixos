@@ -395,11 +395,25 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   <p className="text-sm font-medium">{customerCtx.customer.name}</p>
                   <p className="text-xs sf-muted-fg">{customerCtx.customer.email}</p>
                   <Link
+                    href={`${base}/account/orders`}
+                    className="block text-sm sf-link"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Orders
+                  </Link>
+                  <Link
                     href={`${base}/account/wishlist`}
                     className="block text-sm sf-link"
                     onClick={() => setMobileOpen(false)}
                   >
                     Wishlist
+                  </Link>
+                  <Link
+                    href={`${base}/track`}
+                    className="block text-sm sf-link"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Track order
                   </Link>
                   <button
                     type="button"
