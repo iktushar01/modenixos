@@ -8,6 +8,7 @@ async function revalidateStorefront() {
   try {
     const res = await httpClient.get<Store>("/stores/me");
     if (res.data?.slug) {
+      revalidateTag(`store-public-${res.data.slug}`);
       revalidatePath(`/store/${res.data.slug}`);
     }
   } catch {
@@ -183,7 +184,9 @@ export async function suspendStoreAction(id: string, isSuspended: boolean) {
 
 // Public
 export async function getPublicStoreAction(slug: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
+    next: { revalidate: 60, tags: [`store-public-${slug}`] },
+  });
   if (!res.ok) return null;
   const json = await res.json();
   return json.data;

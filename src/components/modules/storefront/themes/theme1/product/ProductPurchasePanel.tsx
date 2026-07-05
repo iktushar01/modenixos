@@ -143,7 +143,7 @@ export function ProductPurchasePanel({
       </div>
 
       <div className="sf-border inline-flex items-center gap-2 rounded border px-3 py-1.5 text-sm">
-        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+        <Star className="sf-star-filled h-4 w-4" />
         <span className="font-medium">{reviewCount}</span>
         <span className="sf-muted-fg">|</span>
         <span className="sf-muted-fg">{reviewCount} Reviews</span>
@@ -256,11 +256,13 @@ export function ProductPurchasePanel({
       {phone && theme.header.showPhone && (
         <a
           href={`tel:${phone.replace(/\s/g, "")}`}
-          className="flex flex-col items-center gap-2 rounded bg-[#1e3a5f] px-4 py-4 text-center text-white transition-opacity hover:opacity-95"
+          className="sf-primary flex flex-col items-center gap-2 rounded px-4 py-4 text-center transition-opacity hover:opacity-95"
         >
           <div className="flex items-center gap-2">
             <Phone className="h-5 w-5" />
-            <span className="rounded bg-white/20 px-3 py-1 text-sm font-medium">{phone}</span>
+            <span className="rounded bg-[color-mix(in_srgb,var(--sf-primary-fg)_20%,transparent)] px-3 py-1 text-sm font-medium">
+              {phone}
+            </span>
           </div>
           <span className="text-xs font-semibold uppercase tracking-widest">Call Us Now</span>
         </a>

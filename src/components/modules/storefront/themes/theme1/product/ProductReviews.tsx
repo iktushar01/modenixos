@@ -37,7 +37,7 @@ export function ProductReviews({ storeSlug, product, reviews }: ProductReviewsPr
         </h2>
         <Button
           size="sm"
-          className="bg-green-600 text-white hover:bg-green-700"
+          className="sf-btn-primary"
           onClick={() => setDialogOpen(true)}
         >
           Write Review
@@ -55,9 +55,7 @@ export function ProductReviews({ storeSlug, product, reviews }: ProductReviewsPr
                 key={i}
                 className={cn(
                   "h-4 w-4",
-                  i < Math.round(avg)
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-amber-200",
+                  i < Math.round(avg) ? "sf-star-filled" : "sf-star-empty",
                 )}
               />
             ))}
@@ -71,9 +69,9 @@ export function ProductReviews({ storeSlug, product, reviews }: ProductReviewsPr
           {([5, 4, 3, 2, 1] as const).map((stars) => (
             <div key={stars} className="flex items-center gap-2 text-sm">
               <span className="w-3 sf-muted-fg">{stars}</span>
-              <div className="h-2 flex-1 overflow-hidden rounded-full border border-amber-200 bg-amber-50">
+              <div className="sf-rating-bar h-2 flex-1 overflow-hidden rounded-full border">
                 <div
-                  className="h-full bg-amber-400 transition-all"
+                  className="sf-rating-bar-fill h-full transition-all"
                   style={{ width: `${(dist[stars] / maxCount) * 100}%` }}
                 />
               </div>
@@ -99,9 +97,7 @@ export function ProductReviews({ storeSlug, product, reviews }: ProductReviewsPr
                         key={i}
                         className={cn(
                           "h-3.5 w-3.5",
-                          i < r.rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-amber-200",
+                          i < r.rating ? "sf-star-filled" : "sf-star-empty",
                         )}
                       />
                     ))}

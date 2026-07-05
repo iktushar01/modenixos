@@ -151,6 +151,44 @@
   }
 }
 
+.storefront-theme .sf-filter-pill {
+  border: 1px solid var(--sf-border);
+  color: var(--sf-muted-fg);
+}
+
+.storefront-theme .sf-filter-pill:hover {
+  border-color: color-mix(in srgb, var(--sf-fg) 30%, var(--sf-border));
+  color: var(--sf-fg);
+}
+
+.storefront-theme .sf-filter-pill-active {
+  background-color: var(--sf-primary);
+  color: var(--sf-primary-fg);
+  border-color: var(--sf-primary);
+}
+
+.storefront-theme .sf-star-filled {
+  color: var(--sf-accent);
+  fill: var(--sf-accent);
+}
+
+.storefront-theme .sf-star-empty {
+  color: color-mix(in srgb, var(--sf-muted-fg) 40%, transparent);
+}
+
+.storefront-theme .sf-rating-bar {
+  border-color: color-mix(in srgb, var(--sf-accent) 35%, var(--sf-border));
+  background-color: color-mix(in srgb, var(--sf-accent) 10%, var(--sf-muted));
+}
+
+.storefront-theme .sf-rating-bar-fill {
+  background-color: var(--sf-accent);
+}
+
+.storefront-theme .sf-overlay-backdrop {
+  background-color: color-mix(in srgb, var(--sf-bg) 40%, transparent);
+}
+
 .storefront-theme .sf-hero-overlay {
   background-color: var(--sf-hero-overlay);
 }

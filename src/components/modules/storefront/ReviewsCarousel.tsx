@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { Review } from "@/types/store.types";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ReviewsCarouselProps {
   reviews: Review[];
@@ -23,7 +24,7 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
     <section className="sf-section w-full border-y sf-border sf-muted py-20">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Testimonials</p>
-        <h2 className="mt-2 text-3xl font-light md:text-4xl">What Customers Say</h2>
+        <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">What Customers Say</h2>
 
         <div className="relative mt-12 min-h-[200px]">
           <AnimatePresence mode="wait">
@@ -35,21 +36,24 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
               transition={{ duration: 0.35 }}
               className="space-y-6"
             >
-              <Quote className="mx-auto h-8 w-8 text-white/20" />
+              <Quote className="sf-muted-fg mx-auto h-8 w-8 opacity-40" />
               <div className="flex justify-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${i < current.rating ? "fill-amber-400 text-amber-400" : "text-white/20"}`}
+                    className={cn(
+                      "h-4 w-4",
+                      i < current.rating ? "sf-star-filled" : "sf-star-empty",
+                    )}
                   />
                 ))}
               </div>
               {current.comment && (
-                <p className="text-lg leading-relaxed text-white/70 md:text-xl">&ldquo;{current.comment}&rdquo;</p>
+                <p className="sf-muted-fg text-lg leading-relaxed md:text-xl">&ldquo;{current.comment}&rdquo;</p>
               )}
-              <p className="text-sm font-medium text-white">{current.guestName ?? "Verified Customer"}</p>
+              <p className="text-sm font-medium sf-fg">{current.guestName ?? "Verified Customer"}</p>
               {current.product?.name && (
-                <p className="text-xs text-white/40">Purchased {current.product.name}</p>
+                <p className="sf-muted-fg text-xs">Purchased {current.product.name}</p>
               )}
             </motion.div>
           </AnimatePresence>
@@ -57,10 +61,10 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
 
         {reviews.length > 1 && (
           <div className="mt-8 flex justify-center gap-2">
-            <Button variant="outline" size="icon" className="rounded-full border-white/20 text-white hover:bg-white/10" onClick={prev}>
+            <Button variant="outline" size="icon" className="sf-btn-outline rounded-full" onClick={prev}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="rounded-full border-white/20 text-white hover:bg-white/10" onClick={next}>
+            <Button variant="outline" size="icon" className="sf-btn-outline rounded-full" onClick={next}>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

@@ -137,7 +137,7 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
           </div>
           {rating ? (
             <div className="sf-muted-fg flex items-center gap-0.5 text-xs">
-              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+              <Star className="sf-star-filled h-3 w-3" />
               {rating.toFixed(1)}
             </div>
           ) : product.tags?.includes("new") ? (

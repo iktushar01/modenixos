@@ -35,11 +35,11 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent px-6 py-12 text-center md:px-16 md:py-16"
+        className="sf-border sf-card rounded-2xl border px-6 py-12 text-center md:px-16 md:py-16"
       >
-        <Mail className="mx-auto h-8 w-8 text-white/40" />
-        <h2 className="mt-4 text-2xl font-light text-white md:text-3xl">Join the {brandName} list</h2>
-        <p className="mx-auto mt-3 max-w-md text-sm text-white/50">
+        <Mail className="sf-muted-fg mx-auto h-8 w-8" />
+        <h2 className="mt-4 text-2xl font-light sf-fg md:text-3xl">Join the {brandName} list</h2>
+        <p className="sf-muted-fg mx-auto mt-3 max-w-md text-sm">
           Be first to know about new drops, exclusive offers, and style edits.
         </p>
         <form onSubmit={handleSubmit} className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
@@ -49,13 +49,12 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
             placeholder="your@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-11 flex-1 rounded-full border-white/20 bg-white/5 text-white placeholder:text-white/30"
+            className="sf-input h-11 flex-1 rounded-full"
           />
           <Button
             type="submit"
             disabled={loading}
-            className="h-11 rounded-full px-8 text-black"
-            style={{ backgroundColor: theme.primaryColor }}
+            className="sf-btn-primary h-11 rounded-full px-8"
           >
             {loading ? "Subscribing..." : "Subscribe"}
           </Button>

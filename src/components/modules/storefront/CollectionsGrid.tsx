@@ -25,8 +25,8 @@ export function CollectionsGrid({ slug, collections, theme }: CollectionsGridPro
         className="mb-10 flex items-end justify-between gap-4"
       >
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-white/50">Curated</p>
-          <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">Collections</h2>
+          <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Curated</p>
+          <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">Collections</h2>
         </div>
       </motion.div>
 
@@ -41,7 +41,7 @@ export function CollectionsGrid({ slug, collections, theme }: CollectionsGridPro
           >
             <Link
               href={`/store/${slug}?collection=${col.slug}#shop`}
-              className="group relative block aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900"
+              className="sf-border sf-card group relative block aspect-[4/5] overflow-hidden rounded-2xl border"
             >
               {col.image ? (
                 <Image
@@ -54,17 +54,17 @@ export function CollectionsGrid({ slug, collections, theme }: CollectionsGridPro
               ) : (
                 <div
                   className="absolute inset-0 opacity-40"
-                  style={{ background: `linear-gradient(135deg, ${theme.secondaryColor}40, transparent)` }}
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.secondary}40, transparent)` }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ boxShadow: `inset 0 0 60px ${theme.secondaryColor}30` }}
+                style={{ boxShadow: `inset 0 0 60px ${theme.colors.secondary}30` }}
               />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <p className="text-lg font-medium text-white">{col.name}</p>
                 {col.isFeatured && (
-                  <span className="mt-1 inline-block text-xs uppercase tracking-wider text-white/50">Featured</span>
+                  <span className="mt-1 inline-block text-xs uppercase tracking-wider sf-muted-fg">Featured</span>
                 )}
               </div>
             </Link>

@@ -4,12 +4,13 @@ import { httpClient } from "@/lib/axios/httpClient";
 import { setCookie } from "@/lib/cookieUtils";
 import { HAS_STORE_COOKIE, HAS_STORE_MAX_AGE } from "@/lib/hasStoreCookie";
 import { Store } from "@/types/store.types";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 async function revalidateStorefront() {
   try {
     const res = await httpClient.get<Store>("/stores/me");
     if (res.data?.slug) {
+      revalidateTag(`store-public-${res.data.slug}`);
       revalidatePath(`/store/${res.data.slug}`);
     }
   } catch {

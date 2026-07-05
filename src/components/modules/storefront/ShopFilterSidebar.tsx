@@ -33,8 +33,8 @@ interface ShopFilterSidebarProps {
 
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border-b border-white/10 pb-5">
-      <p className="mb-3 text-xs font-medium uppercase tracking-wider text-white/50">{title}</p>
+    <div className="sf-border border-b pb-5">
+      <p className="sf-muted-fg mb-3 text-xs font-medium uppercase tracking-wider">{title}</p>
       {children}
     </div>
   );
@@ -56,27 +56,27 @@ export function ShopFilterSidebar({
   return (
     <aside className={cn("space-y-5", className)}>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-white">Filters</h2>
-        <Button variant="ghost" size="sm" className="h-8 text-xs text-white/60 hover:text-white" onClick={onClear}>
+        <h2 className="text-sm font-semibold uppercase tracking-wider sf-fg">Filters</h2>
+        <Button variant="ghost" size="sm" className="sf-muted-fg h-8 text-xs hover:opacity-80" onClick={onClear}>
           Clear all
         </Button>
       </div>
 
       <FilterGroup title="Search">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+          <Search className="sf-muted-fg absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="Search products..."
             value={filters.search ?? ""}
             onChange={(e) => onChange({ search: e.target.value || undefined })}
-            className="border-white/15 bg-white/5 pl-9 text-white placeholder:text-white/35"
+            className="sf-input pl-9"
           />
         </div>
       </FilterGroup>
 
       <FilterGroup title="Sort by">
         <Select value={filters.sort} onValueChange={(v) => onChange({ sort: v as ShopFilters["sort"] })}>
-          <SelectTrigger className="border-white/15 bg-white/5 text-white">
+          <SelectTrigger className="sf-input">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -96,7 +96,7 @@ export function ShopFilterSidebar({
               onClick={() => onChange({ category: undefined })}
               className={cn(
                 "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                !filters.category ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/5 hover:text-white",
+                !filters.category ? "sf-surface sf-fg" : "sf-muted-fg hover:sf-fg hover:opacity-90",
               )}
             >
               All categories
@@ -109,8 +109,8 @@ export function ShopFilterSidebar({
                 className={cn(
                   "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
                   filters.category === cat.slug
-                    ? "bg-white/10 text-white"
-                    : "text-white/60 hover:bg-white/5 hover:text-white",
+                    ? "sf-surface sf-fg"
+                    : "sf-muted-fg hover:sf-fg hover:opacity-90",
                 )}
               >
                 {cat.image ? (
@@ -133,7 +133,7 @@ export function ShopFilterSidebar({
               onClick={() => onChange({ collection: undefined })}
               className={cn(
                 "block w-full rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                !filters.collection ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/5",
+                !filters.collection ? "sf-surface sf-fg" : "sf-muted-fg hover:opacity-90",
               )}
             >
               All collections
@@ -145,7 +145,7 @@ export function ShopFilterSidebar({
                 onClick={() => onChange({ collection: col.slug })}
                 className={cn(
                   "block w-full rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                  filters.collection === col.slug ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/5",
+                  filters.collection === col.slug ? "sf-surface sf-fg" : "sf-muted-fg hover:opacity-90",
                 )}
               >
                 {col.name}
@@ -156,12 +156,12 @@ export function ShopFilterSidebar({
       )}
 
       <FilterGroup title="Price">
-        <p className="mb-2 text-xs text-white/40">
+        <p className="sf-muted-fg mb-2 text-xs">
           {formatPrice(facets.minPrice, currency)} – {formatPrice(facets.maxPrice, currency)}
         </p>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="text-xs text-white/50">Min</Label>
+            <Label className="sf-muted-fg text-xs">Min</Label>
             <Input
               type="number"
               min={0}
@@ -170,11 +170,11 @@ export function ShopFilterSidebar({
               onChange={(e) =>
                 onChange({ minPrice: e.target.value === "" ? undefined : Number(e.target.value) })
               }
-              className="mt-1 border-white/15 bg-white/5 text-white"
+              className="sf-input mt-1"
             />
           </div>
           <div>
-            <Label className="text-xs text-white/50">Max</Label>
+            <Label className="sf-muted-fg text-xs">Max</Label>
             <Input
               type="number"
               min={0}
@@ -183,7 +183,7 @@ export function ShopFilterSidebar({
               onChange={(e) =>
                 onChange({ maxPrice: e.target.value === "" ? undefined : Number(e.target.value) })
               }
-              className="mt-1 border-white/15 bg-white/5 text-white"
+              className="sf-input mt-1"
             />
           </div>
         </div>
@@ -199,9 +199,7 @@ export function ShopFilterSidebar({
                 onClick={() => onChange({ size: filters.size === size ? undefined : size })}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs transition-colors",
-                  filters.size === size
-                    ? "border-white bg-white text-black"
-                    : "border-white/20 text-white/70 hover:border-white/40",
+                  filters.size === size ? "sf-filter-pill-active" : "sf-filter-pill",
                 )}
               >
                 {size}
@@ -221,9 +219,7 @@ export function ShopFilterSidebar({
                 onClick={() => onChange({ color: filters.color === color ? undefined : color })}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs transition-colors",
-                  filters.color === color
-                    ? "border-white bg-white text-black"
-                    : "border-white/20 text-white/70 hover:border-white/40",
+                  filters.color === color ? "sf-filter-pill-active" : "sf-filter-pill",
                 )}
               >
                 {color}
@@ -243,9 +239,7 @@ export function ShopFilterSidebar({
                 onClick={() => onChange({ tag: filters.tag === tag ? undefined : tag })}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs capitalize transition-colors",
-                  filters.tag === tag
-                    ? "border-white bg-white text-black"
-                    : "border-white/20 text-white/70 hover:border-white/40",
+                  filters.tag === tag ? "sf-filter-pill-active" : "sf-filter-pill",
                 )}
               >
                 {tag}
@@ -256,7 +250,7 @@ export function ShopFilterSidebar({
       )}
 
       <FilterGroup title="Offers">
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-white/80">
+        <label className="flex cursor-pointer items-center gap-2 text-sm sf-fg">
           <Checkbox
             checked={filters.sale ?? false}
             onCheckedChange={(v) => onChange({ sale: v === true ? true : undefined })}
@@ -267,7 +261,7 @@ export function ShopFilterSidebar({
 
       <Link
         href={`${base}#shop`}
-        className="inline-flex text-xs text-white/45 hover:text-white"
+        className="sf-link inline-flex text-xs"
         onClick={onClear}
       >
         View full store
@@ -315,7 +309,7 @@ export function ShopActiveFilters({
           key={chip.label}
           type="button"
           onClick={chip.clear}
-          className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80 hover:bg-white/10"
+          className="sf-border sf-surface inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs sf-fg hover:opacity-90"
         >
           {chip.label}
           <X className="h-3 w-3" />

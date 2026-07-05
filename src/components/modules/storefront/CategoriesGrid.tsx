@@ -24,8 +24,8 @@ export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps)
         transition={{ duration: 0.5 }}
         className="mb-10"
       >
-        <p className="text-xs uppercase tracking-[0.2em] text-white/50">Browse by</p>
-        <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">Categories</h2>
+        <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Browse by</p>
+        <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">Categories</h2>
       </motion.div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -39,7 +39,7 @@ export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps)
           >
             <Link
               href={`/store/${slug}?category=${cat.slug}#shop`}
-              className="group relative block aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900"
+              className="sf-border sf-card group relative block aspect-[4/5] overflow-hidden rounded-2xl border"
             >
               {cat.image ? (
                 <Image
@@ -52,13 +52,13 @@ export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps)
               ) : (
                 <div
                   className="absolute inset-0 opacity-50"
-                  style={{ background: `linear-gradient(135deg, ${theme.primaryColor}40, ${theme.secondaryColor}20)` }}
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}40, ${theme.colors.secondary}20)` }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
               <div
                 className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ boxShadow: `inset 0 0 50px ${theme.secondaryColor}25` }}
+                style={{ boxShadow: `inset 0 0 50px ${theme.colors.secondary}25` }}
               />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <p className="text-lg font-medium text-white">{cat.name}</p>

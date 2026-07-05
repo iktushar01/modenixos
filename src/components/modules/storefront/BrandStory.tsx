@@ -17,14 +17,14 @@ export function BrandStory({ theme }: BrandStoryProps) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/10 lg:aspect-square"
+          className="sf-border relative aspect-[4/5] overflow-hidden rounded-2xl border lg:aspect-square"
         >
           {theme.brandStoryImage ? (
             <Image src={theme.brandStoryImage} alt="" fill className="object-cover" unoptimized />
           ) : (
             <div
               className="absolute inset-0"
-              style={{ background: `linear-gradient(160deg, ${theme.secondaryColor}20, #18181b)` }}
+              style={{ background: `linear-gradient(160deg, ${theme.colors.secondary}20, var(--sf-muted))` }}
             />
           )}
         </motion.div>
@@ -34,9 +34,9 @@ export function BrandStory({ theme }: BrandStoryProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-xs uppercase tracking-[0.2em] text-white/50">Our Story</p>
-          <h2 className="mt-3 text-3xl font-light text-white md:text-4xl">{theme.brandStoryTitle}</h2>
-          <p className="mt-6 text-base leading-relaxed text-white/60 md:text-lg">{theme.brandStoryContent}</p>
+          <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Our Story</p>
+          <h2 className="mt-3 text-3xl font-light sf-fg md:text-4xl">{theme.brandStoryTitle}</h2>
+          <p className="sf-muted-fg mt-6 text-base leading-relaxed md:text-lg">{theme.brandStoryContent}</p>
         </motion.div>
       </div>
     </section>
