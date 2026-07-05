@@ -49,7 +49,6 @@ export default function StorefrontRegisterClient({
     <StorefrontPageShell store={store} categories={categories}>
       <main className="sf-section w-full py-12 md:py-16">
         <AccountAuthLayout
-          store={store}
           title="Create account"
           subtitle={`Join ${store.brandName} to save your favourite pieces.`}
         >

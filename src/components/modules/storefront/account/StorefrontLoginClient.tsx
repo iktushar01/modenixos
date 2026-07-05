@@ -48,7 +48,6 @@ export default function StorefrontLoginClient({
     <StorefrontPageShell store={store} categories={categories}>
       <main className="sf-section w-full py-12 md:py-16">
         <AccountAuthLayout
-          store={store}
           title="Log in"
           subtitle={`Sign in to ${store.brandName} to access your wishlist.`}
         >
