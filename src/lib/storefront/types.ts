@@ -79,12 +79,18 @@ export interface StorefrontSections {
   newsletter: boolean;
 }
 
+export interface StorefrontBrandColors {
+  primary: string;
+  accent: string;
+}
+
 export interface StorefrontThemeConfig {
   templateId: StorefrontTemplateId;
   colorMode: StorefrontColorMode;
   palettePreset: string;
   colors: StorefrontColorPalette;
   customColors?: Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>>;
+  brandColors?: StorefrontBrandColors;
   primaryColor: string;
   secondaryColor: string;
   header: StorefrontHeaderConfig;
@@ -111,6 +117,26 @@ export const DEFAULT_UTILITY_LINKS: StorefrontNavLink[] = [
   { label: "Log In", href: "/login" },
   { label: "About Us", href: "#about" },
   { label: "Cart", href: "/cart" },
+];
+
+export const STOREFRONT_COLOR_PAIRS: Array<{
+  bg: keyof StorefrontColorPalette;
+  fg: keyof StorefrontColorPalette;
+  group: string;
+  bgLabel: string;
+  fgLabel: string;
+  ui?: boolean;
+}> = [
+  { bg: "background", fg: "foreground", group: "Base", bgLabel: "Page background", fgLabel: "Page text" },
+  { bg: "surface", fg: "surfaceForeground", group: "Base", bgLabel: "Surface", fgLabel: "Surface text" },
+  { bg: "muted", fg: "mutedForeground", group: "Base", bgLabel: "Muted background", fgLabel: "Muted text", ui: true },
+  { bg: "primary", fg: "primaryForeground", group: "Brand", bgLabel: "Primary", fgLabel: "Primary text" },
+  { bg: "secondary", fg: "secondaryForeground", group: "Brand", bgLabel: "Secondary", fgLabel: "Secondary text" },
+  { bg: "accent", fg: "accentForeground", group: "Brand", bgLabel: "Accent", fgLabel: "Accent text" },
+  { bg: "card", fg: "cardForeground", group: "Layout", bgLabel: "Card background", fgLabel: "Card text" },
+  { bg: "announcement", fg: "announcementForeground", group: "Layout", bgLabel: "Announcement bar", fgLabel: "Announcement text" },
+  { bg: "navbar", fg: "navbarForeground", group: "Layout", bgLabel: "Header background", fgLabel: "Header text" },
+  { bg: "footer", fg: "footerForeground", group: "Layout", bgLabel: "Footer background", fgLabel: "Footer text" },
 ];
 
 export const STOREFRONT_COLOR_FIELDS: Array<{ key: keyof StorefrontColorPalette; label: string; group: string }> = [

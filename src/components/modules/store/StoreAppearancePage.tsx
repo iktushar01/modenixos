@@ -16,8 +16,14 @@ import {
   parseStorefrontTheme,
   buildThemePayload,
   StorefrontSections,
+  StorefrontBrandColors,
   StorefrontColorMode,
   StorefrontColorPalette,
+  validatePalette,
+  harmonizePalette,
+  mergePalette,
+  getPresetById,
+  STOREFRONT_PALETTE_PRESETS,
 } from "@/lib/storefront";
 import { StoreColorPaletteEditor } from "./StoreColorPaletteEditor";
 
@@ -35,10 +41,12 @@ const SECTION_LABELS: Record<keyof StorefrontSections, string> = {
 export default function StoreAppearancePage() {
   const { data: store, refetch, isLoading } = useMyStore();
   const [saving, setSaving] = useState(false);
+  const [previewMode, setPreviewMode] = useState<StorefrontColorMode>("light");
   const [form, setForm] = useState({
     templateId: "theme1" as const,
     colorMode: "light" as StorefrontColorMode,
     palettePreset: "classic-retail",
+    brandColors: { primary: "#0f172a", accent: "#0f172a" } as StorefrontBrandColors,
     customColors: undefined as Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>> | undefined,
     heroHeadline: "",
     heroSubtext: "",
@@ -60,6 +68,10 @@ export default function StoreAppearancePage() {
         templateId: theme.templateId,
         colorMode: theme.colorMode,
         palettePreset: theme.palettePreset,
+        brandColors: theme.brandColors ?? {
+          primary: theme.primaryColor,
+          accent: theme.secondaryColor,
+        },
         customColors: theme.customColors,
         heroHeadline: theme.heroHeadline,
         heroSubtext: theme.heroSubtext,
@@ -73,64 +85,57 @@ export default function StoreAppearancePage() {
         facebook: theme.social.facebook ?? "",
         sections: theme.sections,
       });
+      setPreviewMode(theme.colorMode);
     }
   }, [store]);
 
   const handleSave = async () => {
     if (!store) return;
+
+    let customColors = form.customColors;
+    if (form.palettePreset === "custom" && customColors) {
+      const preset = getPresetById("classic-retail") ?? STOREFRONT_PALETTE_PRESETS[0];
+      const light = harmonizePalette(
+        mergePalette(preset.light, customColors.light, "light"),
+      );
+      const dark = harmonizePalette(
+        mergePalette(preset.dark, customColors.dark, "dark"),
+      );
+      const lightValidation = validatePalette(light);
+      const darkValidation = validatePalette(dark);
+      if (!lightValidation.ok || !darkValidation.ok) {
+        toast.error("Fix contrast issues before saving, or use Auto-fix");
+        return;
+      }
+      customColors = { light, dark };
+    }
+
     setSaving(true);
     try {
       const existing = (store.theme ?? {}) as Record<string, unknown>;
-      const resolved = parseStorefrontTheme({
-        ...store,
-        theme: buildThemePayload({
-          templateId: form.templateId,
-          colorMode: form.colorMode,
-          palettePreset: form.palettePreset,
-          customColors: form.customColors,
-          primaryColor: undefined,
-          secondaryColor: undefined,
-          heroHeadline: form.heroHeadline,
-          heroSubtext: form.heroSubtext,
-          promoText: form.promoText,
-          promoEnabled: form.promoEnabled,
-          brandStoryTitle: form.brandStoryTitle,
-          brandStoryContent: form.brandStoryContent,
-          newsletterEnabled: form.newsletterEnabled,
-          sections: form.sections,
-          social: {
-            instagram: form.instagram || undefined,
-            twitter: form.twitter || undefined,
-            facebook: form.facebook || undefined,
-          },
-          existingTheme: existing,
-        }),
+      const themePayload = buildThemePayload({
+        templateId: form.templateId,
+        colorMode: form.colorMode,
+        palettePreset: form.palettePreset,
+        customColors,
+        brandColors: form.brandColors,
+        heroHeadline: form.heroHeadline,
+        heroSubtext: form.heroSubtext,
+        promoText: form.promoText,
+        promoEnabled: form.promoEnabled,
+        brandStoryTitle: form.brandStoryTitle,
+        brandStoryContent: form.brandStoryContent,
+        newsletterEnabled: form.newsletterEnabled,
+        sections: form.sections,
+        social: {
+          instagram: form.instagram || undefined,
+          twitter: form.twitter || undefined,
+          facebook: form.facebook || undefined,
+        },
+        existingTheme: existing,
       });
 
-      await updateStoreAction(store.id, {
-        theme: buildThemePayload({
-          templateId: form.templateId,
-          colorMode: form.colorMode,
-          palettePreset: form.palettePreset,
-          customColors: form.customColors,
-          primaryColor: resolved.colors.primary,
-          secondaryColor: resolved.colors.secondary,
-          heroHeadline: form.heroHeadline,
-          heroSubtext: form.heroSubtext,
-          promoText: form.promoText,
-          promoEnabled: form.promoEnabled,
-          brandStoryTitle: form.brandStoryTitle,
-          brandStoryContent: form.brandStoryContent,
-          newsletterEnabled: form.newsletterEnabled,
-          sections: form.sections,
-          social: {
-            instagram: form.instagram || undefined,
-            twitter: form.twitter || undefined,
-            facebook: form.facebook || undefined,
-          },
-          existingTheme: existing,
-        }),
-      });
+      await updateStoreAction(store.id, { theme: themePayload });
       toast.success("Storefront appearance saved");
       refetch();
     } catch {
@@ -166,17 +171,23 @@ export default function StoreAppearancePage() {
         <CardHeader>
           <CardTitle>Theme & colors</CardTitle>
           <CardDescription>
-            Choose a preset palette or build your own. Toggle light or dark mode for your storefront.
+            Choose a preset or customize brand colors. Light and dark palettes stay harmonious automatically.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <StoreColorPaletteEditor
-            colorMode={form.colorMode}
+            defaultColorMode={form.colorMode}
+            previewMode={previewMode}
             palettePreset={form.palettePreset}
+            brandColors={form.brandColors}
             customColors={form.customColors}
-            onColorModeChange={(colorMode) => setForm((prev) => ({ ...prev, colorMode }))}
+            onDefaultColorModeChange={(colorMode) => setForm((prev) => ({ ...prev, colorMode }))}
+            onPreviewModeChange={setPreviewMode}
             onPresetChange={(palettePreset) => setForm((prev) => ({ ...prev, palettePreset }))}
-            onCustomColorsChange={(customColors) => setForm((prev) => ({ ...prev, customColors, palettePreset: "custom" }))}
+            onBrandColorsChange={(brandColors) => setForm((prev) => ({ ...prev, brandColors }))}
+            onCustomColorsChange={(customColors) =>
+              setForm((prev) => ({ ...prev, customColors, palettePreset: "custom" }))
+            }
           />
         </CardContent>
       </Card>

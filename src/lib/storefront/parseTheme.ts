@@ -1,6 +1,7 @@
 import { Store } from "@/types/store.types";
 import {
   DEFAULT_UTILITY_LINKS,
+  StorefrontBrandColors,
   StorefrontColorMode,
   StorefrontColorPalette,
   StorefrontHeaderConfig,
@@ -10,7 +11,13 @@ import {
   StorefrontTemplateId,
   StorefrontThemeConfig,
 } from "./types";
-import { getPresetById, mergePalette, STOREFRONT_PALETTE_PRESETS } from "./presets";
+import {
+  getPresetById,
+  getPresetBrandSeed,
+  mergePalette,
+  STOREFRONT_PALETTE_PRESETS,
+} from "./presets";
+import { harmonizePalette, regenerateFromBrand } from "./palette";
 
 const defaultSections: StorefrontSections = {
   categories: true,
@@ -76,6 +83,42 @@ function resolveLayout(raw: Record<string, unknown>): StorefrontThemeConfig["lay
   };
 }
 
+function parseBrandColors(raw: Record<string, unknown>): StorefrontBrandColors | undefined {
+  const brand = raw.brandColors as Partial<StorefrontBrandColors> | undefined;
+  if (brand?.primary && brand?.accent) {
+    return { primary: brand.primary, accent: brand.accent };
+  }
+  return undefined;
+}
+
+function resolveBrandSeed(
+  raw: Record<string, unknown>,
+  presetId: string,
+): StorefrontBrandColors {
+  const stored = parseBrandColors(raw);
+  if (stored) return stored;
+
+  const presetSeed = getPresetBrandSeed(presetId);
+  return { primary: presetSeed.brandPrimary, accent: presetSeed.brandAccent };
+}
+
+function applyLegacyBrandSeeds(
+  overrides: Partial<StorefrontColorPalette>,
+  raw: Record<string, unknown>,
+): Partial<StorefrontColorPalette> {
+  const next = { ...overrides };
+  const legacyPrimary = raw.primaryColor as string | undefined;
+  const legacySecondary = raw.secondaryColor as string | undefined;
+  if (legacyPrimary && !next.primary) {
+    next.primary = legacyPrimary;
+  }
+  if (legacySecondary) {
+    if (!next.secondary) next.secondary = legacySecondary;
+    if (!next.accent) next.accent = legacySecondary;
+  }
+  return next;
+}
+
 function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorMode): StorefrontColorPalette {
   const presetId = (raw.palettePreset as string) ?? "classic-retail";
   const preset = getPresetById(presetId) ?? STOREFRONT_PALETTE_PRESETS[0];
@@ -85,20 +128,11 @@ function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorM
     const customRoot = (raw.customColors ?? {}) as Partial<
       Record<StorefrontColorMode, Partial<StorefrontColorPalette>>
     >;
-    return mergePalette(base, customRoot[colorMode] ?? {}, colorMode);
+    const custom = applyLegacyBrandSeeds(customRoot[colorMode] ?? {}, raw);
+    return mergePalette(base, custom, colorMode);
   }
 
-  const legacyOverrides: Partial<StorefrontColorPalette> = {};
-  const legacyPrimary = raw.primaryColor as string | undefined;
-  const legacySecondary = raw.secondaryColor as string | undefined;
-  if (legacyPrimary) {
-    legacyOverrides.primary = legacyPrimary;
-    legacyOverrides.primaryForeground = colorMode === "dark" ? "#0a0a0a" : "#fafafa";
-  }
-  if (legacySecondary) {
-    legacyOverrides.secondary = legacySecondary;
-    legacyOverrides.accent = legacySecondary;
-  }
+  const legacyOverrides = applyLegacyBrandSeeds({}, raw);
   return mergePalette(base, legacyOverrides, colorMode);
 }
 
@@ -106,7 +140,7 @@ function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorM
 export function resolveColorsForMode(
   theme: Pick<
     StorefrontThemeConfig,
-    "palettePreset" | "customColors" | "primaryColor" | "secondaryColor"
+    "palettePreset" | "customColors" | "primaryColor" | "secondaryColor" | "brandColors"
   >,
   colorMode: StorefrontColorMode,
 ): StorefrontColorPalette {
@@ -114,19 +148,11 @@ export function resolveColorsForMode(
   const base = colorMode === "dark" ? preset.dark : preset.light;
 
   if (theme.palettePreset === "custom") {
-    return mergePalette(base, theme.customColors?.[colorMode], colorMode);
+    const custom = theme.customColors?.[colorMode] ?? {};
+    return mergePalette(base, custom, colorMode);
   }
 
-  const legacyOverrides: Partial<StorefrontColorPalette> = {};
-  if (theme.primaryColor) {
-    legacyOverrides.primary = theme.primaryColor;
-    legacyOverrides.primaryForeground = colorMode === "dark" ? "#0a0a0a" : "#fafafa";
-  }
-  if (theme.secondaryColor) {
-    legacyOverrides.secondary = theme.secondaryColor;
-    legacyOverrides.accent = theme.secondaryColor;
-  }
-  return mergePalette(base, legacyOverrides, colorMode);
+  return mergePalette(base, undefined, colorMode);
 }
 
 export function resolveStorefrontNavLinks(
@@ -166,16 +192,19 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
         : [];
 
   const colorMode = ((raw.colorMode as StorefrontColorMode) ?? "light") as StorefrontColorMode;
+  const palettePreset = (raw.palettePreset as string) ?? "classic-retail";
+  const brandColors = resolveBrandSeed(raw, palettePreset);
   const colors = resolveColors(raw, colorMode);
 
   return {
     templateId: ((raw.templateId as StorefrontTemplateId) ?? "theme1") as StorefrontTemplateId,
     colorMode,
-    palettePreset: (raw.palettePreset as string) ?? "classic-retail",
+    palettePreset,
     colors,
     customColors: raw.customColors as StorefrontThemeConfig["customColors"],
-    primaryColor: colors.primary,
-    secondaryColor: colors.secondary,
+    brandColors,
+    primaryColor: brandColors.primary,
+    secondaryColor: brandColors.accent,
     header: resolveHeader(raw, store),
     layout: resolveLayout(raw),
     contact: resolveContact(raw),
@@ -202,6 +231,7 @@ export function buildThemePayload(form: {
   colorMode?: StorefrontColorMode;
   palettePreset?: string;
   customColors?: StorefrontThemeConfig["customColors"];
+  brandColors?: StorefrontBrandColors;
   primaryColor?: string;
   secondaryColor?: string;
   header?: StorefrontHeaderConfig;
@@ -223,6 +253,7 @@ export function buildThemePayload(form: {
   if (form.colorMode !== undefined) out.colorMode = form.colorMode;
   if (form.palettePreset !== undefined) out.palettePreset = form.palettePreset;
   if (form.customColors !== undefined) out.customColors = form.customColors;
+  if (form.brandColors !== undefined) out.brandColors = form.brandColors;
   if (form.primaryColor !== undefined) out.primaryColor = form.primaryColor;
   if (form.secondaryColor !== undefined) out.secondaryColor = form.secondaryColor;
   if (form.header !== undefined) out.header = form.header;
@@ -239,3 +270,5 @@ export function buildThemePayload(form: {
   if (form.social !== undefined) out.social = form.social;
   return out;
 }
+
+export { regenerateFromBrand, harmonizePalette };
