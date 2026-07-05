@@ -34,6 +34,26 @@ export interface Collection {
   isFeatured: boolean;
 }
 
+export interface ProductSizeChart {
+  note?: string;
+  columns: string[];
+  rows: string[][];
+}
+
+export interface ProductDetails {
+  specifications?: string[];
+  careInstructions?: string[];
+  sizeChart?: ProductSizeChart;
+  deliveryOverride?: string | null;
+  colorImages?: Record<string, string>;
+}
+
+export interface StoreShippingConfig {
+  deliveryPolicy?: string;
+  insideRate?: number;
+  outsideRate?: number;
+}
+
 export interface Product {
   id: string;
   storeId: string;
@@ -49,9 +69,12 @@ export interface Product {
   sizes: string[];
   colors: string[];
   tags: string[];
+  details?: ProductDetails | null;
   status: "DRAFT" | "ACTIVE" | "ARCHIVED";
   category?: Category | null;
   collection?: Collection | null;
+  reviews?: Review[];
+  createdAt?: string;
 }
 
 export interface OrderItem {
@@ -94,6 +117,21 @@ export interface Customer {
   orders?: Order[];
 }
 
+export interface StorefrontCustomer {
+  id: string;
+  storeId: string;
+  email: string;
+  name: string;
+  phone?: string | null;
+}
+
+export interface WishlistItem {
+  id: string;
+  productId: string;
+  createdAt: string;
+  product: Product;
+}
+
 export interface Review {
   id: string;
   storeId: string;
@@ -101,8 +139,10 @@ export interface Review {
   rating: number;
   comment?: string | null;
   guestName?: string | null;
+  guestEmail?: string | null;
   status: "PENDING" | "APPROVED" | "REJECTED";
   reply?: string | null;
+  createdAt?: string;
   product?: { id: string; name: string; images: string[] };
 }
 

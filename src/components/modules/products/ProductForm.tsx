@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { ProductImageUpload } from "./ProductImageUpload";
 import { TagInput } from "./TagInput";
+import { SizeChartEditor } from "./SizeChartEditor";
 import {
   createProductAction,
   updateProductAction,
@@ -45,6 +46,11 @@ const defaultValues: ProductFormValues = {
   sizes: [],
   colors: [],
   tags: [],
+  details: {
+    specifications: [],
+    careInstructions: [],
+    colorImages: {},
+  },
 };
 
 function buildFormData(
@@ -68,6 +74,7 @@ function buildFormData(
   fd.append("sizes", JSON.stringify(values.sizes));
   fd.append("colors", JSON.stringify(values.colors));
   fd.append("tags", JSON.stringify(values.tags));
+  fd.append("details", JSON.stringify(values.details));
   if (isEdit || existingUrls.length > 0) {
     fd.append("images", JSON.stringify(existingUrls));
   }
@@ -89,6 +96,13 @@ function productToFormValues(product: Product): ProductFormValues {
     sizes: product.sizes ?? [],
     colors: product.colors ?? [],
     tags: product.tags ?? [],
+    details: {
+      specifications: product.details?.specifications ?? [],
+      careInstructions: product.details?.careInstructions ?? [],
+      sizeChart: product.details?.sizeChart,
+      deliveryOverride: product.details?.deliveryOverride ?? "",
+      colorImages: product.details?.colorImages ?? {},
+    },
   };
 }
 
@@ -270,6 +284,97 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                 onChange={(v) => set("tags", v)}
                 placeholder="e.g. summer, cotton, new"
               />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Product page details</CardTitle>
+              <CardDescription>
+                Shown on the storefront Description and Delivery tabs.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <TagInput
+                label="Specifications"
+                value={values.details.specifications}
+                onChange={(v) =>
+                  set("details", { ...values.details, specifications: v })
+                }
+                placeholder="Add a specification and press Enter"
+              />
+              <TagInput
+                label="Care instructions"
+                value={values.details.careInstructions}
+                onChange={(v) =>
+                  set("details", { ...values.details, careInstructions: v })
+                }
+                placeholder="e.g. Machine wash cold"
+              />
+              <SizeChartEditor
+                value={values.details.sizeChart}
+                onChange={(chart) =>
+                  set("details", { ...values.details, sizeChart: chart })
+                }
+              />
+              <div className="space-y-2">
+                <Label htmlFor="deliveryOverride">Delivery override (optional)</Label>
+                <Textarea
+                  id="deliveryOverride"
+                  rows={4}
+                  value={values.details.deliveryOverride ?? ""}
+                  onChange={(e) =>
+                    set("details", {
+                      ...values.details,
+                      deliveryOverride: e.target.value,
+                    })
+                  }
+                  placeholder="Leave empty to use store-wide delivery policy"
+                />
+              </div>
+              {values.colors.length > 0 && existingUrls.length > 0 && (
+                <div className="space-y-3">
+                  <Label>Color swatch images</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Pick which product image represents each color on the product page.
+                  </p>
+                  {values.colors.map((color) => (
+                    <div key={color} className="flex items-center gap-3">
+                      <span className="w-24 text-sm font-medium">{color}</span>
+                      <Select
+                        value={values.details.colorImages[color] || "none"}
+                        onValueChange={(url) =>
+                          set("details", {
+                            ...values.details,
+                            colorImages: {
+                              ...values.details.colorImages,
+                              ...(url === "none"
+                                ? (() => {
+                                    const next = { ...values.details.colorImages };
+                                    delete next[color];
+                                    return next;
+                                  })()
+                                : { [color]: url }),
+                            },
+                          })
+                        }
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Select image" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No image</SelectItem>
+                          {existingUrls.map((url, i) => (
+                            <SelectItem key={url} value={url}>
+                              Image {i + 1}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
