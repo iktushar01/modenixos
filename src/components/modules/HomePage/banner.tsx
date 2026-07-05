@@ -14,7 +14,6 @@ import {
   Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import HowItWorksSection from "./HowItWorksSection";
 import TryProjectSection from "./TryProjectSection";
 import HeroMockup from "./HeroMockup";
@@ -267,45 +266,41 @@ export default function Homepage() {
 
       <TryProjectSection />
 
-      {/* Pricing */}
-      <section id="pricing" className="scroll-mt-20 border-t border-border/60 py-20 md:py-28">
-        <div className="container mx-auto max-w-5xl px-4">
+      <section id="pricing" className="scroll-mt-28 border-b border-border py-20 md:py-28">
+        <div className="mkt-section max-w-5xl">
           <AnimatedContent distance={50} duration={0.8}>
-            <div className="text-center">
-              <h2 className="text-3xl font-bold sm:text-4xl">Simple pricing</h2>
-              <p className="mt-3 text-muted-foreground">Start free. Upgrade when you scale.</p>
-            </div>
+            <MarketingSectionHeader
+              label="Pricing"
+              title="Simple pricing"
+              description="Start free. Upgrade when you scale."
+            />
           </AnimatedContent>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {pricingPlans.map((plan, i) => (
               <AnimatedContent key={plan.name} distance={50} duration={0.75} delay={i * 0.1}>
                 <div
-                  className={`rounded-2xl border p-6 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
-                    plan.highlight
-                      ? "border-violet-500/40 bg-violet-500/5 shadow-md ring-1 ring-violet-500/20"
-                      : "border-border/60 bg-card"
+                  className={`mkt-card rounded-md p-6 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-sm ${
+                    plan.highlight ? "ring-1 ring-[#7047EB]/30" : ""
                   }`}
                 >
                   {plan.highlight && (
-                    <Badge className="mb-3 bg-gradient-to-r from-rose-500 to-violet-500">
-                      Popular
-                    </Badge>
+                    <p className="mkt-label mb-3 text-[#7047EB]">Popular</p>
                   )}
                   <h3 className="text-lg font-semibold">{plan.name}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{plan.desc}</p>
-                  <p className="mt-5 text-4xl font-bold tracking-tight">{plan.price}</p>
+                  <p className="mt-5 text-4xl font-semibold tracking-tight">{plan.price}</p>
                   <ul className="mt-6 space-y-2.5 text-left text-sm text-muted-foreground">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                        <Check className="h-4 w-4 shrink-0 text-[#7047EB]" />
                         {feature}
                       </li>
                     ))}
                   </ul>
                   <Button
                     asChild
-                    className="mt-8 w-full rounded-xl"
+                    className="mt-8 w-full rounded-md"
                     variant={plan.highlight ? "default" : "outline"}
                   >
                     <Link href="/register">
@@ -319,16 +314,15 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="scroll-mt-20 border-t border-border/60 py-20 md:py-28">
-        <div className="container mx-auto max-w-3xl px-4">
+      <section id="faq" className="scroll-mt-28 border-b border-border py-20 md:py-28">
+        <div className="mkt-section max-w-3xl">
           <AnimatedContent distance={40} duration={0.8}>
-            <h2 className="text-center text-3xl font-bold sm:text-4xl">Frequently asked questions</h2>
+            <MarketingSectionHeader title="Frequently asked questions" />
           </AnimatedContent>
           <div className="mt-12 space-y-4">
             {faqs.map((item, i) => (
               <FadeContent key={item.q} delay={i * 80} duration={600}>
-                <div className="rounded-2xl border border-border/60 bg-card p-6 transition-shadow hover:shadow-sm">
+                <div className="mkt-card rounded-md p-6 transition-shadow hover:shadow-sm">
                   <h3 className="font-semibold">{item.q}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
                 </div>
@@ -340,18 +334,18 @@ export default function Homepage() {
 
       <DeveloperSection />
 
-      {/* Final CTA */}
-      <section className="border-t border-border/60 bg-muted/30 py-20 md:py-24">
+      <section className="border-b border-border bg-muted/20 py-20 md:py-24">
         <AnimatedContent distance={50} duration={0.8}>
-          <div className="container mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl">
+          <div className="mkt-section max-w-3xl text-center">
+            <p className="mkt-label mb-4">Get started</p>
+            <h2 className="text-2xl font-semibold sm:text-3xl md:text-4xl">
               See {APP_NAME} in action today
             </h2>
             <p className="mt-4 text-muted-foreground">
               Browse the live demo store or log in to the owner dashboard — no credit card required.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-md`}>
+              <Button asChild size="lg" className={`${heroBtnClass} gap-2`}>
                 <Link href="/store/luxe-threads" target="_blank">
                   Open demo store
                   <ArrowRight className="h-4 w-4" />
