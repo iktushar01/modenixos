@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductImageUpload } from "./ProductImageUpload";
+import { ProductMediaSection, ProductImageMode } from "./ProductMediaSection";
 import { TagInput } from "./TagInput";
 import { SizeChartEditor } from "./SizeChartEditor";
 import {
@@ -58,6 +58,8 @@ function buildFormData(
   existingUrls: string[],
   newFiles: File[],
   isEdit: boolean,
+  imageMode: ProductImageMode,
+  colorNewFiles: Record<string, File>,
 ): FormData {
   const fd = new FormData();
   fd.append("name", values.name);
@@ -74,12 +76,56 @@ function buildFormData(
   fd.append("sizes", JSON.stringify(values.sizes));
   fd.append("colors", JSON.stringify(values.colors));
   fd.append("tags", JSON.stringify(values.tags));
-  fd.append("details", JSON.stringify(values.details));
-  if (isEdit || existingUrls.length > 0) {
-    fd.append("images", JSON.stringify(existingUrls));
+
+  const detailsForSubmit = { ...values.details };
+  if (imageMode === "color") {
+    const colorImages = { ...detailsForSubmit.colorImages };
+    for (const color of Object.keys(colorNewFiles)) {
+      delete colorImages[color];
+    }
+    detailsForSubmit.colorImages = colorImages;
   }
-  newFiles.forEach((file) => fd.append("images", file));
+  fd.append("details", JSON.stringify(detailsForSubmit));
+
+  const filesToUpload: File[] = [];
+  const colorImageFileMap: Record<string, number> = {};
+
+  if (imageMode === "color") {
+    const keptUrls = values.colors
+      .map((color) => (colorNewFiles[color] ? null : values.details.colorImages[color]))
+      .filter((url): url is string => Boolean(url));
+
+    if (isEdit || keptUrls.length > 0) {
+      fd.append("images", JSON.stringify(keptUrls));
+    }
+
+    values.colors.forEach((color) => {
+      const file = colorNewFiles[color];
+      if (file) {
+        colorImageFileMap[color] = filesToUpload.length;
+        filesToUpload.push(file);
+      }
+    });
+
+    if (Object.keys(colorImageFileMap).length > 0) {
+      fd.append("colorImageFileMap", JSON.stringify(colorImageFileMap));
+    }
+  } else {
+    if (isEdit || existingUrls.length > 0) {
+      fd.append("images", JSON.stringify(existingUrls));
+    }
+    filesToUpload.push(...newFiles);
+  }
+
+  filesToUpload.forEach((file) => fd.append("images", file));
   return fd;
+}
+
+function detectImageMode(product?: Product): ProductImageMode {
+  if (!product) return "standard";
+  const colorImages = product.details?.colorImages ?? {};
+  const hasColorImages = product.colors.some((color) => Boolean(colorImages[color]));
+  return hasColorImages ? "color" : "standard";
 }
 
 function productToFormValues(product: Product): ProductFormValues {
@@ -118,12 +164,16 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   );
   const [existingUrls, setExistingUrls] = useState<string[]>(product?.images ?? []);
   const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [imageMode, setImageMode] = useState<ProductImageMode>(() => detectImageMode(product));
+  const [colorNewFiles, setColorNewFiles] = useState<Record<string, File>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (product) {
       setValues(productToFormValues(product));
       setExistingUrls(product.images ?? []);
+      setImageMode(detectImageMode(product));
+      setColorNewFiles({});
     }
   }, [product]);
 
@@ -148,7 +198,14 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const fd = buildFormData(values, existingUrls, newFiles, mode === "edit");
+      const fd = buildFormData(
+        values,
+        existingUrls,
+        newFiles,
+        mode === "edit",
+        imageMode,
+        colorNewFiles,
+      );
       if (mode === "create") {
         return createProductAction(fd);
       }
@@ -183,6 +240,34 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
     setValues((prev) => ({ ...prev, [key]: val }));
   };
 
+  const setColors = (colors: string[]) => {
+    set("colors", colors);
+    const nextColorImages = { ...values.details.colorImages };
+    const nextColorFiles = { ...colorNewFiles };
+    for (const color of Object.keys(nextColorImages)) {
+      if (!colors.includes(color)) delete nextColorImages[color];
+    }
+    for (const color of Object.keys(nextColorFiles)) {
+      if (!colors.includes(color)) delete nextColorFiles[color];
+    }
+    set("details", { ...values.details, colorImages: nextColorImages });
+    setColorNewFiles(nextColorFiles);
+  };
+
+  const handleImageModeChange = (next: ProductImageMode) => {
+    if (next === imageMode) return;
+    if (next === "standard") {
+      const merged = [...existingUrls];
+      values.colors.forEach((color) => {
+        const url = values.details.colorImages[color];
+        if (url && !merged.includes(url)) merged.push(url);
+      });
+      setExistingUrls(merged);
+      setColorNewFiles({});
+    }
+    setImageMode(next);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center gap-4">
@@ -206,21 +291,6 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Media</CardTitle>
-              <CardDescription>First image is used as the cover on your storefront.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ProductImageUpload
-                existingUrls={existingUrls}
-                onExistingChange={setExistingUrls}
-                newFiles={newFiles}
-                onNewFilesChange={setNewFiles}
-              />
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Basic information</CardTitle>
@@ -274,7 +344,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
               <TagInput
                 label="Colors"
                 value={values.colors}
-                onChange={(v) => set("colors", v)}
+                onChange={setColors}
                 placeholder="Add color and press Enter"
                 presets={COLOR_PRESETS}
               />
@@ -283,6 +353,32 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                 value={values.tags}
                 onChange={(v) => set("tags", v)}
                 placeholder="e.g. summer, cotton, new"
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Media</CardTitle>
+              <CardDescription>
+                Choose standard gallery upload or upload one image per color for the storefront.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProductMediaSection
+                mode={imageMode}
+                onModeChange={handleImageModeChange}
+                colors={values.colors}
+                existingUrls={existingUrls}
+                onExistingChange={setExistingUrls}
+                newFiles={newFiles}
+                onNewFilesChange={setNewFiles}
+                colorImages={values.details.colorImages}
+                onColorImagesChange={(map) =>
+                  set("details", { ...values.details, colorImages: map })
+                }
+                colorNewFiles={colorNewFiles}
+                onColorNewFilesChange={setColorNewFiles}
               />
             </CardContent>
           </Card>
@@ -332,7 +428,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                   placeholder="Leave empty to use store-wide delivery policy"
                 />
               </div>
-              {values.colors.length > 0 && existingUrls.length > 0 && (
+              {imageMode === "standard" && values.colors.length > 0 && existingUrls.length > 0 && (
                 <div className="space-y-3">
                   <Label>Color swatch images</Label>
                   <p className="text-xs text-muted-foreground">
