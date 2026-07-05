@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -8,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
-import { updateStoreAction } from "@/actions/store.actions";
+import { revalidateStoreBrandingAction } from "@/actions/store.actions";
 import { parseStorefrontTheme } from "@/lib/storefrontTheme";
+import { uploadStoreBranding } from "@/lib/uploadStoreBranding";
 import { ImageCropUpload } from "./ImageCropUpload";
 import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
 
@@ -22,6 +24,7 @@ const LOGO_RATIOS = [
 ];
 
 function extractErrorMessage(err: unknown): string {
+  if (err instanceof Error && err.message) return err.message;
   if (err && typeof err === "object") {
     const ax = err as { response?: { data?: { message?: string } }; message?: string };
     if (ax.response?.data?.message) return ax.response.data.message;
@@ -31,6 +34,7 @@ function extractErrorMessage(err: unknown): string {
 }
 
 export default function StoreBrandingPage() {
+  const queryClient = useQueryClient();
   const { data: store, refetch, isLoading } = useMyStore();
   const [saving, setSaving] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -94,7 +98,15 @@ export default function StoreBrandingPage() {
         }
       }
 
-      await updateStoreAction(store.id, fd);
+      const updated = await uploadStoreBranding(store.id, fd);
+
+      if (logoFile && !updated.logo) {
+        throw new Error("Logo upload did not save — please try again");
+      }
+
+      queryClient.setQueryData(["my-store"], updated);
+      await revalidateStoreBrandingAction();
+
       toast.success("Branding saved");
       setLogoFile(null);
       setClearLogo(false);
@@ -120,7 +132,7 @@ export default function StoreBrandingPage() {
     <div className="space-y-6">
       <PageHeader
         title="Branding"
-        description="Logo and hero slider for your storefront. After cropping, click Save branding to upload."
+        description="Crop your logo or hero slides, then click Save branding to upload."
         action={
           hasPendingChanges ? (
             <Badge variant="secondary" className="shrink-0">

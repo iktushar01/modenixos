@@ -49,3 +49,10 @@ export async function updateStoreAction(id: string, data: FormData | Record<stri
   await revalidateStorefront();
   return res;
 }
+
+export async function revalidateStoreBrandingAction() {
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/store");
+  revalidatePath("/dashboard/store/branding");
+  await revalidateStorefront();
+}
