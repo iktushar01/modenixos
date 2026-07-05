@@ -142,9 +142,9 @@ export function ProductPurchasePanel({
         )}
       </div>
 
-      <div className="sf-border inline-flex items-center gap-2 rounded border px-3 py-1.5 text-sm">
-        <Star className="sf-star-filled h-4 w-4" />
-        <span className="font-medium">{reviewCount}</span>
+      <div className="sf-border inline-flex items-center gap-2 rounded border px-3 py-1.5 text-sm sf-fg">
+        <Star className="sf-star-filled h-4 w-4 shrink-0" />
+        <span className="font-medium sf-accent-text">{reviewCount}</span>
         <span className="sf-muted-fg">|</span>
         <span className="sf-muted-fg">{reviewCount} Reviews</span>
         {avgRating > 0 && (
@@ -189,21 +189,35 @@ export function ProductPurchasePanel({
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide sf-fg">Size:</p>
           <div className="flex flex-wrap gap-2">
-            {product.sizes.map((s) => (
+            {product.sizes.map((s) => {
+              const isActive = size === s;
+              return (
               <button
                 key={s}
                 type="button"
                 onClick={() => setSize(s)}
                 className={cn(
                   "min-w-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                  size === s
-                    ? "sf-btn-primary border-transparent"
-                    : "sf-border sf-surface sf-surface-fg hover:opacity-90",
+                  isActive ? "sf-filter-pill-active" : "sf-filter-pill",
                 )}
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: "var(--sf-primary)",
+                        color: "var(--sf-primary-fg)",
+                        borderColor: "var(--sf-primary)",
+                      }
+                    : {
+                        backgroundColor: "var(--sf-surface)",
+                        color: "var(--sf-fg)",
+                        borderColor: "var(--sf-border)",
+                      }
+                }
               >
                 {s}
               </button>
-            ))}
+            );
+            })}
           </div>
           <p className="sf-muted-fg mt-2 text-sm">
             {product.stock > 0 ? `${product.stock} available` : "Out of stock"}
@@ -212,19 +226,19 @@ export function ProductPurchasePanel({
       )}
 
       <div className="flex flex-wrap items-center gap-4">
-        <div className="sf-border flex items-center rounded border">
+        <div className="sf-border sf-surface flex items-center rounded border">
           <button
             type="button"
-            className="px-3 py-2 hover:opacity-70"
+            className="sf-fg px-3 py-2 hover:opacity-70"
             onClick={() => setQty((q) => Math.max(1, q - 1))}
             aria-label="Decrease quantity"
           >
             <Minus className="h-4 w-4" />
           </button>
-          <span className="min-w-[2rem] text-center font-medium">{qty}</span>
+          <span className="sf-fg min-w-[2rem] text-center font-medium">{qty}</span>
           <button
             type="button"
-            className="px-3 py-2 hover:opacity-70"
+            className="sf-fg px-3 py-2 hover:opacity-70"
             onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))}
             aria-label="Increase quantity"
           >
@@ -235,20 +249,26 @@ export function ProductPurchasePanel({
         <div className="flex flex-1 flex-wrap gap-2">
           <Button
             type="button"
-            className="sf-btn-outline sf-surface sf-surface-fg min-w-[140px] flex-1 rounded-md"
+            variant="outline"
+            className="sf-btn-outline h-11 min-w-[140px] flex-1 rounded-md"
             onClick={handleAddToCart}
             disabled={product.stock <= 0}
           >
             Add To Cart
           </Button>
-          <Button
+          <button
             type="button"
-            className="sf-btn-primary min-w-[140px] flex-1 rounded-md"
+            className="sf-btn-primary inline-flex h-11 min-w-[140px] flex-1 items-center justify-center rounded-md text-sm font-medium transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+            style={{
+              backgroundColor: "var(--sf-primary)",
+              color: "var(--sf-primary-fg)",
+              borderColor: "var(--sf-primary)",
+            }}
             onClick={handleBuyNow}
             disabled={product.stock <= 0}
           >
             Buy Now
-          </Button>
+          </button>
         </div>
       </div>
 
