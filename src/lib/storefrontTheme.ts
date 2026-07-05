@@ -1,78 +1,15 @@
-import { Store } from "@/types/store.types";
+/** @deprecated Import from `@/lib/storefront` instead */
+export {
+  parseStorefrontTheme,
+  buildThemePayload,
+  type StorefrontThemeConfig,
+  type StorefrontSections,
+  type StorefrontColorPalette,
+  type StorefrontColorMode,
+  type StorefrontTemplateId,
+} from "@/lib/storefront";
 
-export interface StorefrontSections {
-  categories: boolean;
-  collections: boolean;
-  featured: boolean;
-  trending: boolean;
-  promo: boolean;
-  brandStory: boolean;
-  reviews: boolean;
-  newsletter: boolean;
-}
-
-export interface StorefrontThemeConfig {
-  primaryColor: string;
-  secondaryColor: string;
-  heroSlides: string[];
-  heroHeadline: string;
-  heroSubtext: string;
-  promoText: string;
-  promoEnabled: boolean;
-  brandStoryTitle: string;
-  brandStoryContent: string;
-  brandStoryImage: string | null;
-  newsletterEnabled: boolean;
-  sections: StorefrontSections;
-  social: {
-    instagram?: string;
-    twitter?: string;
-    facebook?: string;
-  };
-}
-
-const defaultSections: StorefrontSections = {
-  categories: true,
-  collections: true,
-  featured: true,
-  trending: true,
-  promo: true,
-  brandStory: true,
-  reviews: true,
-  newsletter: true,
-};
-
-export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
-  const raw = (store.theme ?? {}) as Record<string, unknown>;
-  const sectionsRaw = (raw.sections ?? {}) as Partial<StorefrontSections>;
-  const social = (raw.social ?? {}) as StorefrontThemeConfig["social"];
-  const heroSlidesRaw = raw.heroSlides as string[] | undefined;
-  const heroSlides =
-    Array.isArray(heroSlidesRaw) && heroSlidesRaw.length > 0
-      ? heroSlidesRaw
-      : store.banner
-        ? [store.banner]
-        : [];
-
-  return {
-    primaryColor: (raw.primaryColor as string) ?? "#f5f5f5",
-    secondaryColor: (raw.secondaryColor as string) ?? "#c9a962",
-    heroSlides,
-    heroHeadline: (raw.heroHeadline as string) ?? store.brandName,
-    heroSubtext: (raw.heroSubtext as string) ?? store.description ?? "Curated fashion for the modern wardrobe.",
-    promoText: (raw.promoText as string) ?? "",
-    promoEnabled: raw.promoEnabled !== false,
-    brandStoryTitle: (raw.brandStoryTitle as string) ?? `The ${store.brandName} Story`,
-    brandStoryContent:
-      (raw.brandStoryContent as string) ??
-      store.description ??
-      "Crafted with intention. Designed for those who appreciate quality, detail, and timeless style.",
-    brandStoryImage: (raw.brandStoryImage as string) ?? store.banner ?? null,
-    newsletterEnabled: raw.newsletterEnabled !== false,
-    sections: { ...defaultSections, ...sectionsRaw },
-    social,
-  };
-}
+import { Product } from "@/types/store.types";
 
 export function formatPrice(amount: number, currency = "USD") {
   const value = Number(amount);

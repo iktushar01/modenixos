@@ -58,9 +58,9 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50">
+      <div className="sf-border sf-card relative overflow-hidden rounded-2xl border">
         <Link href={`/store/${store.slug}/products/${product.id}`} className="block">
-          <div className="relative aspect-[3/4] overflow-hidden bg-zinc-800">
+          <div className="relative aspect-[3/4] overflow-hidden sf-muted">
             {product.images[0] ? (
               <>
                 <Image
@@ -87,14 +87,11 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
                 )}
               </>
             ) : (
-              <div className="flex h-full items-center justify-center text-white/20">No image</div>
+              <div className="sf-muted-fg flex h-full items-center justify-center">No image</div>
             )}
 
             {discountPercent && (
-              <span
-                className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-black"
-                style={{ backgroundColor: theme.secondaryColor }}
-              >
+              <span className="sf-badge-secondary absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide">
                 -{discountPercent}%
               </span>
             )}
@@ -102,8 +99,7 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
             <div className="absolute inset-x-0 bottom-0 flex translate-y-full gap-2 p-3 transition-transform duration-300 group-hover:translate-y-0">
               <Button
                 size="sm"
-                className="flex-1 rounded-full text-xs text-black"
-                style={{ backgroundColor: theme.primaryColor }}
+                className="sf-btn-primary flex-1 rounded-full text-xs"
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
@@ -112,7 +108,7 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
               <Button
                 size="sm"
                 variant="secondary"
-                className="rounded-full bg-white/90 text-xs text-black hover:bg-white"
+                className="rounded-full sf-surface text-xs sf-surface-fg hover:opacity-90"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -128,24 +124,24 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
 
       <div className="mt-3 space-y-1 px-1">
         <Link href={`/store/${store.slug}/products/${product.id}`}>
-          <h3 className="truncate text-sm font-medium text-white transition-colors hover:text-white/80">
+          <h3 className="truncate text-sm font-medium sf-fg transition-colors hover:opacity-80">
             {product.name}
           </h3>
         </Link>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium text-white">{formatPrice(price, store.currency)}</span>
+            <span className="font-medium sf-fg">{formatPrice(price, store.currency)}</span>
             {compareAt && (
-              <span className="text-white/40 line-through">{formatPrice(compareAt, store.currency)}</span>
+              <span className="sf-muted-fg line-through">{formatPrice(compareAt, store.currency)}</span>
             )}
           </div>
           {rating ? (
-            <div className="flex items-center gap-0.5 text-xs text-white/50">
+            <div className="sf-muted-fg flex items-center gap-0.5 text-xs">
               <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
               {rating.toFixed(1)}
             </div>
           ) : product.tags?.includes("new") ? (
-            <span className="text-[10px] uppercase tracking-wider text-white/40">New</span>
+            <span className="text-[10px] uppercase tracking-wider sf-muted-fg">New</span>
           ) : null}
         </div>
       </div>

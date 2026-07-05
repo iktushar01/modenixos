@@ -49,9 +49,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
       transition={{ duration: 0.5 }}
       className={cn(
         "sticky top-0 z-50 border-b transition-all duration-300",
-        scrolled
-          ? "border-white/10 bg-black/80 backdrop-blur-xl"
-          : "border-transparent bg-transparent",
+        scrolled ? "sf-border sf-navbar backdrop-blur-xl" : "border-transparent bg-transparent",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:h-[4.5rem] md:px-6">
@@ -59,7 +57,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
           {store.logo ? (
             <Image src={store.logo} alt={store.brandName} width={120} height={36} className="h-8 w-auto object-contain" unoptimized />
           ) : (
-            <span className="text-lg font-semibold tracking-wide text-white md:text-xl">{store.brandName}</span>
+            <span className="text-lg font-semibold tracking-wide sf-navbar-fg md:text-xl">{store.brandName}</span>
           )}
         </Link>
 
@@ -68,7 +66,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
             <Link
               key={link.label}
               href={link.href ? `${base}${link.href.startsWith("#") ? link.href : link.href}` : base}
-              className="text-sm text-white/70 transition-colors hover:text-white"
+              className="text-sm sf-link transition-colors sf-hover-fg"
             >
               {link.label}
             </Link>
@@ -79,19 +77,18 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="text-white hover:bg-white/10 hover:text-white"
+            className="sf-navbar-fg hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]"
             onClick={() => setSearchOpen((v) => !v)}
             aria-label="Search"
           >
             <Search className="h-5 w-5" />
           </Button>
           <Link href={`${base}/cart`}>
-            <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/10 hover:text-white" aria-label="Cart">
+            <Button variant="ghost" size="icon" className="relative sf-navbar-fg hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]" aria-label="Cart">
               <ShoppingBag className="h-5 w-5" />
               {hydrated && cartCount > 0 && (
                 <span
-                  className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-black"
-                  style={{ backgroundColor: theme.secondaryColor }}
+                  className="sf-badge-secondary absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold"
                 >
                   {cartCount}
                 </span>
@@ -99,7 +96,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
             </Button>
           </Link>
           <Link href="/login" className="hidden sm:block">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-white hover:bg-white/10 hover:text-white">
+            <Button variant="ghost" size="sm" className="gap-1.5 sf-navbar-fg hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]">
               <User className="h-4 w-4" />
               Login
             </Button>
@@ -107,7 +104,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="text-white md:hidden"
+            className="sf-navbar-fg md:hidden"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Menu"
           >
@@ -120,11 +117,11 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
-          className="border-t border-white/10 bg-black/90 px-4 py-3 md:px-6"
+          className="sf-border sf-navbar border-t px-4 py-3 md:px-6"
         >
           <Input
             placeholder="Search products..."
-            className="max-w-xl border-white/20 bg-white/5 text-white placeholder:text-white/40"
+            className="sf-input max-w-xl"
             autoFocus
           />
         </motion.div>
@@ -134,13 +131,13 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
         <motion.nav
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="border-t border-white/10 bg-black/95 px-4 py-4 md:hidden"
+          className="sf-border sf-navbar border-t px-4 py-4 md:hidden"
         >
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
               href={link.href ? `${base}${link.href}` : base}
-              className="block py-2.5 text-sm text-white/80"
+              className="sf-link block py-2.5 text-sm"
               onClick={() => setMobileOpen(false)}
             >
               {link.label}

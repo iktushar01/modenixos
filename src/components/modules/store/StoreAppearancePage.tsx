@@ -12,7 +12,14 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
-import { parseStorefrontTheme, StorefrontSections } from "@/lib/storefrontTheme";
+import {
+  parseStorefrontTheme,
+  buildThemePayload,
+  StorefrontSections,
+  StorefrontColorMode,
+  StorefrontColorPalette,
+} from "@/lib/storefront";
+import { StoreColorPaletteEditor } from "./StoreColorPaletteEditor";
 
 const SECTION_LABELS: Record<keyof StorefrontSections, string> = {
   categories: "Categories",
@@ -29,8 +36,10 @@ export default function StoreAppearancePage() {
   const { data: store, refetch, isLoading } = useMyStore();
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    primaryColor: "#f5f5f5",
-    secondaryColor: "#c9a962",
+    templateId: "theme1" as const,
+    colorMode: "dark" as StorefrontColorMode,
+    palettePreset: "luxury-dark",
+    customColors: undefined as Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>> | undefined,
     heroHeadline: "",
     heroSubtext: "",
     promoText: "",
@@ -48,8 +57,10 @@ export default function StoreAppearancePage() {
     if (store) {
       const theme = parseStorefrontTheme(store);
       setForm({
-        primaryColor: theme.primaryColor,
-        secondaryColor: theme.secondaryColor,
+        templateId: theme.templateId,
+        colorMode: theme.colorMode,
+        palettePreset: theme.palettePreset,
+        customColors: theme.customColors,
         heroHeadline: theme.heroHeadline,
         heroSubtext: theme.heroSubtext,
         promoText: theme.promoText,
@@ -70,11 +81,15 @@ export default function StoreAppearancePage() {
     setSaving(true);
     try {
       const existing = (store.theme ?? {}) as Record<string, unknown>;
-      await updateStoreAction(store.id, {
-        theme: {
-          ...existing,
-          primaryColor: form.primaryColor,
-          secondaryColor: form.secondaryColor,
+      const resolved = parseStorefrontTheme({
+        ...store,
+        theme: buildThemePayload({
+          templateId: form.templateId,
+          colorMode: form.colorMode,
+          palettePreset: form.palettePreset,
+          customColors: form.customColors,
+          primaryColor: undefined,
+          secondaryColor: undefined,
           heroHeadline: form.heroHeadline,
           heroSubtext: form.heroSubtext,
           promoText: form.promoText,
@@ -88,7 +103,33 @@ export default function StoreAppearancePage() {
             twitter: form.twitter || undefined,
             facebook: form.facebook || undefined,
           },
-        },
+          existingTheme: existing,
+        }),
+      });
+
+      await updateStoreAction(store.id, {
+        theme: buildThemePayload({
+          templateId: form.templateId,
+          colorMode: form.colorMode,
+          palettePreset: form.palettePreset,
+          customColors: form.customColors,
+          primaryColor: resolved.colors.primary,
+          secondaryColor: resolved.colors.secondary,
+          heroHeadline: form.heroHeadline,
+          heroSubtext: form.heroSubtext,
+          promoText: form.promoText,
+          promoEnabled: form.promoEnabled,
+          brandStoryTitle: form.brandStoryTitle,
+          brandStoryContent: form.brandStoryContent,
+          newsletterEnabled: form.newsletterEnabled,
+          sections: form.sections,
+          social: {
+            instagram: form.instagram || undefined,
+            twitter: form.twitter || undefined,
+            facebook: form.facebook || undefined,
+          },
+          existingTheme: existing,
+        }),
       });
       toast.success("Storefront appearance saved");
       refetch();
@@ -118,41 +159,25 @@ export default function StoreAppearancePage() {
     <div className="space-y-6">
       <PageHeader
         title="Storefront appearance"
-        description="Colors, hero copy, sections, and social links for your public shop."
+        description="Full color control, hero copy, sections, and social links for your public shop."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Colors</CardTitle>
-          <CardDescription>Accent colors used across your storefront.</CardDescription>
+          <CardTitle>Theme & colors</CardTitle>
+          <CardDescription>
+            Choose a preset palette or build your own. Toggle light or dark mode for your storefront.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="primaryColor">Primary color</Label>
-            <div className="flex items-center gap-3">
-              <Input
-                id="primaryColor"
-                type="color"
-                value={form.primaryColor}
-                onChange={(e) => setForm({ ...form, primaryColor: e.target.value })}
-                className="h-10 w-16 cursor-pointer p-1"
-              />
-              <Input value={form.primaryColor} onChange={(e) => setForm({ ...form, primaryColor: e.target.value })} />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="secondaryColor">Secondary color</Label>
-            <div className="flex items-center gap-3">
-              <Input
-                id="secondaryColor"
-                type="color"
-                value={form.secondaryColor}
-                onChange={(e) => setForm({ ...form, secondaryColor: e.target.value })}
-                className="h-10 w-16 cursor-pointer p-1"
-              />
-              <Input value={form.secondaryColor} onChange={(e) => setForm({ ...form, secondaryColor: e.target.value })} />
-            </div>
-          </div>
+        <CardContent>
+          <StoreColorPaletteEditor
+            colorMode={form.colorMode}
+            palettePreset={form.palettePreset}
+            customColors={form.customColors}
+            onColorModeChange={(colorMode) => setForm((prev) => ({ ...prev, colorMode }))}
+            onPresetChange={(palettePreset) => setForm((prev) => ({ ...prev, palettePreset }))}
+            onCustomColorsChange={(customColors) => setForm((prev) => ({ ...prev, customColors, palettePreset: "custom" }))}
+          />
         </CardContent>
       </Card>
 

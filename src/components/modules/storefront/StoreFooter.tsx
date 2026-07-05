@@ -22,59 +22,59 @@ export function StoreFooter({ store, theme }: StoreFooterProps) {
   const base = `/store/${store.slug}`;
 
   return (
-    <footer className="border-t border-white/10 bg-black/40">
+    <footer className="sf-border sf-footer border-t">
       <div className="mx-auto max-w-7xl px-4 py-14 md:px-6">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             {store.logo ? (
               <Image src={store.logo} alt={store.brandName} width={120} height={40} className="h-8 w-auto object-contain" unoptimized />
             ) : (
-              <p className="text-lg font-medium text-white">{store.brandName}</p>
+              <p className="text-lg font-medium sf-footer-fg">{store.brandName}</p>
             )}
-            <p className="mt-2 max-w-xs text-sm text-white/50">{store.description}</p>
+            <p className="mt-2 max-w-xs text-sm sf-muted-fg">{store.description}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wider text-white/40">Links</p>
+            <p className="text-xs uppercase tracking-wider sf-muted-fg">Links</p>
             <ul className="mt-4 space-y-2">
               {FOOTER_LINKS.map((link) => (
                 <li key={link.label}>
-                  <Link href={`${base}${link.href}`} className="text-sm text-white/60 transition-colors hover:text-white">
+                  <Link href={`${base}${link.href}`} className="sf-link text-sm transition-colors sf-hover-fg">
                     {link.label}
                   </Link>
                 </li>
               ))}
               <li>
-                <Link href={`${base}/cart`} className="text-sm text-white/60 transition-colors hover:text-white">
+                <Link href={`${base}/cart`} className="sf-link text-sm transition-colors sf-hover-fg">
                   Cart
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wider text-white/40">Follow</p>
+            <p className="text-xs uppercase tracking-wider sf-muted-fg">Follow</p>
             <div className="mt-4 flex gap-3">
               {theme.social.instagram && (
-                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white">
+                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg">
                   <Instagram className="h-5 w-5" />
                 </a>
               )}
               {theme.social.twitter && (
-                <a href={theme.social.twitter} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white">
+                <a href={theme.social.twitter} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg">
                   <Twitter className="h-5 w-5" />
                 </a>
               )}
               {theme.social.facebook && (
-                <a href={theme.social.facebook} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white">
+                <a href={theme.social.facebook} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg">
                   <Facebook className="h-5 w-5" />
                 </a>
               )}
               {!theme.social.instagram && !theme.social.twitter && !theme.social.facebook && (
-                <span className="text-sm text-white/30">Social links from dashboard</span>
+                <span className="text-sm sf-muted-fg">Social links from dashboard</span>
               )}
             </div>
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-8 text-xs text-white/40 md:flex-row">
+        <div className="sf-border mt-12 flex flex-col items-center justify-between gap-2 border-t pt-8 text-xs sf-muted-fg md:flex-row">
           <p>&copy; {new Date().getFullYear()} {store.brandName}. All rights reserved.</p>
           <p>Powered by ModenixOS</p>
         </div>
