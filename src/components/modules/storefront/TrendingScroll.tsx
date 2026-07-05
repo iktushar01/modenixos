@@ -1,12 +1,17 @@
 "use client";
 
-import { useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Product, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  useCarousel,
+} from "@/components/ui/carousel";
 
 interface TrendingScrollProps {
   store: Store;
@@ -16,56 +21,90 @@ interface TrendingScrollProps {
   onQuickView: (product: Product) => void;
 }
 
-export function TrendingScroll({ store, products, theme, ratings, onQuickView }: TrendingScrollProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+function TrendingNavButtons() {
+  const { scrollPrev, scrollNext, canScrollPrev, canScrollNext } = useCarousel();
 
+  return (
+    <div className="flex gap-2">
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-9 w-9 rounded-full border sf-border bg-transparent sf-fg hover:bg-[color-mix(in_srgb,var(--sf-muted)_60%,transparent)] disabled:opacity-30"
+        disabled={!canScrollPrev}
+        onClick={scrollPrev}
+        aria-label="Previous products"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-9 w-9 rounded-full border sf-border bg-transparent sf-fg hover:bg-[color-mix(in_srgb,var(--sf-muted)_60%,transparent)] disabled:opacity-30"
+        disabled={!canScrollNext}
+        onClick={scrollNext}
+        aria-label="Next products"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
+export function TrendingScroll({
+  store,
+  products,
+  theme,
+  ratings,
+  onQuickView,
+}: TrendingScrollProps) {
   if (products.length === 0) return null;
-
-  const scroll = (dir: "left" | "right") => {
-    scrollRef.current?.scrollBy({ left: dir === "left" ? -320 : 320, behavior: "smooth" });
-  };
 
   return (
     <section className="py-20">
-      <div className="sf-section w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-8 flex items-end justify-between"
-        >
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/50">Trending</p>
-            <h2 className="mt-2 text-3xl font-light text-white md:text-4xl">Popular Right Now</h2>
-          </div>
-          <div className="hidden gap-2 sm:flex">
-            <Button variant="outline" size="icon" className="rounded-full border-white/20 bg-transparent text-white hover:bg-white/10" onClick={() => scroll("left")}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="rounded-full border-white/20 bg-transparent text-white hover:bg-white/10" onClick={() => scroll("right")}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 scrollbar-none md:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
-        style={{ scrollbarWidth: "none" }}
+      <Carousel
+        opts={{
+          align: "start",
+          containScroll: "trimSnaps",
+          dragFree: false,
+        }}
+        className="w-full"
       >
-        {products.map((p) => (
-          <ProductCard
-            key={p.id}
-            product={p}
-            store={store}
-            theme={theme}
-            rating={ratings[p.id]}
-            onQuickView={onQuickView}
-            layout="scroll"
-          />
-        ))}
-      </div>
+        <div className="sf-section w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8 flex items-end justify-between gap-4"
+          >
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Trending</p>
+              <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">Popular Right Now</h2>
+            </div>
+            {products.length > 1 && <TrendingNavButtons />}
+          </motion.div>
+        </div>
+
+        <div className="sf-section w-full">
+          <CarouselContent className="-ml-4 pb-2">
+            {products.map((product) => (
+              <CarouselItem
+                key={product.id}
+                className="basis-[78%] pl-4 sm:basis-[52%] md:basis-[38%] lg:basis-[28%] xl:basis-[22%]"
+              >
+                <ProductCard
+                  product={product}
+                  store={store}
+                  theme={theme}
+                  rating={ratings[product.id]}
+                  onQuickView={onQuickView}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </div>
+      </Carousel>
     </section>
   );
 }
