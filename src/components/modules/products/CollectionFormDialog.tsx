@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -16,39 +17,41 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CategoryImageUpload } from "./CategoryImageUpload";
-import { createCategoryAction, updateCategoryAction } from "@/actions/catalog.actions";
-import { Category } from "@/types/store.types";
+import { CollectionImageUpload } from "./CollectionImageUpload";
+import { createCollectionAction, updateCollectionAction } from "@/actions/catalog.actions";
+import { Collection } from "@/types/store.types";
 
 const slugify = (text: string) =>
   text.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-");
 
-interface CategoryFormDialogProps {
+interface CollectionFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  category?: Category | null;
+  collection?: Collection | null;
 }
 
-export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFormDialogProps) {
-  const isEdit = Boolean(category);
+export function CollectionFormDialog({ open, onOpenChange, collection }: CollectionFormDialogProps) {
+  const isEdit = Boolean(collection);
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(false);
   const [existingUrl, setExistingUrl] = useState<string | null>(null);
   const [newFile, setNewFile] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setName(category?.name ?? "");
-      setSlug(category?.slug ?? "");
+      setName(collection?.name ?? "");
+      setSlug(collection?.slug ?? "");
       setSlugTouched(false);
-      setExistingUrl(category?.image ?? null);
+      setIsFeatured(collection?.isFeatured ?? false);
+      setExistingUrl(collection?.image ?? null);
       setNewFile(null);
       setRemoveImage(false);
     }
-  }, [open, category]);
+  }, [open, collection]);
 
   useEffect(() => {
     if (!slugTouched && name) {
@@ -61,63 +64,68 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
       const fd = new FormData();
       fd.append("name", name.trim());
       if (slug.trim()) fd.append("slug", slug.trim());
+      fd.append("isFeatured", String(isFeatured));
       if (isEdit && removeImage && !newFile) {
         fd.append("image", "");
       }
       if (newFile) fd.append("image", newFile);
 
-      if (isEdit && category) {
-        return updateCategoryAction(category.id, fd);
+      if (isEdit && collection) {
+        return updateCollectionAction(collection.id, fd);
       }
-      return createCategoryAction(fd);
+      return createCollectionAction(fd);
     },
     onSuccess: () => {
-      toast.success(isEdit ? "Category updated" : "Category created");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast.success(isEdit ? "Collection updated" : "Collection created");
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
       onOpenChange(false);
     },
-    onError: () => toast.error(isEdit ? "Failed to update category" : "Failed to create category"),
+    onError: () => toast.error(isEdit ? "Failed to update collection" : "Failed to create collection"),
   });
-
-  const handleRemoveImage = () => {
-    setNewFile(null);
-    setExistingUrl(null);
-    setRemoveImage(true);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit category" : "New category"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit collection" : "New collection"}</DialogTitle>
           <DialogDescription>
-            {isEdit ? "Update name, slug, or cover image." : "Add a category with an optional cover image for your storefront."}
+            {isEdit
+              ? "Update name, slug, featured flag, or cover image."
+              : "Add a curated collection with an optional cover image for your storefront."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="cat-name">Name *</Label>
+            <Label htmlFor="col-name">Name *</Label>
             <Input
-              id="cat-name"
+              id="col-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. T-Shirts"
+              placeholder="e.g. Summer Edit"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cat-slug">Slug</Label>
+            <Label htmlFor="col-slug">Slug</Label>
             <Input
-              id="cat-slug"
+              id="col-slug"
               value={slug}
               onChange={(e) => {
                 setSlugTouched(true);
                 setSlug(e.target.value);
               }}
-              placeholder="t-shirts"
+              placeholder="summer-edit"
             />
           </div>
-          <CategoryImageUpload
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="col-featured"
+              checked={isFeatured}
+              onCheckedChange={(v) => setIsFeatured(!!v)}
+            />
+            <Label htmlFor="col-featured">Featured on storefront</Label>
+          </div>
+          <CollectionImageUpload
             existingUrl={existingUrl}
             onExistingChange={(url) => {
               setExistingUrl(url);
@@ -135,12 +143,9 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={() => mutation.mutate()}
-            disabled={!name.trim() || mutation.isPending}
-          >
+          <Button onClick={() => mutation.mutate()} disabled={!name.trim() || mutation.isPending}>
             {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEdit ? "Save changes" : "Create category"}
+            {isEdit ? "Save changes" : "Create collection"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -148,12 +153,11 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
   );
 }
 
-/** Thumbnail for table rows */
-export function CategoryThumbnail({ category }: { category: Category }) {
+export function CollectionThumbnail({ collection }: { collection: Collection }) {
   return (
-    <div className="relative h-10 w-10 overflow-hidden rounded-md border bg-muted">
-      {category.image ? (
-        <Image src={category.image} alt={category.name} fill className="object-cover" unoptimized />
+    <div className="relative h-12 w-9 overflow-hidden rounded-md border bg-muted">
+      {collection.image ? (
+        <Image src={collection.image} alt={collection.name} fill className="object-cover" unoptimized />
       ) : (
         <div className="flex h-full items-center justify-center text-xs text-muted-foreground">—</div>
       )}

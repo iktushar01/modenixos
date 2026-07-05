@@ -42,6 +42,8 @@ export type CropRatioOption = {
 export const CROP_RATIO_PRESETS: CropRatioOption[] = [
   { label: "Free", value: undefined },
   { label: "1:1", value: 1 },
+  { label: "4:5", value: 4 / 5 },
+  { label: "3:4", value: 3 / 4 },
   { label: "4:3", value: 4 / 3 },
   { label: "3:2", value: 3 / 2 },
   { label: "16:9", value: 16 / 9 },
@@ -291,6 +293,7 @@ export function CropEditorDialog({
             </div>
           )}
 
+          {ratioOptions.length > 1 && (
           <div className="space-y-2">
             <Label className="text-xs font-medium">Aspect ratio</Label>
             <div className="flex flex-wrap gap-1.5">
@@ -320,6 +323,7 @@ export function CropEditorDialog({
               <p className="text-xs text-muted-foreground">Square / circle shapes lock to 1:1 ratio.</p>
             )}
           </div>
+          )}
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">

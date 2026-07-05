@@ -63,12 +63,21 @@ export async function getCollectionsAction(params?: Record<string, unknown>) {
 export async function createCollectionAction(data: FormData) {
   const res = await httpClient.post<Collection>("/collections", data);
   revalidatePath("/dashboard/collections");
+  await revalidateStorefront();
+  return res;
+}
+
+export async function updateCollectionAction(id: string, data: FormData) {
+  const res = await httpClient.patch<Collection>(`/collections/${id}`, data);
+  revalidatePath("/dashboard/collections");
+  await revalidateStorefront();
   return res;
 }
 
 export async function deleteCollectionAction(id: string) {
   await httpClient.delete(`/collections/${id}`);
   revalidatePath("/dashboard/collections");
+  await revalidateStorefront();
 }
 
 // Products

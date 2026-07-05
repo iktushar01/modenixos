@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Loader2, Pencil, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { resolveImageForCrop } from "@/lib/resolveImageForCrop";
 import { CropEditorDialog, CropRatioOption } from "./CropEditorDialog";
 import { CropShape } from "@/lib/cropShapes";
+import { cn } from "@/lib/utils";
 
 interface ImageCropUploadProps {
   label: string;
@@ -19,6 +22,9 @@ interface ImageCropUploadProps {
   onClear?: () => void;
   outputFileName: string;
   previewClassName?: string;
+  previewFit?: "cover" | "contain";
+  allowRecrop?: boolean;
+  cropTitle?: string;
 }
 
 export function ImageCropUpload({
@@ -33,20 +39,35 @@ export function ImageCropUpload({
   onClear,
   outputFileName,
   previewClassName,
+  previewFit = "cover",
+  allowRecrop = true,
+  cropTitle,
 }: ImageCropUploadProps) {
   const [preview, setPreview] = useState<string | null>(existingUrl ?? null);
   const [cropOpen, setCropOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [recropLoading, setRecropLoading] = useState(false);
+  const sourceRef = useRef<string | null>(null);
 
   useEffect(() => {
     setPreview(existingUrl ?? null);
+    if (!existingUrl) {
+      sourceRef.current = null;
+    }
   }, [existingUrl]);
+
+  const openCrop = (src: string, keepSource = true) => {
+    if (keepSource) {
+      sourceRef.current = src;
+    }
+    setImageSrc(src);
+    setCropOpen(true);
+  };
 
   const handleFile = (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
-      setImageSrc(reader.result as string);
-      setCropOpen(true);
+      openCrop(reader.result as string);
     };
     reader.readAsDataURL(file);
   };
@@ -58,7 +79,28 @@ export function ImageCropUpload({
     setImageSrc(null);
   };
 
+  const startRecrop = async () => {
+    if (!preview || !allowRecrop) return;
+    setRecropLoading(true);
+    try {
+      const src = sourceRef.current ?? (await resolveImageForCrop(preview));
+      if (!sourceRef.current) {
+        sourceRef.current = src;
+      }
+      openCrop(src, false);
+    } catch (err) {
+      console.error("Recrop load failed:", err);
+      toast.error("Could not load image for cropping — try uploading again");
+    } finally {
+      setRecropLoading(false);
+    }
+  };
+
   const remove = () => {
+    if (preview?.startsWith("blob:")) {
+      URL.revokeObjectURL(preview);
+    }
+    sourceRef.current = null;
     setPreview(null);
     onCroppedFile(null);
     onClear?.();
@@ -73,10 +115,20 @@ export function ImageCropUpload({
 
       {preview ? (
         <div
-          className={`relative overflow-hidden rounded-lg border bg-muted ${previewClassName ?? "aspect-[3/1] max-w-md"}`}
+          className={cn(
+            "relative overflow-hidden rounded-lg border bg-muted",
+            previewClassName ?? "aspect-[3/1] max-w-md",
+          )}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="" className="h-full w-full object-contain p-2" />
+          <img
+            src={preview}
+            alt=""
+            className={cn(
+              "h-full w-full",
+              previewFit === "contain" ? "object-contain p-2" : "object-cover",
+            )}
+          />
         </div>
       ) : (
         <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors hover:border-primary/50 hover:bg-muted/50">
@@ -91,7 +143,7 @@ export function ImageCropUpload({
         </label>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <label>
           <Button type="button" variant="outline" size="sm" asChild>
             <span>{preview ? "Replace" : "Choose file"}</span>
@@ -103,6 +155,22 @@ export function ImageCropUpload({
             onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
           />
         </label>
+        {preview && allowRecrop && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={startRecrop}
+            disabled={recropLoading}
+          >
+            {recropLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Pencil className="mr-2 h-4 w-4" />
+            )}
+            Adjust crop
+          </Button>
+        )}
         {preview && (
           <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={remove}>
             Remove
@@ -114,6 +182,7 @@ export function ImageCropUpload({
         open={cropOpen}
         onOpenChange={setCropOpen}
         imageSrc={imageSrc}
+        title={cropTitle ?? "Crop image"}
         defaultAspect={defaultAspect}
         ratioOptions={ratioOptions}
         allowShapeSelection={allowShapeSelection}
