@@ -32,6 +32,7 @@ import {
 import { formatPriceSample, getCurrencyName } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
+import { StorefrontShopProfile } from "@/types/store.types";
 import { cn } from "@/lib/utils";
 
 function ProfileSkeleton() {
@@ -53,6 +54,16 @@ function ProfileSkeleton() {
   );
 }
 
+function readShopProfile(theme: Record<string, unknown> | null | undefined): StorefrontShopProfile {
+  const profile = (theme?.profile ?? {}) as StorefrontShopProfile;
+  return {
+    seoDescription: profile.seoDescription ?? "",
+    contactEmail: profile.contactEmail ?? "",
+    contactPhone: profile.contactPhone ?? "",
+    address: profile.address ?? "",
+  };
+}
+
 export default function StoreProfilePage() {
   const { data: store, refetch, isLoading } = useMyStore();
   const [saving, setSaving] = useState(false);
@@ -63,10 +74,15 @@ export default function StoreProfilePage() {
     currency: "USD",
     description: "",
     isPublished: false,
+    seoDescription: "",
+    contactEmail: "",
+    contactPhone: "",
+    address: "",
   });
 
   useEffect(() => {
     if (store) {
+      const profile = readShopProfile(store.theme as Record<string, unknown>);
       setForm({
         brandName: store.brandName,
         slug: store.slug,
@@ -74,19 +90,28 @@ export default function StoreProfilePage() {
         currency: store.currency,
         description: store.description ?? "",
         isPublished: store.isPublished,
+        seoDescription: profile.seoDescription ?? "",
+        contactEmail: profile.contactEmail ?? "",
+        contactPhone: profile.contactPhone ?? "",
+        address: profile.address ?? "",
       });
     }
   }, [store]);
 
   const isDirty = useMemo(() => {
     if (!store) return false;
+    const profile = readShopProfile(store.theme as Record<string, unknown>);
     return (
       form.brandName !== store.brandName ||
       form.slug !== store.slug ||
       form.country !== store.country ||
       form.currency !== store.currency ||
       form.description !== (store.description ?? "") ||
-      form.isPublished !== store.isPublished
+      form.isPublished !== store.isPublished ||
+      form.seoDescription !== (profile.seoDescription ?? "") ||
+      form.contactEmail !== (profile.contactEmail ?? "") ||
+      form.contactPhone !== (profile.contactPhone ?? "") ||
+      form.address !== (profile.address ?? "")
     );
   }, [store, form]);
 
@@ -98,6 +123,7 @@ export default function StoreProfilePage() {
     }
     setSaving(true);
     try {
+      const existingTheme = (store.theme ?? {}) as Record<string, unknown>;
       await updateStoreAction(store.id, {
         brandName: form.brandName,
         slug: form.slug,
@@ -105,6 +131,20 @@ export default function StoreProfilePage() {
         currency: form.currency.trim().toUpperCase(),
         description: form.description,
         isPublished: form.isPublished,
+        theme: {
+          ...existingTheme,
+          profile: {
+            seoDescription: form.seoDescription,
+            contactEmail: form.contactEmail,
+            contactPhone: form.contactPhone,
+            address: form.address,
+          },
+          contact: {
+            ...((existingTheme.contact as Record<string, unknown>) ?? {}),
+            phone: form.contactPhone,
+            email: form.contactEmail,
+          },
+        },
       });
       toast.success("Shop profile saved");
       refetch();
@@ -257,6 +297,23 @@ export default function StoreProfilePage() {
             </div>
 
             <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="seoDescription">Short description (SEO &amp; data feed)</Label>
+                <span className="text-xs text-muted-foreground">
+                  {form.seoDescription.length}/255
+                </span>
+              </div>
+              <Input
+                id="seoDescription"
+                maxLength={255}
+                value={form.seoDescription}
+                onChange={(e) => setForm({ ...form, seoDescription: e.target.value })}
+                placeholder="One-line summary for search engines and social sharing"
+                className="h-10"
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="description">Brand description</Label>
               <Textarea
                 id="description"
@@ -269,6 +326,53 @@ export default function StoreProfilePage() {
               <p className="text-xs text-muted-foreground">
                 Shown on your storefront homepage when customers visit your shop.
               </p>
+            </div>
+          </section>
+
+          <section className="admin-panel space-y-6 p-6">
+            <div className="space-y-1">
+              <p className="admin-section-label">Contact</p>
+              <h3 className="text-base font-semibold">Shop contact details</h3>
+              <p className="text-sm text-muted-foreground">
+                Contact info shown on your storefront footer and product pages.
+              </p>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="contactEmail">Contact email</Label>
+                <Input
+                  id="contactEmail"
+                  type="email"
+                  value={form.contactEmail}
+                  onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
+                  placeholder="hello@yourbrand.com"
+                  className="h-10"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contactPhone">Contact phone</Label>
+                <Input
+                  id="contactPhone"
+                  type="tel"
+                  value={form.contactPhone}
+                  onChange={(e) => setForm({ ...form, contactPhone: e.target.value })}
+                  placeholder="+1 555 000 0000"
+                  className="h-10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address">Shop address</Label>
+              <Textarea
+                id="address"
+                rows={2}
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                placeholder="Street, city, country"
+                className="resize-y"
+              />
             </div>
           </section>
 

@@ -6,12 +6,36 @@ const sizeChartSchema = z.object({
   rows: z.array(z.array(z.string())),
 });
 
+const customFieldSchema = z.object({
+  label: z.string().max(100),
+  value: z.string().max(500),
+});
+
+const dimensionsSchema = z.object({
+  length: z.coerce.number().positive().optional(),
+  width: z.coerce.number().positive().optional(),
+  height: z.coerce.number().positive().optional(),
+});
+
 const productDetailsSchema = z.object({
   specifications: z.array(z.string()).default([]),
   careInstructions: z.array(z.string()).default([]),
   sizeChart: sizeChartSchema.optional(),
   deliveryOverride: z.string().optional(),
   colorImages: z.record(z.string(), z.string()).default({}),
+  shortDescription: z.string().max(255).optional(),
+  buyingPrice: z.union([z.literal(""), z.coerce.number().positive()]).optional(),
+  productSerial: z.string().max(100).optional(),
+  unitName: z.string().max(50).optional(),
+  warranty: z.string().max(200).optional(),
+  initialSoldCount: z.coerce.number().int().min(0).optional(),
+  useDefaultShipping: z.boolean().optional(),
+  customFields: z.array(customFieldSchema).default([]),
+  brand: z.string().max(100).optional(),
+  weight: z.union([z.literal(""), z.coerce.number().positive()]).optional(),
+  dimensions: dimensionsSchema.optional(),
+  condition: z.enum(["NEW", "USED", "REFURBISHED"]).optional(),
+  videoUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export const productFormSchema = z.object({
@@ -31,6 +55,8 @@ export const productFormSchema = z.object({
     specifications: [],
     careInstructions: [],
     colorImages: {},
+    customFields: [],
+    useDefaultShipping: true,
   }),
 });
 

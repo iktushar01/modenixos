@@ -8,9 +8,15 @@ interface ProductDeliveryTabProps {
 }
 
 export function ProductDeliveryTab({ product, store }: ProductDeliveryTabProps) {
+  const useDefault = product.details?.useDefaultShipping ?? true;
   const override = product.details?.deliveryOverride?.trim();
   const shipping = (store.shipping ?? {}) as StoreShippingConfig;
-  const policy = override || shipping.deliveryPolicy?.trim();
+  const storePolicy = shipping.deliveryPolicy?.trim();
+
+  const parts: string[] = [];
+  if (useDefault && storePolicy) parts.push(storePolicy);
+  if (override) parts.push(override);
+  const policy = parts.join("\n\n");
 
   if (!policy) {
     return (

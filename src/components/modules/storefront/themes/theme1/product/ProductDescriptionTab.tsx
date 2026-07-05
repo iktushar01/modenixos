@@ -49,10 +49,49 @@ export function ProductDescriptionTab({ product, theme }: ProductDescriptionTabP
 
       <section>
         <h2 className="mb-3 text-lg font-bold">{product.name}</h2>
+        {details?.shortDescription && (
+          <p className="sf-muted-fg mb-3 font-medium">{details.shortDescription}</p>
+        )}
         {product.description && (
           <p className="sf-muted-fg whitespace-pre-wrap">{product.description}</p>
         )}
       </section>
+
+      {details?.customFields && details.customFields.length > 0 && (
+        <section>
+          <h3 className="mb-2 text-base font-bold">Product details:</h3>
+          <dl className="grid gap-2 sm:grid-cols-2">
+            {details.customFields.map((field) =>
+              field.label && field.value ? (
+                <div key={`${field.label}-${field.value}`} className="rounded-lg border sf-border px-3 py-2">
+                  <dt className="text-xs font-medium sf-muted-fg">{field.label}</dt>
+                  <dd className="mt-0.5 text-sm sf-fg">{field.value}</dd>
+                </div>
+              ) : null,
+            )}
+          </dl>
+        </section>
+      )}
+
+      {(details?.brand || details?.condition || details?.warranty) && (
+        <section>
+          <h3 className="mb-2 text-base font-bold">Additional info:</h3>
+          <ul className="space-y-1 text-sm sf-muted-fg">
+            {details.brand && <li>Brand: {details.brand}</li>}
+            {details.condition && (
+              <li>
+                Condition:{" "}
+                {details.condition === "NEW"
+                  ? "New"
+                  : details.condition === "USED"
+                    ? "Used"
+                    : "Refurbished"}
+              </li>
+            )}
+            {details.warranty && <li>Warranty: {details.warranty}</li>}
+          </ul>
+        </section>
+      )}
 
       {details?.specifications && details.specifications.length > 0 && (
         <section>

@@ -42,12 +42,43 @@ export interface ProductSizeChart {
   rows: string[][];
 }
 
+export interface ProductCustomField {
+  label: string;
+  value: string;
+}
+
+export interface ProductDimensions {
+  length?: number;
+  width?: number;
+  height?: number;
+}
+
 export interface ProductDetails {
   specifications?: string[];
   careInstructions?: string[];
   sizeChart?: ProductSizeChart;
   deliveryOverride?: string | null;
   colorImages?: Record<string, string>;
+  shortDescription?: string;
+  buyingPrice?: number | null;
+  productSerial?: string;
+  unitName?: string;
+  warranty?: string;
+  initialSoldCount?: number;
+  useDefaultShipping?: boolean;
+  customFields?: ProductCustomField[];
+  brand?: string;
+  weight?: number | null;
+  dimensions?: ProductDimensions;
+  condition?: "NEW" | "USED" | "REFURBISHED";
+  videoUrl?: string;
+}
+
+export interface StorefrontShopProfile {
+  seoDescription?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  address?: string;
 }
 
 export interface StoreShippingConfig {
