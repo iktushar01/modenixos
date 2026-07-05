@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
 import { STOREFRONT_CATEGORY_ASPECT } from "@/lib/storefront/imageAspects";
+import { buildCategoryTree } from "@/lib/catalog/categoryTree";
 import {
   StorefrontCarousel,
   StorefrontCarouselHeaderAction,
@@ -20,7 +21,8 @@ interface CategoriesGridProps {
 }
 
 export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
-  if (categories.length === 0) return null;
+  const topLevel = buildCategoryTree(categories);
+  if (topLevel.length === 0) return null;
 
   return (
     <section id="categories" className="py-16 md:py-24">
@@ -32,13 +34,13 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
           action={
             <StorefrontCarouselHeaderAction
               viewAllHref={`/store/${slug}#shop`}
-              itemCount={categories.length}
+              itemCount={topLevel.length}
             />
           }
         />
 
         <StorefrontCarouselTrack>
-          {categories.map((cat) => (
+          {topLevel.map((cat) => (
             <StorefrontCarouselSlide key={cat.id} className={STOREFRONT_CAROUSEL_TILE_CLASS}>
               <motion.div
                 initial={{ opacity: 0, y: 12 }}

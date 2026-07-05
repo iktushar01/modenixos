@@ -4,9 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Menu, Phone, Search, ShoppingBag, User, X } from "lucide-react";
+import { Menu, ChevronDown, Phone, Search, ShoppingBag, User, X } from "lucide-react";
 import { Category, Store } from "@/types/store.types";
 import { StorefrontThemeConfig, resolveStorefrontNavLinks } from "@/lib/storefront";
+import { buildStorefrontCategoryNav, type StorefrontNavItem } from "@/lib/catalog/categoryTree";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartCount } from "@/hooks/useStoreCart";
 import { Button } from "@/components/ui/button";
@@ -42,10 +43,34 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
     [theme, store.slug, categories],
   );
 
-  const menuItems = useMemo(
-    () => [{ label: "HOME", href: base }, ...navLinks],
-    [base, navLinks],
-  );
+  const menuItems = useMemo(() => {
+    const home = { type: "link" as const, label: "HOME", href: base };
+    const navSource = theme.header.navSource;
+
+    if (navSource === "manual") {
+      return [
+        home,
+        ...navLinks.map((link) => ({
+          type: "link" as const,
+          label: link.label,
+          href: link.href,
+        })),
+      ];
+    }
+
+    const categoryNav = buildStorefrontCategoryNav(categories, base);
+
+    if (navSource === "both") {
+      const manualItems: StorefrontNavItem[] = navLinks.map((link) => ({
+        type: "link",
+        label: link.label,
+        href: link.href,
+      }));
+      return [home, ...manualItems, ...categoryNav];
+    }
+
+    return [home, ...categoryNav];
+  }, [base, categories, navLinks, theme.header.navSource]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -191,15 +216,37 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
         {menuItems.length > 0 && (
           <nav className="sf-section hidden border-b sf-border md:block" aria-label="Store categories">
             <div className="sf-nav-menu sf-carousel-fade-left sf-carousel-fade-right">
-              {menuItems.map((link) => (
-                <Link
-                  key={`${link.label}-${link.href}`}
-                  href={link.href}
-                  className="sf-nav-menu-item"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {menuItems.map((item) =>
+                item.type === "group" ? (
+                  <div key={item.label} className="group relative shrink-0">
+                    <Link href={item.href} className="sf-nav-menu-item inline-flex items-center gap-1">
+                      {item.label}
+                      <ChevronDown className="h-3 w-3 opacity-60" />
+                    </Link>
+                    <div className="sf-card sf-border pointer-events-none absolute left-1/2 top-full z-50 min-w-[11rem] -translate-x-1/2 pt-2 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                      <div className="rounded-md border py-1 shadow-lg sf-border">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className="block px-4 py-2 text-xs font-medium tracking-wide uppercase transition-colors hover:bg-muted/60 sf-fg"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={`${item.label}-${item.href}`}
+                    href={item.href}
+                    className="sf-nav-menu-item"
+                  >
+                    {item.label}
+                  </Link>
+                ),
+              )}
             </div>
           </nav>
         )}
@@ -226,16 +273,40 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             )}
 
             <nav className="flex flex-col gap-1">
-              {menuItems.map((link) => (
-                <Link
-                  key={`m-${link.label}-${link.href}`}
-                  href={link.href}
-                  className="sf-eyebrow border-b sf-border py-4 text-sm transition-opacity hover:opacity-70"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {menuItems.map((item) =>
+                item.type === "group" ? (
+                  <div key={item.label} className="border-b sf-border py-2">
+                    <Link
+                      href={item.href}
+                      className="sf-eyebrow block py-2 text-sm transition-opacity hover:opacity-70"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                    <div className="ml-3 space-y-1 border-l pl-3 sf-border">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className="block py-2 text-sm sf-muted-fg transition-opacity hover:opacity-70"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={`m-${item.label}-${item.href}`}
+                    href={item.href}
+                    className="sf-eyebrow border-b sf-border py-4 text-sm transition-opacity hover:opacity-70"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ),
+              )}
             </nav>
 
             {theme.header.showSearch && (

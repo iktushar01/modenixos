@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ import {
 } from "@/actions/catalog.actions";
 import { productFormSchema, ProductFormValues } from "@/zod/product.validation";
 import { Product } from "@/types/store.types";
+import { buildCategoryTree } from "@/lib/catalog/categoryTree";
 
 const SIZE_PRESETS = ["XS", "S", "M", "L", "XL", "XXL"];
 const COLOR_PRESETS = ["Black", "White", "Navy", "Beige", "Red", "Green", "Gray"];
@@ -187,6 +188,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   });
 
   const categories = categoriesRes?.data ?? [];
+  const categoryTree = useMemo(() => buildCategoryTree(categories), [categories]);
   const collections = collectionsRes?.data ?? [];
 
   const salePercent =
@@ -567,8 +569,15 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No category</SelectItem>
-                    {categories.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    {categoryTree.map((parent) => (
+                      <Fragment key={parent.id}>
+                        <SelectItem value={parent.id}>{parent.name}</SelectItem>
+                        {parent.children?.map((child) => (
+                          <SelectItem key={child.id} value={child.id}>
+                            — {child.name}
+                          </SelectItem>
+                        ))}
+                      </Fragment>
                     ))}
                   </SelectContent>
                 </Select>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { Category, Collection } from "@/types/store.types";
 import { ShopFacets, ShopFilters } from "@/lib/shopFilters";
+import { buildCategoryTree } from "@/lib/catalog/categoryTree";
 import { formatPrice } from "@/lib/storefrontTheme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +55,7 @@ export function ShopFilterSidebar({
 }: ShopFilterSidebarProps) {
   const base = `/store/${slug}`;
   const portalVars = useStorefrontCssVars();
+  const categoryTree = buildCategoryTree(categories);
 
   return (
     <aside className={cn("space-y-5", className)}>
@@ -103,25 +105,41 @@ export function ShopFilterSidebar({
             >
               All categories
             </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => onChange({ category: cat.slug })}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                  filters.category === cat.slug
-                    ? "sf-surface sf-fg"
-                    : "sf-muted-fg hover:sf-fg hover:opacity-90",
-                )}
-              >
-                {cat.image ? (
-                  <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md">
-                    <Image src={cat.image} alt="" fill className="object-cover" unoptimized />
-                  </span>
-                ) : null}
-                {cat.name}
-              </button>
+            {categoryTree.map((parent) => (
+              <div key={parent.id} className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => onChange({ category: parent.slug })}
+                  className={cn(
+                    "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
+                    filters.category === parent.slug
+                      ? "sf-surface sf-fg"
+                      : "sf-muted-fg hover:sf-fg hover:opacity-90",
+                  )}
+                >
+                  {parent.image ? (
+                    <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md">
+                      <Image src={parent.image} alt="" fill className="object-cover" unoptimized />
+                    </span>
+                  ) : null}
+                  {parent.name}
+                </button>
+                {parent.children?.map((child) => (
+                  <button
+                    key={child.id}
+                    type="button"
+                    onClick={() => onChange({ category: child.slug })}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-lg py-1.5 pl-8 pr-2 text-left text-sm transition-colors",
+                      filters.category === child.slug
+                        ? "sf-surface sf-fg"
+                        : "sf-muted-fg hover:sf-fg hover:opacity-90",
+                    )}
+                  >
+                    {child.name}
+                  </button>
+                ))}
+              </div>
             ))}
           </div>
         </FilterGroup>

@@ -20,9 +20,11 @@ export interface Store {
 export interface Category {
   id: string;
   storeId: string;
+  parentId?: string | null;
   name: string;
   slug: string;
   image?: string | null;
+  children?: Category[];
 }
 
 export interface Collection {

@@ -27,10 +27,17 @@ interface CategoryFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   category?: Category | null;
+  parentCategory?: Category | null;
 }
 
-export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFormDialogProps) {
+export function CategoryFormDialog({
+  open,
+  onOpenChange,
+  category,
+  parentCategory,
+}: CategoryFormDialogProps) {
   const isEdit = Boolean(category);
+  const isSubcategory = Boolean(parentCategory) || Boolean(category?.parentId);
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -61,6 +68,14 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
       const fd = new FormData();
       fd.append("name", name.trim());
       if (slug.trim()) fd.append("slug", slug.trim());
+
+      const parentId = parentCategory?.id ?? category?.parentId;
+      if (parentId) {
+        fd.append("parentId", parentId);
+      } else if (isEdit && !category?.parentId) {
+        fd.append("parentId", "");
+      }
+
       if (isEdit && removeImage && !newFile) {
         fd.append("image", "");
       }
@@ -72,22 +87,45 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
       return createCategoryAction(fd);
     },
     onSuccess: () => {
-      toast.success(isEdit ? "Category updated" : "Category created");
+      toast.success(
+        isEdit
+          ? isSubcategory
+            ? "Subcategory updated"
+            : "Category updated"
+          : isSubcategory
+            ? "Subcategory created"
+            : "Category created",
+      );
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       onOpenChange(false);
     },
-    onError: () => toast.error(isEdit ? "Failed to update category" : "Failed to create category"),
+    onError: () =>
+      toast.error(
+        isEdit
+          ? "Failed to update category"
+          : isSubcategory
+            ? "Failed to create subcategory"
+            : "Failed to create category",
+      ),
   });
+
+  const title = isEdit
+    ? isSubcategory
+      ? "Edit subcategory"
+      : "Edit category"
+    : parentCategory
+      ? `New subcategory under ${parentCategory.name}`
+      : "New category";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit category" : "New category"}</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Update name, slug, or cover image (4:5 crop)."
-              : "Add a category with an optional cover image. Crop to 4:5 to match your storefront."}
+            {isSubcategory
+              ? "Subcategories appear under their parent in your storefront navigation."
+              : "Top-level categories can contain subcategories. Crop images to 4:5 for your storefront."}
           </DialogDescription>
         </DialogHeader>
 
@@ -98,7 +136,7 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
               id="cat-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. T-Shirts"
+              placeholder={isSubcategory ? "e.g. Polo Shirt" : "e.g. Shirts"}
             />
           </div>
           <div className="space-y-2">
@@ -110,21 +148,23 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
                 setSlugTouched(true);
                 setSlug(e.target.value);
               }}
-              placeholder="t-shirts"
+              placeholder="polo-shirt"
             />
           </div>
-          <CategoryImageUpload
-            existingUrl={existingUrl}
-            onExistingChange={(url) => {
-              setExistingUrl(url);
-              if (!url) setRemoveImage(true);
-              else setRemoveImage(false);
-            }}
-            onNewFileChange={(file) => {
-              setNewFile(file);
-              setRemoveImage(false);
-            }}
-          />
+          {!isSubcategory && (
+            <CategoryImageUpload
+              existingUrl={existingUrl}
+              onExistingChange={(url) => {
+                setExistingUrl(url);
+                if (!url) setRemoveImage(true);
+                else setRemoveImage(false);
+              }}
+              onNewFileChange={(file) => {
+                setNewFile(file);
+                setRemoveImage(false);
+              }}
+            />
+          )}
         </div>
 
         <DialogFooter>
@@ -136,7 +176,7 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
             disabled={!name.trim() || mutation.isPending}
           >
             {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEdit ? "Save changes" : "Create category"}
+            {isEdit ? "Save changes" : isSubcategory ? "Create subcategory" : "Create category"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -144,10 +184,21 @@ export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFor
   );
 }
 
-/** Thumbnail for table rows */
-export function CategoryThumbnail({ category }: { category: Category }) {
+export function CategoryThumbnail({
+  category,
+  compact,
+}: {
+  category: Category;
+  compact?: boolean;
+}) {
   return (
-    <div className="relative h-12 w-10 overflow-hidden rounded-md border bg-muted">
+    <div
+      className={
+        compact
+          ? "relative h-8 w-7 overflow-hidden rounded border bg-muted"
+          : "relative h-12 w-10 overflow-hidden rounded-md border bg-muted"
+      }
+    >
       {category.image ? (
         <Image src={category.image} alt={category.name} fill className="object-cover" unoptimized />
       ) : (
