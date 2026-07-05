@@ -65,6 +65,9 @@ export async function logoutStorefrontCustomerAction(slug: string) {
   );
   await deleteCookie(storefrontCustomerCookieName(slug));
   revalidatePath(`/store/${slug}`);
+  revalidatePath(`/store/${slug}/account/login`);
+  revalidatePath(`/store/${slug}/account/register`);
+  revalidatePath(`/store/${slug}/account/wishlist`);
 }
 
 export async function getStorefrontCustomerAction(slug: string) {

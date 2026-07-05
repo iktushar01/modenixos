@@ -283,7 +283,9 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 )}
               </Link>
 
-              <StorefrontAccountMenu base={base} className="hidden p-2 sf-link sm:inline-flex" />
+              <div className="hidden sm:block">
+                <StorefrontAccountMenu base={base} />
+              </div>
 
               <div className="hidden sm:block">
                 <StorefrontThemeToggle />

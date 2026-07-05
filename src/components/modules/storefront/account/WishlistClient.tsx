@@ -9,6 +9,7 @@ import { Category, Store, WishlistItem } from "@/types/store.types";
 import { formatPrice, productDisplayPrice } from "@/lib/storefrontTheme";
 import { removeFromWishlistAction } from "@/actions/storefront-customer.actions";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
+import { useStorefrontCustomer } from "@/components/modules/storefront/StorefrontCustomerContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -22,6 +23,7 @@ export default function WishlistClient({
   items: WishlistItem[];
 }) {
   const router = useRouter();
+  const { customer, logout } = useStorefrontCustomer();
   const [list, setList] = useState(items);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const base = `/store/${store.slug}`;
@@ -47,11 +49,26 @@ export default function WishlistClient({
           <div>
             <p className="sf-eyebrow">Saved</p>
             <h1 className="sf-display-lg mt-2">My wishlist</h1>
-            <p className="sf-muted-fg mt-2 text-sm">{list.length} items</p>
+            <p className="sf-muted-fg mt-2 text-sm">
+              {customer?.name ? `${customer.name} · ` : ""}
+              {list.length} items
+            </p>
           </div>
-          <Button variant="outline" asChild className="sf-btn-outline rounded-full">
-            <Link href={base}>Continue shopping</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              className="sf-btn-outline rounded-full"
+              onClick={async () => {
+                await logout();
+                router.push(`${base}/account/login`);
+              }}
+            >
+              Log out
+            </Button>
+            <Button variant="outline" asChild className="sf-btn-outline rounded-full">
+              <Link href={base}>Continue shopping</Link>
+            </Button>
+          </div>
         </div>
 
         {list.length === 0 ? (
