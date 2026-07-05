@@ -25,26 +25,7 @@ const EXTENDED_COLORS_DARK = {
   ratingEmpty: "#a3a3a3",
 };
 
-/** Ensures palettes saved before extended tokens existed still resolve completely */
-export function fillPaletteDefaults(
-  palette: StorefrontColorPalette,
-  mode: StorefrontColorMode,
-): StorefrontColorPalette {
-  const ext = mode === "dark" ? EXTENDED_COLORS_DARK : EXTENDED_COLORS_LIGHT;
-  return {
-    ...palette,
-    overlay: palette.overlay ?? ext.overlay,
-    imageOverlay: palette.imageOverlay ?? ext.imageOverlay,
-    imageOverlayForeground: palette.imageOverlayForeground ?? ext.imageOverlayForeground,
-    imageOverlayMuted: palette.imageOverlayMuted ?? ext.imageOverlayMuted,
-    success: palette.success ?? ext.success,
-    destructive: palette.destructive ?? ext.destructive,
-    rating: palette.rating ?? palette.accent ?? ext.rating,
-    ratingEmpty: palette.ratingEmpty ?? palette.mutedForeground ?? ext.ratingEmpty,
-  };
-}
-
-export const CLASSIC_RETAIL_LIGHT: StorefrontColorPalette = {
+const CLASSIC_BASE_LIGHT: StorefrontColorPalette = {
   background: "#ffffff",
   foreground: "#171717",
   surface: "#ffffff",
@@ -69,7 +50,7 @@ export const CLASSIC_RETAIL_LIGHT: StorefrontColorPalette = {
   ...EXTENDED_COLORS_LIGHT,
 };
 
-export const CLASSIC_RETAIL_DARK: StorefrontColorPalette = {
+const CLASSIC_BASE_DARK: StorefrontColorPalette = {
   background: "#0a0a0a",
   foreground: "#f5f5f5",
   surface: "#141414",
@@ -94,23 +75,65 @@ export const CLASSIC_RETAIL_DARK: StorefrontColorPalette = {
   ...EXTENDED_COLORS_DARK,
 };
 
-export const THEME1_DARK_DEFAULT: StorefrontColorPalette = {
-  ...CLASSIC_RETAIL_DARK,
-  secondary: "#c9a962",
-  accent: "#c9a962",
-  navbar: "rgba(0,0,0,0.8)",
-  footer: "rgba(0,0,0,0.4)",
-};
+/** Ensures palettes saved before extended tokens existed still resolve completely */
+export function fillPaletteDefaults(
+  palette: StorefrontColorPalette,
+  mode: StorefrontColorMode,
+): StorefrontColorPalette {
+  const ext = mode === "dark" ? EXTENDED_COLORS_DARK : EXTENDED_COLORS_LIGHT;
+  return {
+    ...palette,
+    overlay: palette.overlay ?? ext.overlay,
+    imageOverlay: palette.imageOverlay ?? ext.imageOverlay,
+    imageOverlayForeground: palette.imageOverlayForeground ?? ext.imageOverlayForeground,
+    imageOverlayMuted: palette.imageOverlayMuted ?? ext.imageOverlayMuted,
+    success: palette.success ?? ext.success,
+    destructive: palette.destructive ?? ext.destructive,
+    rating: palette.rating ?? palette.accent ?? ext.rating,
+    ratingEmpty: palette.ratingEmpty ?? palette.mutedForeground ?? ext.ratingEmpty,
+  };
+}
 
-export const THEME1_LIGHT_DEFAULT: StorefrontColorPalette = {
-  ...CLASSIC_RETAIL_LIGHT,
-  secondary: "#b8860b",
-  accent: "#b8860b",
-};
+/** Build a complete palette from classic base + overrides, with brand-aligned extended tokens */
+export function buildPalette(
+  mode: StorefrontColorMode,
+  overrides: Partial<StorefrontColorPalette> = {},
+): StorefrontColorPalette {
+  const base = mode === "dark" ? CLASSIC_BASE_DARK : CLASSIC_BASE_LIGHT;
+  const merged: StorefrontColorPalette = { ...base, ...overrides };
+  return fillPaletteDefaults(
+    {
+      ...merged,
+      rating: overrides.rating ?? merged.accent,
+      ratingEmpty: overrides.ratingEmpty ?? merged.mutedForeground,
+    },
+    mode,
+  );
+}
 
-function withAnnouncement(palette: StorefrontColorPalette, ann: typeof ANNOUNCEMENT_LIGHT): StorefrontColorPalette {
+function withAnnouncement(
+  palette: StorefrontColorPalette,
+  ann: typeof ANNOUNCEMENT_LIGHT,
+): StorefrontColorPalette {
   return { ...palette, ...ann };
 }
+
+export const CLASSIC_RETAIL_LIGHT: StorefrontColorPalette = buildPalette("light", {});
+export const CLASSIC_RETAIL_DARK: StorefrontColorPalette = buildPalette("dark", {});
+
+export const THEME1_DARK_DEFAULT: StorefrontColorPalette = buildPalette("dark", {
+  secondary: "#c9a962",
+  accent: "#c9a962",
+  secondaryForeground: "#0a0a0a",
+  accentForeground: "#0a0a0a",
+  navbar: "rgba(0,0,0,0.8)",
+  footer: "rgba(0,0,0,0.4)",
+});
+
+export const THEME1_LIGHT_DEFAULT: StorefrontColorPalette = buildPalette("light", {
+  secondary: "#b8860b",
+  accent: "#b8860b",
+});
 
 export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
   {
@@ -125,7 +148,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
     name: "Luxury Dark",
     description: "Black & gold fashion aesthetic",
     dark: withAnnouncement(
-      {
+      buildPalette("dark", {
         background: "#0a0a0a",
         foreground: "#f5f5f5",
         surface: "#141414",
@@ -146,7 +169,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
         navbarForeground: "#ffffff",
         footer: "rgba(0,0,0,0.4)",
         footerForeground: "#ffffff",
-      } as StorefrontColorPalette,
+      }),
       ANNOUNCEMENT_DARK,
     ),
     light: withAnnouncement(THEME1_LIGHT_DEFAULT, ANNOUNCEMENT_LIGHT),
@@ -156,8 +179,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
     name: "Midnight Blue",
     description: "Deep navy with ice blue accents",
     dark: withAnnouncement(
-      {
-        ...CLASSIC_RETAIL_DARK,
+      buildPalette("dark", {
         background: "#0b0f1a",
         surface: "#111827",
         muted: "#1e293b",
@@ -170,11 +192,19 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
         card: "#111827",
         navbar: "rgba(11,15,26,0.9)",
         footer: "rgba(11,15,26,0.6)",
-      },
+      }),
       ANNOUNCEMENT_DARK,
     ),
     light: withAnnouncement(
-      { ...CLASSIC_RETAIL_LIGHT, background: "#f0f4ff", primary: "#1e3a5f", secondary: "#0284c7", accent: "#0284c7" },
+      buildPalette("light", {
+        background: "#f0f4ff",
+        primary: "#1e3a5f",
+        primaryForeground: "#ffffff",
+        secondary: "#0284c7",
+        secondaryForeground: "#ffffff",
+        accent: "#0284c7",
+        accentForeground: "#ffffff",
+      }),
       ANNOUNCEMENT_LIGHT,
     ),
   },
@@ -183,8 +213,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
     name: "Rose Noir",
     description: "Dark base with rose gold highlights",
     dark: withAnnouncement(
-      {
-        ...CLASSIC_RETAIL_DARK,
+      buildPalette("dark", {
         background: "#120a0e",
         surface: "#1a1015",
         secondary: "#e94560",
@@ -193,11 +222,17 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
         accentForeground: "#ffffff",
         navbar: "rgba(18,10,14,0.9)",
         footer: "rgba(18,10,14,0.6)",
-      },
+      }),
       ANNOUNCEMENT_DARK,
     ),
     light: withAnnouncement(
-      { ...CLASSIC_RETAIL_LIGHT, background: "#fff5f7", secondary: "#e94560", accent: "#e94560" },
+      buildPalette("light", {
+        background: "#fff5f7",
+        secondary: "#e94560",
+        accent: "#e94560",
+        accentForeground: "#ffffff",
+        secondaryForeground: "#ffffff",
+      }),
       ANNOUNCEMENT_LIGHT,
     ),
   },
@@ -206,8 +241,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
     name: "Forest",
     description: "Earthy greens on dark charcoal",
     dark: withAnnouncement(
-      {
-        ...CLASSIC_RETAIL_DARK,
+      buildPalette("dark", {
         background: "#0a0f0c",
         surface: "#111916",
         secondary: "#6ee7b7",
@@ -216,11 +250,17 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
         accentForeground: "#0a0f0c",
         navbar: "rgba(10,15,12,0.9)",
         footer: "rgba(10,15,12,0.6)",
-      },
+      }),
       ANNOUNCEMENT_DARK,
     ),
     light: withAnnouncement(
-      { ...CLASSIC_RETAIL_LIGHT, background: "#f0fdf4", secondary: "#059669", accent: "#059669" },
+      buildPalette("light", {
+        background: "#f0fdf4",
+        secondary: "#059669",
+        accent: "#059669",
+        accentForeground: "#ffffff",
+        secondaryForeground: "#ffffff",
+      }),
       ANNOUNCEMENT_LIGHT,
     ),
   },
@@ -229,11 +269,16 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
     name: "Minimal Light",
     description: "Clean white storefront with charcoal accents",
     dark: withAnnouncement(
-      { ...CLASSIC_RETAIL_DARK, background: "#18181b", primary: "#fafafa", secondary: "#52525b", accent: "#52525b" },
+      buildPalette("dark", {
+        background: "#18181b",
+        primary: "#fafafa",
+        secondary: "#52525b",
+        accent: "#52525b",
+      }),
       ANNOUNCEMENT_DARK,
     ),
     light: withAnnouncement(
-      {
+      buildPalette("light", {
         background: "#ffffff",
         foreground: "#09090b",
         surface: "#fafafa",
@@ -254,7 +299,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
         navbarForeground: "#09090b",
         footer: "#fafafa",
         footerForeground: "#09090b",
-      } as StorefrontColorPalette,
+      }),
       ANNOUNCEMENT_LIGHT,
     ),
   },
@@ -263,8 +308,7 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
     name: "Sunset",
     description: "Warm amber tones on deep brown",
     dark: withAnnouncement(
-      {
-        ...CLASSIC_RETAIL_DARK,
+      buildPalette("dark", {
         background: "#140e0a",
         surface: "#1c1410",
         secondary: "#f59e0b",
@@ -273,11 +317,15 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
         accentForeground: "#140e0a",
         navbar: "rgba(20,14,10,0.9)",
         footer: "rgba(20,14,10,0.6)",
-      },
+      }),
       ANNOUNCEMENT_DARK,
     ),
     light: withAnnouncement(
-      { ...CLASSIC_RETAIL_LIGHT, background: "#fffbeb", secondary: "#d97706", accent: "#ea580c" },
+      buildPalette("light", {
+        background: "#fffbeb",
+        secondary: "#d97706",
+        accent: "#ea580c",
+      }),
       ANNOUNCEMENT_LIGHT,
     ),
   },
@@ -285,6 +333,12 @@ export const STOREFRONT_PALETTE_PRESETS: StorefrontPalettePreset[] = [
 
 export function getPresetById(id: string): StorefrontPalettePreset | undefined {
   return STOREFRONT_PALETTE_PRESETS.find((p) => p.id === id);
+}
+
+export function resolvePresetPalette(presetId: string, mode: StorefrontColorMode): StorefrontColorPalette {
+  const preset = getPresetById(presetId) ?? STOREFRONT_PALETTE_PRESETS[0];
+  const base = mode === "dark" ? preset.dark : preset.light;
+  return mergePalette(base, undefined, mode);
 }
 
 export function mergePalette(
