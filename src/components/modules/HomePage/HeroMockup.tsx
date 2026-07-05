@@ -11,8 +11,8 @@ export default function HeroMockup() {
       transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
       className="relative mx-auto w-full max-w-lg perspective-[1200px] lg:max-w-none"
     >
-      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-rose-500/20 via-violet-500/15 to-indigo-500/20 blur-2xl" />
-      <div className="relative overflow-hidden rounded-xl border border-border/80 bg-card shadow-2xl shadow-black/10 dark:shadow-black/40">
+      <div className="absolute -inset-4 rounded-md bg-[#7047EB]/10 blur-2xl" />
+      <div className="relative overflow-hidden rounded-md border border-border bg-card shadow-xl shadow-black/10 dark:shadow-black/40">
         {/* Browser chrome */}
         <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-4 py-3">
           <div className="flex gap-1.5">
@@ -45,16 +45,16 @@ export default function HeroMockup() {
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               {[
-                { label: "Revenue", value: "$4,280", icon: TrendingUp, color: "text-rose-500" },
-                { label: "Orders", value: "47", icon: ShoppingCart, color: "text-violet-500" },
-                { label: "Products", value: "12", icon: Package, color: "text-blue-500" },
-                { label: "Conversion", value: "3.2%", icon: BarChart3, color: "text-amber-500" },
+                { label: "Revenue", value: "$4,280", icon: TrendingUp },
+                { label: "Orders", value: "47", icon: ShoppingCart },
+                { label: "Products", value: "12", icon: Package },
+                { label: "Conversion", value: "3.2%", icon: BarChart3 },
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-lg border border-border/50 bg-card/80 p-2.5 sm:p-3"
+                  className="rounded-md border border-border bg-card/80 p-2.5 sm:p-3"
                 >
-                  <stat.icon className={`mb-1 h-3.5 w-3.5 ${stat.color}`} />
+                  <stat.icon className="mb-1 h-3.5 w-3.5 text-[#7047EB]" />
                   <p className="text-sm font-bold sm:text-base">{stat.value}</p>
                   <p className="text-[10px] text-muted-foreground">{stat.label}</p>
                 </div>

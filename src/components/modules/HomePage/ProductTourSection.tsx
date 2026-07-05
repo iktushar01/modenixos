@@ -8,7 +8,6 @@ import {
   Shield,
   Store,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import AnimatedContent from "@/components/AnimatedContent";
 import { cn } from "@/lib/utils";
@@ -129,33 +128,26 @@ export default function ProductTourSection() {
   const current = tabs.find((t) => t.id === active)!;
 
   return (
-    <section id="product-tour" className="scroll-mt-20 border-t border-border/60 py-20 md:py-28">
-      <div className="container mx-auto max-w-6xl px-4">
+    <section id="product-tour" className="scroll-mt-28 border-b border-border py-20 md:py-28">
+      <div className="mkt-section">
         <AnimatedContent distance={50} duration={0.8}>
-          <div className="text-center">
-            <Badge variant="secondary" className="mb-4">
-              Product tour
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              One platform, three experiences
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              Store owners run their brand, shoppers buy on a public storefront, and admins oversee
-              the entire multi-tenant platform.
-            </p>
-          </div>
+          <MarketingSectionHeader
+            label="Product tour"
+            title="One platform, three experiences"
+            description="Store owners run their brand, shoppers buy on a public storefront, and admins oversee the entire multi-tenant platform."
+          />
         </AnimatedContent>
 
         <AnimatedContent distance={40} duration={0.75} delay={0.1}>
-          <div className="mt-12 overflow-hidden rounded-2xl border border-border/60 bg-card/50 shadow-lg backdrop-blur-sm">
-            <div className="flex flex-wrap gap-1 border-b border-border/60 bg-muted/20 p-2">
+          <div className="mt-12 overflow-hidden rounded-md border border-border bg-card">
+            <div className="flex flex-wrap gap-1 border-b border-border bg-muted/20 p-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => setActive(tab.id)}
                   className={cn(
-                    "flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all duration-200",
                     active === tab.id
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
@@ -172,14 +164,14 @@ export default function ProductTourSection() {
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {current.description}
                 </p>
-                <Button asChild className="mt-6 gap-2 rounded-xl">
+                <Button asChild className="mt-6 gap-2 rounded-md">
                   <Link href={current.href} target={current.id === "storefront" ? "_blank" : undefined}>
                     {current.cta}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>
-              <div className="rounded-xl border border-border/50 bg-background/80 p-4">
+              <div className="rounded-md border border-border bg-muted/20 p-4">
                 {current.preview === "dashboard" && <DashboardPreview />}
                 {current.preview === "storefront" && <StorefrontPreview />}
                 {current.preview === "admin" && <AdminPreview />}
