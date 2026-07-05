@@ -22,10 +22,7 @@ export function BrandStory({ theme }: BrandStoryProps) {
           {theme.brandStoryImage ? (
             <Image src={theme.brandStoryImage} alt="" fill className="object-cover" unoptimized />
           ) : (
-            <div
-              className="absolute inset-0"
-              style={{ background: `linear-gradient(160deg, ${theme.colors.secondary}20, var(--sf-muted))` }}
-            />
+            <div className="sf-brand-placeholder absolute inset-0" />
           )}
         </motion.div>
         <motion.div

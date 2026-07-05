@@ -81,11 +81,11 @@ function Theme1HomeContent({
       )}
 
       {activeTheme.sections.categories && !isShopFiltered && (
-        <CategoriesGrid slug={store.slug} categories={categories} theme={activeTheme} />
+        <CategoriesGrid slug={store.slug} categories={categories} />
       )}
 
       {activeTheme.sections.collections && !isShopFiltered && (
-        <CollectionsGrid slug={store.slug} collections={collections} theme={activeTheme} />
+        <CollectionsGrid slug={store.slug} collections={collections} />
       )}
 
       {activeTheme.sections.featured && (

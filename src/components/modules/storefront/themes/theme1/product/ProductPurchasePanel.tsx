@@ -276,7 +276,7 @@ export function ProductPurchasePanel({
           className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide sf-fg transition-opacity hover:opacity-70"
         >
           <Heart
-            className={cn("h-5 w-5", inWishlist && "fill-red-500 text-red-500")}
+            className={cn("h-5 w-5", inWishlist && "sf-destructive-fill")}
           />
           {inWishlist ? "In Wishlist" : "Add To Wishlist"}
         </button>

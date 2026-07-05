@@ -49,7 +49,7 @@ export function ProductGallery({ product, selectedColor, colorImages }: ProductG
           ))}
         </div>
       )}
-      <div className="sf-border relative min-h-[320px] flex-1 overflow-hidden rounded-lg border bg-white sm:min-h-[480px]">
+      <div className="sf-border sf-surface relative min-h-[320px] flex-1 overflow-hidden rounded-lg border sm:min-h-[480px]">
         <Image
           src={mainSrc}
           alt={product.name}

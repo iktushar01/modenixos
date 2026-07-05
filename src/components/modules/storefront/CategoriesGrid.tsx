@@ -4,15 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
-import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
 
 interface CategoriesGridProps {
   slug: string;
   categories: Category[];
-  theme: StorefrontThemeConfig;
 }
 
-export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps) {
+export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
   if (categories.length === 0) return null;
 
   return (
@@ -50,19 +48,13 @@ export function CategoriesGrid({ slug, categories, theme }: CategoriesGridProps)
                   unoptimized
                 />
               ) : (
-                <div
-                  className="absolute inset-0 opacity-50"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}40, ${theme.colors.secondary}20)` }}
-                />
+                <div className="sf-tile-placeholder absolute inset-0 opacity-50" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
-              <div
-                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ boxShadow: `inset 0 0 50px ${theme.colors.secondary}25` }}
-              />
+              <div className="sf-image-overlay absolute inset-0" />
+              <div className="sf-tile-hover-glow absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
-                <p className="text-lg font-medium text-white">{cat.name}</p>
-                <p className="mt-1 text-xs uppercase tracking-wider text-white/45">Shop now</p>
+                <p className="sf-image-overlay-fg text-lg font-medium">{cat.name}</p>
+                <p className="sf-image-overlay-muted mt-1 text-xs uppercase tracking-wider">Shop now</p>
               </div>
             </Link>
           </motion.div>

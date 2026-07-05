@@ -4,15 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Collection } from "@/types/store.types";
-import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
 
 interface CollectionsGridProps {
   slug: string;
   collections: Collection[];
-  theme: StorefrontThemeConfig;
 }
 
-export function CollectionsGrid({ slug, collections, theme }: CollectionsGridProps) {
+export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
   if (collections.length === 0) return null;
 
   return (
@@ -52,17 +50,12 @@ export function CollectionsGrid({ slug, collections, theme }: CollectionsGridPro
                   unoptimized
                 />
               ) : (
-                <div
-                  className="absolute inset-0 opacity-40"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.secondary}40, transparent)` }}
-                />
+                <div className="sf-tile-placeholder absolute inset-0 opacity-40" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-              <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ boxShadow: `inset 0 0 60px ${theme.colors.secondary}30` }}
-              />
+              <div className="sf-image-overlay absolute inset-0" />
+              <div className="sf-tile-hover-glow absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
-                <p className="text-lg font-medium text-white">{col.name}</p>
+                <p className="sf-image-overlay-fg text-lg font-medium">{col.name}</p>
                 {col.isFeatured && (
                   <span className="mt-1 inline-block text-xs uppercase tracking-wider sf-muted-fg">Featured</span>
                 )}

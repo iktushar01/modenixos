@@ -14,7 +14,6 @@ interface PromoBannerProps {
 export function PromoBanner({ slug, theme, fallbackText }: PromoBannerProps) {
   const text = theme.promoText || fallbackText;
   if (!theme.promoEnabled || !text) return null;
-  const c = theme.colors;
 
   return (
     <section className="sf-section w-full py-6">
@@ -22,19 +21,13 @@ export function PromoBanner({ slug, theme, fallbackText }: PromoBannerProps) {
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="sf-border relative overflow-hidden rounded-2xl border px-6 py-8 md:px-12 md:py-10"
-        style={{
-          background: `linear-gradient(135deg, ${c.secondary}25, transparent 60%), color-mix(in srgb, var(--sf-card) 80%, transparent)`,
-        }}
+        className="sf-border sf-promo-panel relative overflow-hidden rounded-2xl border px-6 py-8 md:px-12 md:py-10"
       >
-        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl" style={{ backgroundColor: `${c.secondary}30` }} />
+        <div className="sf-promo-glow absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl" />
         <div className="relative flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-start gap-4">
-            <div
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: `${c.secondary}30` }}
-            >
-              <Zap className="h-5 w-5 sf-secondary-text" style={{ color: c.secondary }} />
+            <div className="sf-promo-icon-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+              <Zap className="sf-secondary-text h-5 w-5" />
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Limited Time</p>

@@ -31,7 +31,7 @@ export function StoreHero({ store, theme }: StoreHeroProps) {
 
   if (slides.length === 0) {
     return (
-      <section className="relative h-[60vh] min-h-[280px] bg-gradient-to-br from-zinc-900 via-black to-zinc-950" />
+      <section className="relative h-[60vh] min-h-[280px] sf-muted" />
     );
   }
 

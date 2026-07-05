@@ -155,7 +155,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 sf-muted-fg hover:text-red-400"
+                        className="sf-hover-destructive h-9 w-9 sf-muted-fg"
                         onClick={() => removeItem(item.productId, store.id, item.size, item.color)}
                         aria-label="Remove item"
                       >

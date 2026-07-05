@@ -168,25 +168,100 @@
 }
 
 .storefront-theme .sf-star-filled {
-  color: var(--sf-accent);
-  fill: var(--sf-accent);
+  color: var(--sf-rating);
+  fill: var(--sf-rating);
 }
 
 .storefront-theme .sf-star-empty {
-  color: color-mix(in srgb, var(--sf-muted-fg) 40%, transparent);
+  color: var(--sf-rating-empty);
 }
 
 .storefront-theme .sf-rating-bar {
-  border-color: color-mix(in srgb, var(--sf-accent) 35%, var(--sf-border));
-  background-color: color-mix(in srgb, var(--sf-accent) 10%, var(--sf-muted));
+  border-color: color-mix(in srgb, var(--sf-rating) 35%, var(--sf-border));
+  background-color: color-mix(in srgb, var(--sf-rating) 10%, var(--sf-muted));
 }
 
 .storefront-theme .sf-rating-bar-fill {
-  background-color: var(--sf-accent);
+  background-color: var(--sf-rating);
 }
 
 .storefront-theme .sf-overlay-backdrop {
-  background-color: color-mix(in srgb, var(--sf-bg) 40%, transparent);
+  background-color: var(--sf-overlay);
+}
+
+.storefront-theme .sf-image-overlay {
+  background: linear-gradient(
+    to top,
+    var(--sf-image-overlay) 0%,
+    color-mix(in srgb, var(--sf-image-overlay) 25%, transparent) 40%,
+    transparent 100%
+  );
+}
+
+.storefront-theme .sf-image-overlay-fg {
+  color: var(--sf-image-overlay-fg);
+}
+
+.storefront-theme .sf-image-overlay-muted {
+  color: var(--sf-image-overlay-muted);
+}
+
+.storefront-theme .sf-success-text {
+  color: var(--sf-success);
+}
+
+.storefront-theme .sf-destructive-text {
+  color: var(--sf-destructive);
+}
+
+.storefront-theme .sf-destructive-fill {
+  color: var(--sf-destructive);
+  fill: var(--sf-destructive);
+}
+
+.storefront-theme .sf-hover-destructive:hover {
+  color: var(--sf-destructive);
+}
+
+.storefront-theme .sf-tile-placeholder {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sf-primary) 25%, transparent),
+    color-mix(in srgb, var(--sf-secondary) 12%, transparent)
+  );
+}
+
+.storefront-theme .sf-tile-hover-glow {
+  box-shadow: inset 0 0 50px color-mix(in srgb, var(--sf-secondary) 15%, transparent);
+}
+
+.storefront-theme .sf-brand-placeholder {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--sf-secondary) 12%, transparent),
+    var(--sf-muted)
+  );
+}
+
+.storefront-theme .sf-promo-panel {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sf-secondary) 15%, transparent),
+    transparent 60%
+  ),
+  color-mix(in srgb, var(--sf-card) 80%, transparent);
+}
+
+.storefront-theme .sf-promo-glow {
+  background-color: color-mix(in srgb, var(--sf-secondary) 18%, transparent);
+}
+
+.storefront-theme .sf-promo-icon-bg {
+  background-color: color-mix(in srgb, var(--sf-secondary) 18%, transparent);
+}
+
+.storefront-theme .sf-navbar-link-muted {
+  color: color-mix(in srgb, var(--sf-navbar-fg) 80%, transparent);
 }
 
 .storefront-theme .sf-hero-overlay {

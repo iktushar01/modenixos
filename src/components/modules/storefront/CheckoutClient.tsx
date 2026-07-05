@@ -201,7 +201,7 @@ export default function CheckoutClient({
                 <span>{formatPrice(shipping, store.currency)}</span>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between text-sm text-green-600">
+                <div className="sf-success-text flex justify-between text-sm">
                   <span>Discount</span>
                   <span>-{formatPrice(discount, store.currency)}</span>
                 </div>

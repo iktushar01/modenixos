@@ -50,6 +50,14 @@ export interface StorefrontColorPalette {
   navbarForeground: string;
   footer: string;
   footerForeground: string;
+  overlay: string;
+  imageOverlay: string;
+  imageOverlayForeground: string;
+  imageOverlayMuted: string;
+  success: string;
+  destructive: string;
+  rating: string;
+  ratingEmpty: string;
 }
 
 export interface StorefrontPalettePreset {
@@ -128,4 +136,12 @@ export const STOREFRONT_COLOR_FIELDS: Array<{ key: keyof StorefrontColorPalette;
   { key: "navbarForeground", label: "Header text", group: "Layout" },
   { key: "footer", label: "Footer background", group: "Layout" },
   { key: "footerForeground", label: "Footer text", group: "Layout" },
+  { key: "overlay", label: "Modal overlay", group: "Overlays" },
+  { key: "imageOverlay", label: "Image card overlay", group: "Overlays" },
+  { key: "imageOverlayForeground", label: "Image card text", group: "Overlays" },
+  { key: "imageOverlayMuted", label: "Image card muted text", group: "Overlays" },
+  { key: "success", label: "Success / discount", group: "Feedback" },
+  { key: "destructive", label: "Destructive / remove", group: "Feedback" },
+  { key: "rating", label: "Star rating (filled)", group: "Feedback" },
+  { key: "ratingEmpty", label: "Star rating (empty)", group: "Feedback" },
 ];

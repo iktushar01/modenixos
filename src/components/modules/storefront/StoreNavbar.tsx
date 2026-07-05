@@ -143,7 +143,7 @@ export function StoreNavbar({ store, theme }: StoreNavbarProps) {
               {link.label}
             </Link>
           ))}
-          <Link href="/login" className="mt-2 block py-2.5 text-sm text-white/80" onClick={() => setMobileOpen(false)}>
+          <Link href="/login" className="sf-navbar-link-muted mt-2 block py-2.5 text-sm" onClick={() => setMobileOpen(false)}>
             Login
           </Link>
         </motion.nav>

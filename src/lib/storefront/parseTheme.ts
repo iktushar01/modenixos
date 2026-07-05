@@ -85,7 +85,7 @@ function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorM
     const customRoot = (raw.customColors ?? {}) as Partial<
       Record<StorefrontColorMode, Partial<StorefrontColorPalette>>
     >;
-    return mergePalette(base, customRoot[colorMode] ?? {});
+    return mergePalette(base, customRoot[colorMode] ?? {}, colorMode);
   }
 
   const legacyOverrides: Partial<StorefrontColorPalette> = {};
@@ -99,7 +99,7 @@ function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorM
     legacyOverrides.secondary = legacySecondary;
     legacyOverrides.accent = legacySecondary;
   }
-  return mergePalette(base, legacyOverrides);
+  return mergePalette(base, legacyOverrides, colorMode);
 }
 
 /** Resolve palette for a given mode (used by storefront light/dark toggle) */
@@ -114,7 +114,7 @@ export function resolveColorsForMode(
   const base = colorMode === "dark" ? preset.dark : preset.light;
 
   if (theme.palettePreset === "custom") {
-    return mergePalette(base, theme.customColors?.[colorMode]);
+    return mergePalette(base, theme.customColors?.[colorMode], colorMode);
   }
 
   const legacyOverrides: Partial<StorefrontColorPalette> = {};
@@ -126,7 +126,7 @@ export function resolveColorsForMode(
     legacyOverrides.secondary = theme.secondaryColor;
     legacyOverrides.accent = theme.secondaryColor;
   }
-  return mergePalette(base, legacyOverrides);
+  return mergePalette(base, legacyOverrides, colorMode);
 }
 
 export function resolveStorefrontNavLinks(

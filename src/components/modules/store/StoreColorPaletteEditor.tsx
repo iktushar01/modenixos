@@ -32,9 +32,9 @@ function resolvePreviewPalette(
   const preset = getPresetById(presetId) ?? STOREFRONT_PALETTE_PRESETS[0];
   const base = colorMode === "dark" ? preset.dark : preset.light;
   if (presetId === "custom") {
-    return mergePalette(base, customColors?.[colorMode]);
+    return mergePalette(base, customColors?.[colorMode], colorMode);
   }
-  return base;
+  return mergePalette(base, undefined, colorMode);
 }
 
 export function StoreColorPaletteEditor({
