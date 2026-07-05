@@ -55,12 +55,19 @@ export default function CustomerDetailPage({ customerId }: { customerId: string 
 
   if (isError || !customer) {
     return (
-      <EmptyState
-        title="Customer not found"
-        description="This customer may have been removed or you no longer have access."
-        actionLabel="Back to customers"
-        onAction={() => {}}
-      />
+      <div className="space-y-6">
+        <Link
+          href="/dashboard/customers"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to customers
+        </Link>
+        <EmptyState
+          title="Customer not found"
+          description="This customer may have been removed or you no longer have access."
+        />
+      </div>
     );
   }
 
