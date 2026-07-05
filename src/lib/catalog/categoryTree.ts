@@ -38,6 +38,23 @@ export type StorefrontNavItem =
       children: Array<{ label: string; href: string }>;
     };
 
+export function resolveCategoryFilterSlugs(categories: Category[], slug: string): Set<string> {
+  const slugs = new Set<string>([slug]);
+  const tree = buildCategoryTree(categories);
+
+  for (const parent of tree) {
+    if (parent.slug === slug) {
+      parent.children?.forEach((child) => slugs.add(child.slug));
+      return slugs;
+    }
+    if (parent.children?.some((child) => child.slug === slug)) {
+      return slugs;
+    }
+  }
+
+  return slugs;
+}
+
 export function buildStorefrontCategoryNav(
   categories: Category[],
   base: string,
@@ -45,10 +62,10 @@ export function buildStorefrontCategoryNav(
   const tree = buildCategoryTree(categories);
 
   return tree.map((parent) => {
-    const href = `${base}#shop?category=${encodeURIComponent(parent.slug)}`;
+    const href = `${base}?category=${encodeURIComponent(parent.slug)}#shop`;
     const children = (parent.children ?? []).map((child) => ({
       label: child.name.toUpperCase(),
-      href: `${base}#shop?category=${encodeURIComponent(child.slug)}`,
+      href: `${base}?category=${encodeURIComponent(child.slug)}#shop`,
     }));
 
     if (children.length > 0) {

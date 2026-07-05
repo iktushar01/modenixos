@@ -1,4 +1,5 @@
-import { Product } from "@/types/store.types";
+import { Category, Product } from "@/types/store.types";
+import { resolveCategoryFilterSlugs } from "@/lib/catalog/categoryTree";
 
 export type ShopSort = "newest" | "price-asc" | "price-desc" | "name";
 
@@ -40,6 +41,31 @@ export function parseShopFilters(params: URLSearchParams): ShopFilters {
     sort: ["newest", "price-asc", "price-desc", "name"].includes(sort) ? sort : "newest",
     search: params.get("search") ?? params.get("q") ?? undefined,
   };
+}
+
+/** Shop URLs must put query params before the hash so Next.js can read them. */
+export function buildShopHref(
+  pathname: string,
+  params?: Record<string, string | undefined> | URLSearchParams,
+): string {
+  const search =
+    params instanceof URLSearchParams
+      ? params
+      : (() => {
+          const p = new URLSearchParams();
+          if (params) {
+            for (const [key, value] of Object.entries(params)) {
+              if (value) p.set(key, value);
+            }
+          }
+          return p;
+        })();
+  const qs = search.toString();
+  return qs ? `${pathname}?${qs}#shop` : `${pathname}#shop`;
+}
+
+export function buildShopCategoryHref(pathname: string, categorySlug: string): string {
+  return buildShopHref(pathname, { category: categorySlug });
 }
 
 export function shopFiltersToSearchParams(filters: ShopFilters): URLSearchParams {
@@ -100,11 +126,18 @@ function productPrice(p: Product) {
   return p.discountPrice ?? p.price;
 }
 
-export function filterAndSortProducts(products: Product[], filters: ShopFilters): Product[] {
+export function filterAndSortProducts(
+  products: Product[],
+  filters: ShopFilters,
+  categories?: Category[],
+): Product[] {
   let result = [...products];
 
   if (filters.category) {
-    result = result.filter((p) => p.category?.slug === filters.category);
+    const slugs = categories?.length
+      ? resolveCategoryFilterSlugs(categories, filters.category)
+      : new Set([filters.category]);
+    result = result.filter((p) => p.category?.slug && slugs.has(p.category.slug));
   }
   if (filters.collection) {
     result = result.filter((p) => p.collection?.slug === filters.collection);

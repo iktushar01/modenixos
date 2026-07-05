@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Collection, Category, Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
@@ -70,6 +70,13 @@ function Theme1HomeContent({
   const trendingProducts = useMemo(() => catalog.slice(0, 12), [catalog]);
   const promoFallback = buildPromoFallback(catalog);
 
+  useEffect(() => {
+    if (!isShopFiltered || typeof window === "undefined" || window.location.hash !== "#shop") return;
+    requestAnimationFrame(() => {
+      document.getElementById("shop")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [isShopFiltered, searchParams]);
+
   return (
     <>
       <AnnouncementBar theme={activeTheme} />
@@ -97,7 +104,7 @@ function Theme1HomeContent({
           collections={collections}
           ratings={ratings}
           onQuickView={setQuickViewProduct}
-          showFilters={false}
+          showFilters={isShopFiltered}
           layout={isShopFiltered ? "grid" : "carousel"}
         />
       )}

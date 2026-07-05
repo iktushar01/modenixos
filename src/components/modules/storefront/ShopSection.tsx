@@ -56,8 +56,16 @@ export function ShopSection({
   const [isPending, startTransition] = useTransition();
 
   const filters = useMemo(() => parseShopFilters(searchParams), [searchParams]);
-  const facets = useMemo(() => extractShopFacets(catalog), [catalog]);
-  const filtered = useMemo(() => filterAndSortProducts(catalog, filters), [catalog, filters]);
+  const categoryScopedCatalog = useMemo(() => {
+    if (!filters.category) return catalog;
+    return filterAndSortProducts(catalog, { sort: "newest", category: filters.category }, categories);
+  }, [catalog, categories, filters.category]);
+
+  const facets = useMemo(() => extractShopFacets(categoryScopedCatalog), [categoryScopedCatalog]);
+  const filtered = useMemo(
+    () => filterAndSortProducts(catalog, filters, categories),
+    [catalog, categories, filters],
+  );
   const activeCount = countActiveFilters(filters);
   const isFiltered = hasShopFilters(filters);
 

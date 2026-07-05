@@ -13,6 +13,7 @@ import {
   type StorefrontNavItem,
 } from "@/lib/catalog/categoryTree";
 import { useStorefrontCssVars } from "../../useStorefrontCssVars";
+import { buildShopHref } from "@/lib/shopFilters";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartCount } from "@/hooks/useStoreCart";
 import { Button } from "@/components/ui/button";
@@ -167,10 +168,9 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set("search", searchQuery.trim());
-    const qs = params.toString();
-    router.push(`${base}#shop${qs ? `?${qs}` : ""}`);
+    router.push(
+      buildShopHref(base, searchQuery.trim() ? { search: searchQuery.trim() } : undefined),
+    );
     setMobileOpen(false);
   };
 
