@@ -16,9 +16,23 @@ export const STORE_CURRENCIES = [
   { code: "THB", name: "Thai Baht" },
 ] as const;
 
+export function normalizeCurrencyCode(code: string): string {
+  return code.trim().toUpperCase().slice(0, 3);
+}
+
+export function isKnownCurrency(code: string): boolean {
+  const normalized = normalizeCurrencyCode(code);
+  return STORE_CURRENCIES.some((item) => item.code === normalized);
+}
+
+export function getCurrencyName(code: string): string {
+  const normalized = normalizeCurrencyCode(code);
+  return STORE_CURRENCIES.find((item) => item.code === normalized)?.name ?? normalized;
+}
+
 const CURRENCY_LOCALES: Record<string, string> = {
   USD: "en-US",
-  EUR: "de-DE",
+  EUR: "en-IE",
   GBP: "en-GB",
   BDT: "bn-BD",
   INR: "en-IN",
@@ -34,30 +48,49 @@ const CURRENCY_LOCALES: Record<string, string> = {
   THB: "th-TH",
 };
 
-export function normalizeCurrencyCode(code: string): string {
-  return code.trim().toUpperCase().slice(0, 3);
+const PRICE_FORMAT_OPTIONS: Intl.NumberFormatOptions = {
+  numberingSystem: "latn",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+};
+
+function buildPriceFormatter(currency: string): Intl.NumberFormat {
+  const code = normalizeCurrencyCode(currency);
+  const locale = CURRENCY_LOCALES[code] ?? "en-US";
+
+  try {
+    return new Intl.NumberFormat(locale, {
+      ...PRICE_FORMAT_OPTIONS,
+      style: "currency",
+      currency: code,
+    });
+  } catch {
+    return new Intl.NumberFormat("en-US", {
+      ...PRICE_FORMAT_OPTIONS,
+      style: "currency",
+      currency: "USD",
+    });
+  }
 }
 
-export function isKnownCurrency(code: string): boolean {
-  const normalized = normalizeCurrencyCode(code);
-  return STORE_CURRENCIES.some((item) => item.code === normalized);
-}
-
-export function getCurrencyName(code: string): string {
-  const normalized = normalizeCurrencyCode(code);
-  return STORE_CURRENCIES.find((item) => item.code === normalized)?.name ?? normalized;
+function normalizeFormattedPrice(formatted: string, currency: string): string {
+  const code = normalizeCurrencyCode(currency);
+  if (code === "BDT") {
+    const trailing = formatted.match(/^([\d,]+(?:\.\d+)?)৳$/);
+    if (trailing) return `৳${trailing[1]}`;
+  }
+  return formatted.replace(/\u200f|\u200e/g, "").trim();
 }
 
 export function formatPrice(amount: number, currency = "USD"): string {
   const value = Number(amount);
   if (!Number.isFinite(value)) return "—";
 
-  const code = normalizeCurrencyCode(currency || "USD");
-  const locale = CURRENCY_LOCALES[code] ?? "en-US";
-
   try {
-    return new Intl.NumberFormat(locale, { style: "currency", currency: code }).format(value);
+    const code = normalizeCurrencyCode(currency || "USD");
+    return normalizeFormattedPrice(buildPriceFormatter(code).format(value), code);
   } catch {
+    const code = normalizeCurrencyCode(currency || "USD");
     return `${code} ${value.toFixed(2)}`;
   }
 }

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Category, Store } from "@/types/store.types";
 import { registerStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
+import { useStorefrontCustomer } from "@/components/modules/storefront/StorefrontCustomerContext";
 import { AccountAuthLayout } from "./AccountAuthLayout";
 
 export default function StorefrontRegisterClient({
@@ -21,6 +22,7 @@ export default function StorefrontRegisterClient({
   categories?: Category[];
 }) {
   const router = useRouter();
+  const { setCustomer } = useStorefrontCustomer();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +33,8 @@ export default function StorefrontRegisterClient({
     e.preventDefault();
     setLoading(true);
     try {
-      await registerStorefrontCustomerAction(store.slug, { name, email, password });
+      const customer = await registerStorefrontCustomerAction(store.slug, { name, email, password });
+      setCustomer(customer);
       toast.success("Account created!");
       router.push(`${base}/account/wishlist`);
       router.refresh();

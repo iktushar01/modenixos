@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Category, Store } from "@/types/store.types";
 import { loginStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
+import { useStorefrontCustomer } from "@/components/modules/storefront/StorefrontCustomerContext";
 import { AccountAuthLayout } from "./AccountAuthLayout";
 
 export default function StorefrontLoginClient({
@@ -21,6 +22,7 @@ export default function StorefrontLoginClient({
   categories?: Category[];
 }) {
   const router = useRouter();
+  const { setCustomer } = useStorefrontCustomer();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +32,8 @@ export default function StorefrontLoginClient({
     e.preventDefault();
     setLoading(true);
     try {
-      await loginStorefrontCustomerAction(store.slug, { email, password });
+      const customer = await loginStorefrontCustomerAction(store.slug, { email, password });
+      setCustomer(customer);
       toast.success("Welcome back!");
       router.push(`${base}/account/wishlist`);
       router.refresh();

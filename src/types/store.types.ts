@@ -116,6 +116,8 @@ export interface Customer {
   phone?: string | null;
   orderCount: number;
   totalSpent: number;
+  hasAccount?: boolean;
+  createdAt?: string;
   orders?: Order[];
 }
 

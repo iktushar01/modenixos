@@ -114,8 +114,8 @@ export interface StorefrontThemeConfig {
 }
 
 export const DEFAULT_UTILITY_LINKS: StorefrontNavLink[] = [
-  { label: "Log In", href: "/login" },
-  { label: "About Us", href: "#about" },
+  { label: "Log In", href: "/account/login" },
+  { label: "Register", href: "/account/register" },
   { label: "Cart", href: "/cart" },
 ];
 

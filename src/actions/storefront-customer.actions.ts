@@ -28,6 +28,9 @@ export async function registerStorefrontCustomerAction(
     await setCookie(storefrontCustomerCookieName(slug), json.data.token, THIRTY_DAYS);
   }
   revalidatePath(`/store/${slug}`);
+  revalidatePath(`/store/${slug}/account/login`);
+  revalidatePath(`/store/${slug}/account/register`);
+  revalidatePath(`/store/${slug}/account/wishlist`);
   return json.data.customer as StorefrontCustomer;
 }
 
@@ -49,6 +52,9 @@ export async function loginStorefrontCustomerAction(
     await setCookie(storefrontCustomerCookieName(slug), json.data.token, THIRTY_DAYS);
   }
   revalidatePath(`/store/${slug}`);
+  revalidatePath(`/store/${slug}/account/login`);
+  revalidatePath(`/store/${slug}/account/register`);
+  revalidatePath(`/store/${slug}/account/wishlist`);
   return json.data.customer as StorefrontCustomer;
 }
 

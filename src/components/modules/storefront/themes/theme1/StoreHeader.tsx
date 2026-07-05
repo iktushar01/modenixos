@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Menu, ChevronDown, Phone, Search, ShoppingBag, User, X } from "lucide-react";
+import { Menu, ChevronDown, Phone, Search, ShoppingBag, X } from "lucide-react";
 import { Category, Store } from "@/types/store.types";
 import { StorefrontThemeConfig, resolveStorefrontNavLinks } from "@/lib/storefront";
 import {
@@ -20,19 +20,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, StorefrontSheetContent } from "../../StorefrontSheet";
 import { StorefrontThemeToggle } from "./StorefrontThemeToggle";
+import { StorefrontAccountMenu } from "../../StorefrontAccountMenu";
+import { useOptionalStorefrontCustomer } from "../../StorefrontCustomerContext";
+import {
+  filterAuthUtilityLinks,
+  resolveStorefrontUtilityHref,
+} from "@/lib/storefront/utilityLinks";
 import { cn } from "@/lib/utils";
 
 interface StoreHeaderProps {
   store: Store;
   theme: StorefrontThemeConfig;
   categories: Category[];
-}
-
-function resolveUtilityHref(base: string, href: string) {
-  if (href.startsWith("#")) return `${base}${href}`;
-  if (href.startsWith("/store/")) return href;
-  if (href === "/cart" || href.endsWith("/cart")) return `${base}/cart`;
-  return href;
 }
 
 type NavGroupItem = Extract<StorefrontNavItem, { type: "group" }>;
@@ -120,11 +119,17 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
   const router = useRouter();
   const hydrated = useCartHydrated();
   const cartCount = useStoreCartCount(store.id);
+  const customerCtx = useOptionalStorefrontCustomer();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const base = `/store/${store.slug}`;
+  const isLoggedIn = Boolean(customerCtx?.customer);
+  const utilityLinks = useMemo(
+    () => filterAuthUtilityLinks(theme.header.utilityLinks, isLoggedIn),
+    [theme.header.utilityLinks, isLoggedIn],
+  );
   const navLinks = useMemo(
     () => resolveStorefrontNavLinks(theme, store.slug, categories),
     [theme, store.slug, categories],
@@ -182,6 +187,22 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
           scrolled ? "sf-glass-nav" : "sf-border border-b",
         )}
       >
+        {utilityLinks.length > 0 && (
+          <div className="hidden border-b sf-border md:block">
+            <div className="sf-section flex h-9 items-center justify-end gap-5 text-xs">
+              {utilityLinks.map((link) => (
+                <Link
+                  key={`${link.label}-${link.href}`}
+                  href={resolveStorefrontUtilityHref(base, link.href)}
+                  className="sf-link transition-colors sf-hover-fg"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="sf-section border-b sf-border">
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 md:grid-cols-3 md:gap-6 md:py-4">
             <div className="flex items-center gap-2 md:justify-self-start">
@@ -262,13 +283,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 )}
               </Link>
 
-              <Link
-                href={`${base}/account/login`}
-                className="hidden p-2 sf-link sm:inline-flex"
-                aria-label="Account"
-              >
-                <User className="h-5 w-5" strokeWidth={1.5} />
-              </Link>
+              <StorefrontAccountMenu base={base} className="hidden p-2 sf-link sm:inline-flex" />
 
               <div className="hidden sm:block">
                 <StorefrontThemeToggle />
@@ -397,17 +412,51 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             )}
 
             <div className="mt-auto space-y-4 border-t sf-border pt-6">
-              <Link
-                href={`${base}/account/login`}
-                className="block text-sm sf-link"
-                onClick={() => setMobileOpen(false)}
-              >
-                Account
-              </Link>
-              {theme.header.utilityLinks.map((link) => (
+              {isLoggedIn && customerCtx?.customer ? (
+                <>
+                  <p className="text-sm font-medium">{customerCtx.customer.name}</p>
+                  <p className="text-xs sf-muted-fg">{customerCtx.customer.email}</p>
+                  <Link
+                    href={`${base}/account/wishlist`}
+                    className="block text-sm sf-link"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Wishlist
+                  </Link>
+                  <button
+                    type="button"
+                    className="block text-left text-sm sf-link"
+                    onClick={async () => {
+                      setMobileOpen(false);
+                      await customerCtx.logout();
+                      router.push(base);
+                    }}
+                  >
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={`${base}/account/login`}
+                    className="block text-sm sf-link"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href={`${base}/account/register`}
+                    className="block text-sm sf-link"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Create account
+                  </Link>
+                </>
+              )}
+              {utilityLinks.map((link) => (
                 <Link
                   key={`mu-${link.label}-${link.href}`}
-                  href={resolveUtilityHref(base, link.href)}
+                  href={resolveStorefrontUtilityHref(base, link.href)}
                   className="block text-sm sf-link"
                   onClick={() => setMobileOpen(false)}
                 >

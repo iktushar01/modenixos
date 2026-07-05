@@ -66,7 +66,8 @@ export function CurrencySelect({ id = "currency", value, onChange, showPreview =
 
       {showPreview && normalized.length === 3 && (
         <p className="text-xs text-muted-foreground">
-          Storefront preview: {formatPriceSample(normalized)} ({getCurrencyName(normalized)})
+          Storefront preview: {formatPriceSample(normalized)} ({getCurrencyName(normalized)}) — numbers use
+          English digits (0–9).
         </p>
       )}
     </div>
