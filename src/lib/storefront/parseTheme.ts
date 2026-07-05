@@ -10,7 +10,9 @@ import {
   StorefrontSections,
   StorefrontTemplateId,
   StorefrontThemeConfig,
+  StorefrontTypography,
 } from "./types";
+import { DEFAULT_STOREFRONT_TYPOGRAPHY } from "./fontPresets";
 import {
   getPresetById,
   getPresetBrandSeed,
@@ -119,6 +121,19 @@ function applyLegacyBrandSeeds(
   return next;
 }
 
+function parseTypography(raw: Record<string, unknown>): StorefrontTypography {
+  const typography = raw.typography as Partial<StorefrontTypography> | undefined;
+  if (!typography?.preset) {
+    return { ...DEFAULT_STOREFRONT_TYPOGRAPHY };
+  }
+
+  return {
+    preset: typography.preset,
+    bodyFont: typography.bodyFont,
+    displayFont: typography.displayFont,
+  };
+}
+
 function resolveColors(raw: Record<string, unknown>, colorMode: StorefrontColorMode): StorefrontColorPalette {
   const presetId = (raw.palettePreset as string) ?? "classic-retail";
   const preset = getPresetById(presetId) ?? STOREFRONT_PALETTE_PRESETS[0];
@@ -195,6 +210,7 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
   const palettePreset = (raw.palettePreset as string) ?? "classic-retail";
   const brandColors = resolveBrandSeed(raw, palettePreset);
   const colors = resolveColors(raw, colorMode);
+  const typography = parseTypography(raw);
 
   return {
     templateId: ((raw.templateId as StorefrontTemplateId) ?? "theme1") as StorefrontTemplateId,
@@ -203,6 +219,7 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
     colors,
     customColors: raw.customColors as StorefrontThemeConfig["customColors"],
     brandColors,
+    typography,
     primaryColor: brandColors.primary,
     secondaryColor: brandColors.accent,
     header: resolveHeader(raw, store),
@@ -232,6 +249,7 @@ export function buildThemePayload(form: {
   palettePreset?: string;
   customColors?: StorefrontThemeConfig["customColors"];
   brandColors?: StorefrontBrandColors;
+  typography?: StorefrontTypography;
   primaryColor?: string;
   secondaryColor?: string;
   header?: StorefrontHeaderConfig;
@@ -254,6 +272,7 @@ export function buildThemePayload(form: {
   if (form.palettePreset !== undefined) out.palettePreset = form.palettePreset;
   if (form.customColors !== undefined) out.customColors = form.customColors;
   if (form.brandColors !== undefined) out.brandColors = form.brandColors;
+  if (form.typography !== undefined) out.typography = form.typography;
   if (form.primaryColor !== undefined) out.primaryColor = form.primaryColor;
   if (form.secondaryColor !== undefined) out.secondaryColor = form.secondaryColor;
   if (form.header !== undefined) out.header = form.header;

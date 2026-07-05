@@ -2,9 +2,10 @@
 
 import { ReactNode } from "react";
 import { StorefrontThemeConfig } from "@/lib/storefront";
-import { cssVarsToStyle } from "@/lib/storefront/cssVars";
+import { themeToCssVars } from "@/lib/storefront/cssVars";
+import { resolveTypography } from "@/lib/storefront/fontPresets";
 import { cn } from "@/lib/utils";
-import { storefrontFontClassName } from "./fonts";
+import { StorefrontGoogleFonts } from "./StorefrontGoogleFonts";
 import { StorefrontThemeProvider, useStorefrontTheme } from "./StorefrontThemeContext";
 
 interface StorefrontThemeShellProps {
@@ -16,16 +17,20 @@ interface StorefrontThemeShellProps {
 
 function StorefrontThemeShellInner({ children, className }: { children: ReactNode; className?: string }) {
   const { colorMode, activeTheme } = useStorefrontTheme();
+  const fonts = resolveTypography(activeTheme.typography);
 
   return (
-    <div
-      className={cn("storefront-theme min-h-screen", storefrontFontClassName, className)}
-      style={cssVarsToStyle(activeTheme.colors)}
-      data-storefront-theme={activeTheme.templateId}
-      data-color-mode={colorMode}
-    >
-      {children}
-    </div>
+    <>
+      <StorefrontGoogleFonts bodyFont={fonts.bodyFont} displayFont={fonts.displayFont} />
+      <div
+        className={cn("storefront-theme min-h-screen", className)}
+        style={themeToCssVars(activeTheme.colors, activeTheme.typography)}
+        data-storefront-theme={activeTheme.templateId}
+        data-color-mode={colorMode}
+      >
+        {children}
+      </div>
+    </>
   );
 }
 

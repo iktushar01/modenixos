@@ -19,6 +19,8 @@ import {
   StorefrontBrandColors,
   StorefrontColorMode,
   StorefrontColorPalette,
+  StorefrontTypography,
+  DEFAULT_STOREFRONT_TYPOGRAPHY,
   validatePalette,
   harmonizePalette,
   mergePalette,
@@ -26,6 +28,7 @@ import {
   STOREFRONT_PALETTE_PRESETS,
 } from "@/lib/storefront";
 import { StoreColorPaletteEditor } from "./StoreColorPaletteEditor";
+import { StoreTypographyEditor } from "./StoreTypographyEditor";
 
 const SECTION_LABELS: Record<keyof StorefrontSections, string> = {
   categories: "Categories",

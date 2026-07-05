@@ -84,6 +84,12 @@ export interface StorefrontBrandColors {
   accent: string;
 }
 
+export interface StorefrontTypography {
+  preset: string;
+  bodyFont?: string;
+  displayFont?: string;
+}
+
 export interface StorefrontThemeConfig {
   templateId: StorefrontTemplateId;
   colorMode: StorefrontColorMode;
@@ -91,6 +97,7 @@ export interface StorefrontThemeConfig {
   colors: StorefrontColorPalette;
   customColors?: Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>>;
   brandColors?: StorefrontBrandColors;
+  typography?: StorefrontTypography;
   primaryColor: string;
   secondaryColor: string;
   header: StorefrontHeaderConfig;

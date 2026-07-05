@@ -1,4 +1,5 @@
-import { StorefrontColorPalette } from "./types";
+import { StorefrontColorPalette, StorefrontTypography } from "./types";
+import { typographyToCssVars } from "./fontPresets";
 
 /** Maps palette tokens to CSS custom properties on `.storefront-theme` */
 export function paletteToCssVars(colors: StorefrontColorPalette): Record<string, string> {
@@ -60,4 +61,14 @@ export function paletteToCssVars(colors: StorefrontColorPalette): Record<string,
 
 export function cssVarsToStyle(colors: StorefrontColorPalette): Record<string, string> {
   return paletteToCssVars(colors);
+}
+
+export function themeToCssVars(
+  colors: StorefrontColorPalette,
+  typography?: StorefrontTypography,
+): Record<string, string> {
+  return {
+    ...paletteToCssVars(colors),
+    ...typographyToCssVars(typography),
+  };
 }

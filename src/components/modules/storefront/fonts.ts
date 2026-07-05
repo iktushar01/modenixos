@@ -1,17 +1,4 @@
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { DEFAULT_STOREFRONT_TYPOGRAPHY, typographyToCssVars } from "@/lib/storefront/fontPresets";
 
-export const sfDisplayFont = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--sf-font-display",
-  display: "swap",
-});
-
-export const sfBodyFont = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--sf-font-body",
-  display: "swap",
-});
-
-export const storefrontFontClassName = `${sfDisplayFont.variable} ${sfBodyFont.variable}`;
+/** Fallback CSS variables for loading states before theme is resolved */
+export const storefrontFontFallbackStyle = typographyToCssVars(DEFAULT_STOREFRONT_TYPOGRAPHY);
