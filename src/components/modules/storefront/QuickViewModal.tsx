@@ -60,9 +60,9 @@ export function QuickViewModal({ product, store, theme, onClose }: QuickViewModa
 
   return (
     <Dialog open={Boolean(product)} onOpenChange={(open) => !open && onClose()}>
-      <StorefrontDialogContent className="max-w-4xl gap-0 overflow-hidden p-0">
-        <div className="grid md:grid-cols-2">
-          <div className="relative aspect-square sf-muted">
+      <StorefrontDialogContent className="flex max-h-[90dvh] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
+        <div className="grid min-h-0 flex-1 md:grid-cols-2">
+          <div className="relative aspect-square shrink-0 sf-muted md:aspect-auto md:h-full md:min-h-[320px]">
             {product.images[imageIndex] && (
               <Image src={product.images[imageIndex]} alt={product.name} fill className="object-cover" unoptimized />
             )}
@@ -85,7 +85,7 @@ export function QuickViewModal({ product, store, theme, onClose }: QuickViewModa
             )}
           </div>
 
-          <div className="space-y-6 p-8 md:p-10">
+          <div className="min-h-0 space-y-5 overflow-y-auto p-6 sm:space-y-6 sm:p-8 md:p-10">
             <DialogHeader className="text-left">
               <p className="sf-eyebrow">{store.brandName}</p>
               <DialogTitle className="sf-display-lg mt-2 text-2xl">{product.name}</DialogTitle>
@@ -150,11 +150,11 @@ export function QuickViewModal({ product, store, theme, onClose }: QuickViewModa
               </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button className="sf-btn-primary h-12 flex-1 rounded-full" onClick={handleAdd} disabled={product.stock <= 0}>
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+              <Button className="sf-btn-primary h-12 w-full flex-1 rounded-full sm:min-w-0" onClick={handleAdd} disabled={product.stock <= 0}>
                 {product.stock <= 0 ? "Out of stock" : "Add to cart"}
               </Button>
-              <Button asChild variant="outline" className="sf-btn-outline h-12 rounded-full px-6">
+              <Button asChild variant="outline" className="sf-btn-outline h-12 w-full shrink-0 rounded-full px-6 sm:w-auto">
                 <Link href={`/store/${store.slug}/products/${product.id}`} onClick={onClose}>
                   View details
                 </Link>
