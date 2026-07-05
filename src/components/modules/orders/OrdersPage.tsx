@@ -261,7 +261,7 @@ export default function OrdersPage() {
               placeholder="Search with order ID or Phone number..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-0 shadow-none focus-visible:ring-0"
+              className="border-0 pl-9 shadow-none focus-visible:ring-0"
             />
           </div>
         </div>
