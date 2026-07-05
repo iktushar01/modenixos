@@ -125,6 +125,43 @@ export async function updateOrderStatusAction(
   return res;
 }
 
+export async function createDashboardOrderAction(payload: {
+  slug: string;
+  status: string;
+  items: Array<{
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+  }>;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  shippingAddress: Record<string, string>;
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
+  paymentMethod?: string;
+  orderNote?: string;
+  paidAmount?: number;
+  markFraud?: boolean;
+}) {
+  const { slug, status, orderNote: _orderNote, paidAmount: _paidAmount, markFraud: _markFraud, ...orderData } = payload;
+  const order = await placeOrderAction(slug, {
+    ...orderData,
+    paymentMethod: orderData.paymentMethod ?? "COD",
+  });
+
+  if (status !== "PENDING") {
+    await updateOrderStatusAction(order.id, status);
+  }
+
+  revalidatePath("/dashboard/orders");
+  return order;
+}
+
 // Customers
 export async function getCustomersAction(params?: Record<string, unknown>) {
   return httpClient.get<Customer[]>("/customers", { params });
