@@ -145,8 +145,8 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
       <div>
         <Label>Hero slider images</Label>
         <p className="mt-1 text-xs text-muted-foreground">
-          Upload multiple images at <strong>21:9</strong> or <strong>3:1</strong> ratio. They auto-rotate on your
-          storefront — images only, no text overlay. Use <strong>Edit</strong> on any slide to re-crop.
+          Upload images at <strong>21:9</strong> or <strong>3:1</strong>. They auto-rotate on your storefront.
+          Use <strong>Edit</strong> on any slide to re-crop.
         </p>
       </div>
 

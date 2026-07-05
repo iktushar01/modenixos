@@ -48,8 +48,6 @@ export default function StoreAppearancePage() {
     palettePreset: "classic-retail",
     brandColors: { primary: "#0f172a", accent: "#0f172a" } as StorefrontBrandColors,
     customColors: undefined as Partial<Record<StorefrontColorMode, Partial<StorefrontColorPalette>>> | undefined,
-    heroHeadline: "",
-    heroSubtext: "",
     promoText: "",
     promoEnabled: true,
     brandStoryTitle: "",
@@ -73,8 +71,6 @@ export default function StoreAppearancePage() {
           accent: theme.secondaryColor,
         },
         customColors: theme.customColors,
-        heroHeadline: theme.heroHeadline,
-        heroSubtext: theme.heroSubtext,
         promoText: theme.promoText,
         promoEnabled: theme.promoEnabled,
         brandStoryTitle: theme.brandStoryTitle,
@@ -119,8 +115,6 @@ export default function StoreAppearancePage() {
         palettePreset: form.palettePreset,
         customColors,
         brandColors: form.brandColors,
-        heroHeadline: form.heroHeadline,
-        heroSubtext: form.heroSubtext,
         promoText: form.promoText,
         promoEnabled: form.promoEnabled,
         brandStoryTitle: form.brandStoryTitle,
@@ -164,7 +158,7 @@ export default function StoreAppearancePage() {
     <div className="space-y-6">
       <PageHeader
         title="Storefront appearance"
-        description="Full color control, hero copy, sections, and social links for your public shop."
+        description="Colors, homepage sections, and social links for your public shop."
       />
 
       <Card>
@@ -189,31 +183,6 @@ export default function StoreAppearancePage() {
               setForm((prev) => ({ ...prev, customColors, palettePreset: "custom" }))
             }
           />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Hero section</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="heroHeadline">Headline</Label>
-            <Input
-              id="heroHeadline"
-              value={form.heroHeadline}
-              onChange={(e) => setForm({ ...form, heroHeadline: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="heroSubtext">Subtext</Label>
-            <Textarea
-              id="heroSubtext"
-              rows={3}
-              value={form.heroSubtext}
-              onChange={(e) => setForm({ ...form, heroSubtext: e.target.value })}
-            />
-          </div>
         </CardContent>
       </Card>
 
