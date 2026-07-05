@@ -1,6 +1,6 @@
 /* Marketing site shell — mirrors storefront header / section vibe */
 .marketing-shell {
-  --mkt-brand: #7047eb;
+  --mkt-brand: var(--brand);
   --mkt-brand-muted: color-mix(in srgb, var(--mkt-brand) 12%, transparent);
 }
 
