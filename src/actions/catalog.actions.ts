@@ -2,7 +2,7 @@
 
 import { httpClient } from "@/lib/axios/httpClient";
 import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, Store } from "@/types/store.types";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 async function revalidateStorefront() {
   try {
@@ -12,6 +12,19 @@ async function revalidateStorefront() {
     }
   } catch {
     // Store may not exist yet during onboarding
+  }
+}
+
+async function revalidateStorefrontProduct(productId: string) {
+  try {
+    const res = await httpClient.get<Store>("/stores/me");
+    const slug = res.data?.slug;
+    if (!slug) return;
+    revalidateTag(`store-product-${slug}-${productId}`);
+    revalidatePath(`/store/${slug}/products/${productId}`);
+    revalidatePath(`/store/${slug}`);
+  } catch {
+    // Store may not exist yet
   }
 }
 
@@ -110,7 +123,16 @@ export async function getReviewsAction(params?: Record<string, unknown>) {
 export async function updateReviewAction(id: string, data: { status?: string; reply?: string }) {
   const res = await httpClient.patch<Review>(`/reviews/${id}`, data);
   revalidatePath("/dashboard/reviews");
+  if (res.data?.productId) {
+    await revalidateStorefrontProduct(res.data.productId);
+  }
   return res;
+}
+
+export async function deleteReviewAction(id: string, productId: string) {
+  await httpClient.delete(`/reviews/${id}`);
+  revalidatePath("/dashboard/reviews");
+  await revalidateStorefrontProduct(productId);
 }
 
 // Coupons
@@ -175,7 +197,9 @@ export async function getPublicProductsAction(slug: string, params?: Record<stri
 }
 
 export async function getPublicProductAction(slug: string, id: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products/${id}`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products/${id}`, {
+    next: { revalidate: 60, tags: [`store-product-${slug}-${id}`] },
+  });
   if (!res.ok) return null;
   const json = await res.json();
   return json.data;

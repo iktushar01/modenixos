@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { deleteCookie, setCookie } from "@/lib/cookieUtils";
 import {
   publicFetchWithStoreCookie,
@@ -135,6 +135,7 @@ export async function createPublicReviewAction(
     const json = await res.json().catch(() => ({}));
     throw new Error(json.message ?? "Failed to submit review");
   }
+  revalidateTag(`store-product-${slug}-${data.productId}`);
   revalidatePath(`/store/${slug}/products/${data.productId}`);
   return true;
 }
