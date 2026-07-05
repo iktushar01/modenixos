@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Loader2, Trash2 } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Category, Store, WishlistItem } from "@/types/store.types";
@@ -42,78 +42,66 @@ export default function WishlistClient({
 
   return (
     <StorefrontPageShell store={store} categories={categories}>
-      <main className="sf-section w-full py-10 md:py-14">
-        <div className="mb-8 flex items-center justify-between">
+      <main className="sf-section w-full py-12 md:py-16">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold sf-fg">My Wishlist</h1>
-            <p className="sf-muted-fg text-sm">{list.length} saved items</p>
+            <p className="sf-eyebrow">Saved</p>
+            <h1 className="sf-display-lg mt-2">My wishlist</h1>
+            <p className="sf-muted-fg mt-2 text-sm">{list.length} items</p>
           </div>
-          <Button variant="outline" asChild className="sf-btn-outline">
+          <Button variant="outline" asChild className="sf-btn-outline rounded-full">
             <Link href={base}>Continue shopping</Link>
           </Button>
         </div>
 
         {list.length === 0 ? (
-          <div className="sf-muted flex flex-col items-center justify-center rounded-2xl border py-20 text-center sf-border">
-            <Heart className="sf-muted-fg mb-4 h-12 w-12" />
-            <p className="sf-fg font-medium">Your wishlist is empty</p>
-            <p className="sf-muted-fg mt-1 text-sm">Save products you love while browsing.</p>
-            <Button asChild className="sf-btn-primary mt-6">
-              <Link href={base}>Browse products</Link>
+          <div className="sf-editorial-card flex flex-col items-center justify-center border-dashed py-24 text-center">
+            <Heart className="sf-muted-fg mb-6 h-12 w-12" strokeWidth={1.25} />
+            <p className="sf-display-lg text-xl">Your wishlist is empty</p>
+            <p className="sf-muted-fg mt-2 text-sm">Save pieces you love while browsing.</p>
+            <Button asChild className="sf-btn-primary mt-8 rounded-full px-8">
+              <Link href={base}>Browse collection</Link>
             </Button>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {list.map((item) => {
               const { price, compareAt } = productDisplayPrice(item.product);
               return (
-                <article key={item.id} className="sf-card sf-border overflow-hidden rounded-xl border">
-                  <Link
-                    href={`${base}/products/${item.product.id}`}
-                    className="relative block aspect-[3/4] sf-muted"
-                  >
-                    {item.product.images[0] ? (
-                      <Image
-                        src={item.product.images[0]}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : null}
-                  </Link>
-                  <div className="space-y-2 p-4">
-                    <Link href={`${base}/products/${item.product.id}`}>
-                      <h3 className="line-clamp-2 text-sm font-medium sf-fg hover:opacity-80">
-                        {item.product.name}
-                      </h3>
-                    </Link>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-semibold sf-fg">
-                        {formatPrice(price, store.currency)}
-                      </span>
-                      {compareAt && (
-                        <span className="sf-muted-fg line-through text-xs">
-                          {formatPrice(compareAt, store.currency)}
-                        </span>
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="sf-btn-outline w-full"
+                <article key={item.id} className="sf-editorial-card group overflow-hidden">
+                  <Link href={`${base}/products/${item.product.id}`} className="sf-image-zoom relative block aspect-[3/4] sf-muted">
+                    {item.product.images[0] && (
+                      <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" unoptimized />
+                    )}
+                    <button
+                      type="button"
+                      className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--sf-card)_90%,transparent)] opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
                       disabled={removingId === item.productId}
-                      onClick={() => handleRemove(item.productId)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleRemove(item.productId);
+                      }}
+                      aria-label="Remove from wishlist"
                     >
                       {removingId === item.productId ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <>
-                          <Trash2 className="mr-1 h-3.5 w-3.5" />
-                          Remove
-                        </>
+                        <Heart className="sf-destructive-fill h-4 w-4" />
                       )}
-                    </Button>
+                    </button>
+                  </Link>
+                  <div className="space-y-2 p-4">
+                    <Link href={`${base}/products/${item.product.id}`}>
+                      <h3 className="sf-font-display line-clamp-2 text-base hover:opacity-70">
+                        {item.product.name}
+                      </h3>
+                    </Link>
+                    <div className="sf-tabular-nums flex items-center gap-2 text-sm">
+                      <span className="font-medium sf-fg">{formatPrice(price, store.currency)}</span>
+                      {compareAt && (
+                        <span className="sf-muted-fg line-through text-xs">{formatPrice(compareAt, store.currency)}</span>
+                      )}
+                    </div>
                   </div>
                 </article>
               );

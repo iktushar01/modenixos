@@ -17,31 +17,30 @@ export function ProductGallery({ product, selectedColor, colorImages }: ProductG
   const images = product.images.length > 0 ? product.images : [];
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const mainSrc =
-    colorImage ?? images[activeIndex] ?? images[0] ?? null;
+  const mainSrc = colorImage ?? images[activeIndex] ?? images[0] ?? null;
 
   if (!mainSrc) {
     return (
-      <div className="sf-muted flex aspect-square items-center justify-center rounded-lg">
+      <div className="sf-muted flex aspect-[4/5] items-center justify-center">
         No image
       </div>
     );
   }
 
   return (
-    <div className="flex gap-3 md:gap-4">
+    <div className="flex flex-col gap-4 md:flex-row md:gap-6">
       {images.length > 1 && (
-        <div className="flex flex-col gap-2">
+        <div className="order-2 flex gap-2 overflow-x-auto md:order-1 md:flex-col md:overflow-visible">
           {images.map((src, i) => (
             <button
               key={src}
               type="button"
               onClick={() => setActiveIndex(i)}
               className={cn(
-                "relative h-16 w-14 overflow-hidden rounded border-2 transition-colors sm:h-20 sm:w-16",
+                "sf-image-zoom relative h-16 w-14 shrink-0 overflow-hidden border-2 md:h-20 md:w-16",
                 activeIndex === i && !colorImage
                   ? "border-[var(--sf-primary)]"
-                  : "sf-border border-transparent opacity-70 hover:opacity-100",
+                  : "sf-border border-transparent opacity-60 hover:opacity-100",
               )}
             >
               <Image src={src} alt="" fill className="object-cover" unoptimized />
@@ -49,12 +48,12 @@ export function ProductGallery({ product, selectedColor, colorImages }: ProductG
           ))}
         </div>
       )}
-      <div className="sf-border sf-surface relative min-h-[320px] flex-1 overflow-hidden rounded-lg border sm:min-h-[480px]">
+      <div className="sf-image-zoom sf-border sf-surface relative order-1 min-h-[360px] flex-1 overflow-hidden border md:order-2 md:min-h-[520px]">
         <Image
           src={mainSrc}
           alt={product.name}
           fill
-          className="object-contain p-2"
+          className="object-cover"
           priority
           unoptimized
         />

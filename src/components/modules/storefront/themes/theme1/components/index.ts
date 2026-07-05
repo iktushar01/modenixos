@@ -1,9 +1,6 @@
 /**
  * Theme 1 component barrel — re-exports shared storefront building blocks.
- * Current design lives under theme1; components remain in parent folder for reuse.
  */
-export { StoreNavbar } from "../../../StoreNavbar";
-export { StoreHero } from "../../../StoreHero";
 export { CategoriesGrid } from "../../../CategoriesGrid";
 export { CollectionsGrid } from "../../../CollectionsGrid";
 export { ShopSection } from "../../../ShopSection";

@@ -111,7 +111,9 @@ function Theme1HomeContent({
         />
       )}
 
-      {activeTheme.sections.brandStory && !isShopFiltered && <BrandStory theme={activeTheme} />}
+      {activeTheme.sections.brandStory && !isShopFiltered && (
+        <BrandStory theme={activeTheme} slug={store.slug} />
+      )}
 
       {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
 
@@ -119,7 +121,7 @@ function Theme1HomeContent({
         <NewsletterSection brandName={store.brandName} theme={activeTheme} />
       )}
 
-      <StoreFooter store={store} theme={activeTheme} />
+      <StoreFooter store={store} theme={activeTheme} categories={categories} />
 
       <QuickViewModal
         key={quickViewProduct?.id ?? "closed"}

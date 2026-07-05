@@ -5,6 +5,7 @@ import { Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { ProductCard } from "../../../ProductCard";
 import { QuickViewModal } from "../../../QuickViewModal";
+import { StorefrontSection } from "../../../ui";
 
 interface RelatedProductsProps {
   store: Store;
@@ -34,13 +35,13 @@ export function RelatedProducts({ store, products, theme, reviews }: RelatedProd
   if (products.length === 0) return null;
 
   return (
-    <section className="mt-16">
-      <div className="mb-8 flex items-center gap-4">
-        <div className="h-px flex-1 sf-border bg-border" />
-        <h2 className="text-sm font-bold uppercase tracking-widest sf-fg">Related Products</h2>
-        <div className="h-px flex-1 sf-border bg-border" />
-      </div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4 md:gap-6">
+    <section className="mt-20">
+      <StorefrontSection
+        eyebrow="You may also like"
+        title="Complete the look"
+        className="mb-8"
+      />
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
         {products.map((p) => (
           <ProductCard
             key={p.id}

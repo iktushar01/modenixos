@@ -2,10 +2,9 @@
 
 import { useCallback, useMemo, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { SlidersHorizontal, PackageOpen } from "lucide-react";
 import { Category, Collection, Product, Store } from "@/types/store.types";
-import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
+import { StorefrontThemeConfig } from "@/lib/storefront";
 import {
   countActiveFilters,
   extractShopFacets,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/shopFilters";
 import { ShopFilterSidebar, ShopActiveFilters } from "./ShopFilterSidebar";
 import { ProductCard } from "./ProductCard";
+import { StorefrontSection } from "./ui";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetHeader, SheetTitle, SheetTrigger, StorefrontSheetContent } from "@/components/modules/storefront/StorefrontSheet";
 
@@ -79,7 +79,7 @@ export function ShopSection({
     if (filters.collection) {
       return collections.find((c) => c.slug === filters.collection)?.name ?? "Shop";
     }
-    return isFiltered ? "Filtered results" : "All products";
+    return isFiltered ? "Filtered results" : "The edit";
   }, [filters, categories, collections, isFiltered]);
 
   const sidebarProps = {
@@ -93,50 +93,43 @@ export function ShopSection({
     onClear: clearFilters,
   };
 
+  const filterAction = showFilters ? (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" className="sf-btn-outline lg:hidden">
+          <SlidersHorizontal className="mr-2 h-4 w-4" />
+          Filters
+          {activeCount > 0 && (
+            <span className="sf-primary ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold">
+              {activeCount}
+            </span>
+          )}
+        </Button>
+      </SheetTrigger>
+      <StorefrontSheetContent side="left" className="w-[min(100%,360px)] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Filters</SheetTitle>
+        </SheetHeader>
+        <div className="mt-6">
+          <ShopFilterSidebar {...sidebarProps} />
+        </div>
+      </StorefrontSheetContent>
+    </Sheet>
+  ) : null;
+
   return (
-    <section id="shop" className="sf-section w-full py-16 md:py-20">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Shop</p>
-          <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">{title}</h2>
-          <p className="sf-muted-fg mt-2 text-sm">
-            {filtered.length} {filtered.length === 1 ? "product" : "products"}
-            {isPending && " · Updating…"}
-          </p>
-        </motion.div>
-
-        {showFilters && (
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                className="sf-btn-outline lg:hidden"
-              >
-                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                Filters
-                {activeCount > 0 && (
-                  <span className="sf-primary ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold">
-                    {activeCount}
-                  </span>
-                )}
-              </Button>
-            </SheetTrigger>
-            <StorefrontSheetContent side="left" className="w-[min(100%,320px)] overflow-y-auto">
-              <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6">
-                <ShopFilterSidebar {...sidebarProps} />
-              </div>
-            </StorefrontSheetContent>
-          </Sheet>
-        )}
-      </div>
-
-      <div className={showFilters ? "flex gap-8 lg:gap-10" : ""}>
+    <StorefrontSection
+      id="shop"
+      className="py-16 md:py-24"
+      eyebrow="Shop"
+      title={title}
+      subtitle={`${filtered.length} ${filtered.length === 1 ? "piece" : "pieces"}${isPending ? " · Updating…" : ""}`}
+      action={filterAction}
+    >
+      <div className={showFilters ? "flex gap-10 lg:gap-14" : ""}>
         {showFilters && (
           <div className="hidden w-64 shrink-0 lg:block">
-            <div className="sf-border sf-surface sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border p-5">
+            <div className="sf-editorial-card sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto p-6">
               <ShopFilterSidebar {...sidebarProps} />
             </div>
           </div>
@@ -153,22 +146,18 @@ export function ShopSection({
           )}
 
           {filtered.length === 0 ? (
-            <div className="sf-border flex flex-col items-center justify-center rounded-2xl border border-dashed py-20 text-center">
-              <PackageOpen className="sf-muted-fg mb-4 h-12 w-12 opacity-50" />
-              <p className="text-lg font-medium sf-fg">No products match your filters</p>
-              <p className="sf-muted-fg mt-2 max-w-sm text-sm">Try adjusting or clearing filters to see more items.</p>
-              <Button
-                variant="outline"
-                className="sf-btn-outline mt-6"
-                onClick={clearFilters}
-              >
+            <div className="sf-editorial-card flex flex-col items-center justify-center border-dashed py-24 text-center">
+              <PackageOpen className="sf-muted-fg mb-6 h-14 w-14 opacity-40" strokeWidth={1} />
+              <p className="sf-display-lg text-2xl">No pieces found</p>
+              <p className="sf-muted-fg mt-3 max-w-sm text-sm">
+                Adjust your filters to discover more from our collection.
+              </p>
+              <Button variant="outline" className="sf-btn-outline mt-8 rounded-full" onClick={clearFilters}>
                 Clear all filters
               </Button>
             </div>
           ) : (
-            <div
-              className={`grid gap-6 sm:grid-cols-2 xl:grid-cols-3 ${isPending ? "opacity-60" : ""}`}
-            >
+            <div className={`grid gap-8 sm:grid-cols-2 xl:grid-cols-3 ${isPending ? "opacity-60" : ""}`}>
               {filtered.map((p) => (
                 <ProductCard
                   key={p.id}
@@ -183,6 +172,6 @@ export function ShopSection({
           )}
         </div>
       </div>
-    </section>
+    </StorefrontSection>
   );
 }

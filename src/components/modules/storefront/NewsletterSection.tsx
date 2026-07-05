@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
 import { toast } from "sonner";
-import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
+import { StorefrontThemeConfig } from "@/lib/storefront";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -30,35 +29,40 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
   };
 
   return (
-    <section id="contact" className="sf-section w-full py-20">
+    <section id="contact" className="sf-section w-full py-16 md:py-24">
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="sf-border sf-card rounded-2xl border px-6 py-12 text-center md:px-16 md:py-16"
+        className="sf-muted sf-border border px-8 py-14 md:px-16 md:py-20"
       >
-        <Mail className="sf-muted-fg mx-auto h-8 w-8" />
-        <h2 className="mt-4 text-2xl font-light sf-fg md:text-3xl">Join the {brandName} list</h2>
-        <p className="sf-muted-fg mx-auto mt-3 max-w-md text-sm">
-          Be first to know about new drops, exclusive offers, and style edits.
-        </p>
-        <form onSubmit={handleSubmit} className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
-          <Input
-            type="email"
-            required
-            placeholder="your@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="sf-input h-11 flex-1 rounded-full"
-          />
-          <Button
-            type="submit"
-            disabled={loading}
-            className="sf-btn-primary h-11 rounded-full px-8"
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="sf-eyebrow">Stay connected</p>
+          <h2 className="sf-display-lg mt-3">Join the {brandName} list</h2>
+          <p className="sf-muted-fg mx-auto mt-4 max-w-md text-sm">
+            First access to new arrivals, private sales, and editorial style notes.
+          </p>
+          <form
+            onSubmit={handleSubmit}
+            className="mx-auto mt-10 flex max-w-lg flex-col gap-3 border sf-border p-2 sm:flex-row sm:rounded-full sm:bg-[color-mix(in_srgb,var(--sf-card)_80%,transparent)]"
           >
-            {loading ? "Subscribing..." : "Subscribe"}
-          </Button>
-        </form>
+            <Input
+              type="email"
+              required
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="sf-input h-12 flex-1 border-0 bg-transparent sm:rounded-full"
+            />
+            <Button
+              type="submit"
+              disabled={loading}
+              className="sf-btn-primary h-12 rounded-full px-10"
+            >
+              {loading ? "Subscribing…" : "Subscribe"}
+            </Button>
+          </form>
+        </div>
       </motion.div>
     </section>
   );

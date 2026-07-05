@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Category, Store } from "@/types/store.types";
 import { registerStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
+import { AccountAuthLayout } from "./AccountAuthLayout";
 
 export default function StorefrontRegisterClient({
   store,
@@ -43,56 +44,37 @@ export default function StorefrontRegisterClient({
 
   return (
     <StorefrontPageShell store={store} categories={categories}>
-      <main className="sf-section mx-auto w-full max-w-md py-14">
-        <h1 className="mb-2 text-2xl font-bold sf-fg">Create account</h1>
-        <p className="sf-muted-fg mb-8 text-sm">
-          Join {store.brandName} to save items to your wishlist.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full name</Label>
-            <Input
-              id="name"
-              className="sf-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              className="sf-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              minLength={6}
-              className="sf-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <Button type="submit" className="sf-btn-primary w-full" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create account
-          </Button>
-        </form>
-        <p className="sf-muted-fg mt-6 text-center text-sm">
-          Already have an account?{" "}
-          <Link href={`${base}/account/login`} className="sf-link font-medium underline">
-            Log in
-          </Link>
-        </p>
+      <main className="sf-section w-full py-12 md:py-16">
+        <AccountAuthLayout
+          store={store}
+          title="Create account"
+          subtitle={`Join ${store.brandName} to save your favourite pieces.`}
+        >
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full name</Label>
+              <Input id="name" className="sf-input" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" className="sf-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" minLength={6} className="sf-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <Button type="submit" className="sf-btn-primary h-11 w-full rounded-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create account
+            </Button>
+          </form>
+          <p className="sf-muted-fg mt-6 text-center text-sm">
+            Already have an account?{" "}
+            <Link href={`${base}/account/login`} className="sf-link underline">
+              Log in
+            </Link>
+          </p>
+        </AccountAuthLayout>
       </main>
     </StorefrontPageShell>
   );

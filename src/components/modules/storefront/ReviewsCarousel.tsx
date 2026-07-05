@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Review } from "@/types/store.types";
+import { StorefrontSection } from "./ui";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,55 +22,59 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   const prev = () => setIndex((i) => (i - 1 + reviews.length) % reviews.length);
 
   return (
-    <section className="sf-section w-full border-y sf-border sf-muted py-20">
-      <div className="mx-auto max-w-3xl text-center">
-        <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Testimonials</p>
-        <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">What Customers Say</h2>
-
-        <div className="relative mt-12 min-h-[200px]">
+    <section className="sf-border border-y sf-muted py-16 md:py-24">
+      <StorefrontSection
+        align="center"
+        eyebrow="Testimonials"
+        title="What customers say"
+        className="mb-0"
+      >
+        <div className="relative mx-auto mt-12 max-w-3xl text-center">
+          <span className="sf-quote-mark block" aria-hidden>
+            &ldquo;
+          </span>
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.35 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4 }}
               className="space-y-6"
             >
-              <Quote className="sf-muted-fg mx-auto h-8 w-8 opacity-40" />
-              <div className="flex justify-center gap-0.5">
+              <div className="flex justify-center gap-1">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={cn(
-                      "h-4 w-4",
-                      i < current.rating ? "sf-star-filled" : "sf-star-empty",
-                    )}
+                    className={cn("h-4 w-4", i < current.rating ? "sf-star-filled" : "sf-star-empty")}
+                    strokeWidth={1.25}
                   />
                 ))}
               </div>
               {current.comment && (
-                <p className="sf-muted-fg text-lg leading-relaxed md:text-xl">&ldquo;{current.comment}&rdquo;</p>
+                <p className="sf-font-display sf-muted-fg text-xl italic leading-relaxed md:text-2xl">
+                  {current.comment}
+                </p>
               )}
-              <p className="text-sm font-medium sf-fg">{current.guestName ?? "Verified Customer"}</p>
+              <p className="sf-eyebrow sf-fg">{current.guestName ?? "Verified customer"}</p>
               {current.product?.name && (
                 <p className="sf-muted-fg text-xs">Purchased {current.product.name}</p>
               )}
             </motion.div>
           </AnimatePresence>
-        </div>
 
-        {reviews.length > 1 && (
-          <div className="mt-8 flex justify-center gap-2">
-            <Button variant="outline" size="icon" className="sf-btn-outline rounded-full" onClick={prev}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="sf-btn-outline rounded-full" onClick={next}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
+          {reviews.length > 1 && (
+            <div className="mt-10 flex justify-center gap-2">
+              <Button variant="ghost" size="icon" onClick={prev} aria-label="Previous review">
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={next} aria-label="Next review">
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </StorefrontSection>
     </section>
   );
 }

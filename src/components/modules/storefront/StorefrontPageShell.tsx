@@ -29,7 +29,7 @@ function StorefrontPageContent({
       <AnnouncementBar theme={activeTheme} />
       <StoreHeader store={store} theme={activeTheme} categories={categories} />
       {children}
-      <StoreFooter store={store} theme={activeTheme} />
+      <StoreFooter store={store} theme={activeTheme} categories={categories} />
     </>
   );
 }

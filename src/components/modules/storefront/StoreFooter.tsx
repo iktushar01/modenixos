@@ -2,43 +2,57 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { Instagram, Twitter, Facebook } from "lucide-react";
-import { Store } from "@/types/store.types";
-import { StorefrontThemeConfig } from "@/lib/storefrontTheme";
+import { Category, Store } from "@/types/store.types";
+import { StorefrontThemeConfig, resolveStorefrontNavLinks } from "@/lib/storefront";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface StoreFooterProps {
   store: Store;
   theme: StorefrontThemeConfig;
+  categories?: Category[];
 }
 
-const FOOTER_LINKS = [
-  { label: "About", href: "#about" },
-  { label: "Help", href: "#contact" },
-  { label: "Shipping", href: "#contact" },
-  { label: "Returns", href: "#contact" },
-];
-
-export function StoreFooter({ store, theme }: StoreFooterProps) {
+export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps) {
   const base = `/store/${store.slug}`;
+  const [email, setEmail] = useState("");
+  const navLinks = resolveStorefrontNavLinks(theme, store.slug, categories).slice(0, 6);
+
+  const handleNewsletter = (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmail("");
+  };
 
   return (
     <footer className="sf-border sf-footer border-t">
-      <div className="sf-section w-full py-14">
-        <div className="grid gap-10 md:grid-cols-3">
+      <div className="sf-section w-full py-16 md:py-20">
+        <div className="mb-14 text-center md:mb-16">
+          {store.logo ? (
+            <Image
+              src={store.logo}
+              alt={store.brandName}
+              width={180}
+              height={60}
+              className="mx-auto h-10 w-auto object-contain md:h-12"
+              unoptimized
+            />
+          ) : (
+            <p className="sf-display-xl text-4xl md:text-5xl">{store.brandName}</p>
+          )}
+          {theme.header.tagline && (
+            <p className="sf-body-lg sf-muted-fg mx-auto mt-3 max-w-md">{theme.header.tagline}</p>
+          )}
+        </div>
+
+        <div className="grid gap-12 md:grid-cols-3 lg:gap-16">
           <div>
-            {store.logo ? (
-              <Image src={store.logo} alt={store.brandName} width={120} height={40} className="h-8 w-auto object-contain" unoptimized />
-            ) : (
-              <p className="text-lg font-medium sf-footer-fg">{store.brandName}</p>
-            )}
-            <p className="mt-2 max-w-xs text-sm sf-muted-fg">{store.description}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wider sf-muted-fg">Links</p>
-            <ul className="mt-4 space-y-2">
-              {FOOTER_LINKS.map((link) => (
-                <li key={link.label}>
-                  <Link href={`${base}${link.href}`} className="sf-link text-sm transition-colors sf-hover-fg">
+            <p className="sf-eyebrow mb-4">Shop</p>
+            <ul className="space-y-2.5">
+              {navLinks.map((link) => (
+                <li key={`${link.label}-${link.href}`}>
+                  <Link href={link.href} className="sf-link text-sm transition-colors sf-hover-fg">
                     {link.label}
                   </Link>
                 </li>
@@ -50,33 +64,69 @@ export function StoreFooter({ store, theme }: StoreFooterProps) {
               </li>
             </ul>
           </div>
+
           <div>
-            <p className="text-xs uppercase tracking-wider sf-muted-fg">Follow</p>
-            <div className="mt-4 flex gap-3">
+            <p className="sf-eyebrow mb-4">Support</p>
+            <ul className="space-y-2.5">
+              <li>
+                <Link href={`${base}#about`} className="sf-link text-sm sf-hover-fg">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href={`${base}#contact`} className="sf-link text-sm sf-hover-fg">
+                  Contact
+                </Link>
+              </li>
+              {theme.contact.phone && (
+                <li>
+                  <a href={`tel:${theme.contact.phone}`} className="sf-link text-sm sf-hover-fg">
+                    {theme.contact.phone}
+                  </a>
+                </li>
+              )}
+            </ul>
+            <div className="mt-6 flex gap-3">
               {theme.social.instagram && (
-                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg">
-                  <Instagram className="h-5 w-5" />
+                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg" aria-label="Instagram">
+                  <Instagram className="h-5 w-5" strokeWidth={1.5} />
                 </a>
               )}
               {theme.social.twitter && (
-                <a href={theme.social.twitter} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg">
-                  <Twitter className="h-5 w-5" />
+                <a href={theme.social.twitter} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg" aria-label="Twitter">
+                  <Twitter className="h-5 w-5" strokeWidth={1.5} />
                 </a>
               )}
               {theme.social.facebook && (
-                <a href={theme.social.facebook} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg">
-                  <Facebook className="h-5 w-5" />
+                <a href={theme.social.facebook} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg" aria-label="Facebook">
+                  <Facebook className="h-5 w-5" strokeWidth={1.5} />
                 </a>
-              )}
-              {!theme.social.instagram && !theme.social.twitter && !theme.social.facebook && (
-                <span className="text-sm sf-muted-fg">Social links from dashboard</span>
               )}
             </div>
           </div>
+
+          <div>
+            <p className="sf-eyebrow mb-4">Newsletter</p>
+            <p className="sf-muted-fg mb-4 text-sm">Exclusive offers and new arrivals.</p>
+            <form onSubmit={handleNewsletter} className="flex gap-2">
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your email"
+                className="sf-input flex-1"
+                required
+              />
+              <Button type="submit" className="sf-btn-primary shrink-0 rounded-full px-5">
+                Join
+              </Button>
+            </form>
+          </div>
         </div>
-        <div className="sf-border mt-12 flex flex-col items-center justify-between gap-2 border-t pt-8 text-xs sf-muted-fg md:flex-row">
-          <p>&copy; {new Date().getFullYear()} {store.brandName}. All rights reserved.</p>
-          <p>Powered by ModenixOS</p>
+
+        <div className="sf-border mt-14 flex flex-col items-center justify-between gap-3 border-t pt-8 text-xs sf-muted-fg md:flex-row">
+          <p>&copy; {new Date().getFullYear()} {store.brandName}</p>
+          <p className="sf-eyebrow">Powered by ModenixOS</p>
         </div>
       </div>
     </footer>

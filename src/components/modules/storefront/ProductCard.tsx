@@ -7,10 +7,11 @@ import { motion } from "framer-motion";
 import { Eye, ShoppingBag, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Product, Store } from "@/types/store.types";
-import { formatPrice, productDisplayPrice, StorefrontThemeConfig } from "@/lib/storefrontTheme";
+import { formatPrice, productDisplayPrice } from "@/lib/storefrontTheme";
 import { useCartStore } from "@/stores/cart.store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { StorefrontThemeConfig } from "@/lib/storefront";
 
 interface ProductCardProps {
   product: Product;
@@ -58,7 +59,7 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="sf-border sf-card relative overflow-hidden rounded-2xl border">
+      <div className="sf-editorial-card sf-image-zoom relative overflow-hidden">
         <Link href={`/store/${store.slug}/products/${product.id}`} className="block">
           <div className="relative aspect-[3/4] overflow-hidden sf-muted">
             {product.images[0] ? (
@@ -68,8 +69,8 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
                   alt={product.name}
                   fill
                   className={cn(
-                    "object-cover transition-all duration-500",
-                    hovered && secondImage ? "opacity-0" : "opacity-100 group-hover:scale-105",
+                    "object-cover transition-all duration-700",
+                    hovered && secondImage ? "opacity-0" : "opacity-100",
                   )}
                   unoptimized
                 />
@@ -79,69 +80,72 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
                     alt=""
                     fill
                     className={cn(
-                      "object-cover transition-all duration-500",
-                      hovered ? "scale-105 opacity-100" : "opacity-0",
+                      "object-cover transition-all duration-700",
+                      hovered ? "opacity-100" : "opacity-0",
                     )}
                     unoptimized
                   />
                 )}
               </>
             ) : (
-              <div className="sf-muted-fg flex h-full items-center justify-center">No image</div>
+              <div className="sf-muted-fg flex h-full items-center justify-center text-sm">No image</div>
             )}
 
             {discountPercent && (
-              <span className="sf-badge-secondary absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide">
-                -{discountPercent}%
+              <span className="sf-eyebrow absolute left-4 top-4 sf-badge-secondary rounded-full px-3 py-1">
+                −{discountPercent}%
               </span>
             )}
 
-            <div className="absolute inset-x-0 bottom-0 flex translate-y-full gap-2 p-3 transition-transform duration-300 group-hover:translate-y-0">
-              <Button
-                size="sm"
-                className="sf-btn-primary flex-1 rounded-full text-xs"
-                onClick={handleAddToCart}
-              >
-                <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
-                Add
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="sf-btn-outline rounded-full text-xs"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onQuickView(product);
-                }}
-              >
-                <Eye className="h-3.5 w-3.5" />
-              </Button>
+            <div className="absolute inset-x-0 bottom-0 translate-y-full bg-[color-mix(in_srgb,var(--sf-card)_92%,transparent)] p-3 backdrop-blur-sm transition-transform duration-300 group-hover:translate-y-0">
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="sf-btn-primary flex-1 rounded-full text-xs uppercase tracking-wider"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
+                  Add
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="sf-btn-outline rounded-full"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onQuickView(product);
+                  }}
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
           </div>
         </Link>
       </div>
 
-      <div className="mt-3 space-y-1 px-1">
+      <div className="mt-4 space-y-1.5 px-0.5">
+        <p className="sf-eyebrow">{store.brandName}</p>
         <Link href={`/store/${store.slug}/products/${product.id}`}>
-          <h3 className="truncate text-sm font-medium sf-fg transition-colors hover:opacity-80">
+          <h3 className="sf-font-display truncate text-base sf-fg transition-opacity hover:opacity-70">
             {product.name}
           </h3>
         </Link>
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm">
+          <div className="sf-tabular-nums flex items-center gap-2 text-sm">
             <span className="font-medium sf-fg">{formatPrice(price, store.currency)}</span>
             {compareAt && (
               <span className="sf-muted-fg line-through">{formatPrice(compareAt, store.currency)}</span>
             )}
           </div>
           {rating ? (
-            <div className="sf-muted-fg flex items-center gap-0.5 text-xs">
-              <Star className="sf-star-filled h-3 w-3" />
+            <div className="sf-muted-fg flex items-center gap-1 text-xs">
+              <Star className="sf-star-filled h-3 w-3" strokeWidth={1.25} />
               {rating.toFixed(1)}
             </div>
           ) : product.tags?.includes("new") ? (
-            <span className="text-[10px] uppercase tracking-wider sf-muted-fg">New</span>
+            <span className="sf-eyebrow">New</span>
           ) : null}
         </div>
       </div>

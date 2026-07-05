@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
+import { StorefrontSection } from "./ui";
 
 interface CategoriesGridProps {
   slug: string;
@@ -13,53 +14,46 @@ interface CategoriesGridProps {
 export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
   if (categories.length === 0) return null;
 
-  return (
-    <section id="categories" className="sf-section w-full py-20">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="mb-10"
-      >
-        <p className="text-xs uppercase tracking-[0.2em] sf-muted-fg">Browse by</p>
-        <h2 className="mt-2 text-3xl font-light sf-fg md:text-4xl">Categories</h2>
-      </motion.div>
+  const featured = categories.slice(0, 4);
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {categories.map((cat, i) => (
+  return (
+    <StorefrontSection
+      id="categories"
+      className="py-16 md:py-24"
+      eyebrow="Browse by"
+      title="Categories"
+      subtitle="Explore our curated departments"
+    >
+      <div className="grid gap-3 md:grid-cols-2 md:gap-4">
+        {featured.map((cat, i) => (
           <motion.div
             key={cat.id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.06 }}
+            transition={{ delay: i * 0.08 }}
+            className={i === 0 ? "md:row-span-2" : ""}
           >
             <Link
               href={`/store/${slug}?category=${cat.slug}#shop`}
-              className="sf-border sf-card group relative block aspect-[4/5] overflow-hidden rounded-2xl border"
+              className="sf-editorial-card sf-image-zoom group relative block overflow-hidden"
+              style={{ aspectRatio: i === 0 ? "3/4" : "4/3" }}
             >
               {cat.image ? (
-                <Image
-                  src={cat.image}
-                  alt={cat.name}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  unoptimized
-                />
+                <Image src={cat.image} alt={cat.name} fill className="object-cover" unoptimized />
               ) : (
-                <div className="sf-tile-placeholder absolute inset-0 opacity-50" />
+                <div className="sf-tile-placeholder absolute inset-0" />
               )}
               <div className="sf-image-overlay absolute inset-0" />
-              <div className="sf-tile-hover-glow absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <p className="sf-image-overlay-fg text-lg font-medium">{cat.name}</p>
-                <p className="sf-image-overlay-muted mt-1 text-xs uppercase tracking-wider">Shop now</p>
+              <div className="sf-tile-hover-glow absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="absolute bottom-0 left-0 p-6 md:p-8">
+                <p className="sf-display-lg sf-image-overlay-fg text-2xl md:text-3xl">{cat.name}</p>
+                <p className="sf-eyebrow sf-image-overlay-muted mt-2">Shop now</p>
               </div>
             </Link>
           </motion.div>
         ))}
       </div>
-    </section>
+    </StorefrontSection>
   );
 }

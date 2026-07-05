@@ -19,21 +19,19 @@ export function ProductInfoTabs({ product, store, theme }: ProductInfoTabsProps)
   const [tab, setTab] = useState<TabId>("description");
 
   return (
-    <div className="mt-12 border-t pt-8 sf-border">
-      <div className="mb-6 flex gap-8 border-b sf-border">
+    <div className="mt-16 border-t pt-10 sf-border">
+      <div className="mb-8 flex flex-wrap gap-2">
         {(["description", "delivery"] as const).map((id) => (
           <button
             key={id}
             type="button"
             onClick={() => setTab(id)}
             className={cn(
-              "pb-3 text-sm font-semibold uppercase tracking-wide transition-colors",
-              tab === id
-                ? "sf-fg border-b-2 border-[var(--sf-primary)]"
-                : "sf-muted-fg hover:opacity-80",
+              "rounded-full border px-5 py-2 text-xs uppercase tracking-[0.15em] transition-colors",
+              tab === id ? "sf-filter-pill-active" : "sf-filter-pill",
             )}
           >
-            {id === "description" ? "Description" : "Delivery Options"}
+            {id === "description" ? "Description" : "Delivery"}
           </button>
         ))}
       </div>

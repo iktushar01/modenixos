@@ -30,17 +30,14 @@ export function ProductReviews({ storeSlug, product, reviews }: ProductReviewsPr
   const maxCount = Math.max(...Object.values(dist), 1);
 
   return (
-    <section className="mt-12">
-      <div className="sf-muted mb-6 flex flex-wrap items-center justify-between gap-4 rounded px-4 py-3">
-        <h2 className="text-sm font-medium sf-fg">
-          Customer Review of {product.name}
-        </h2>
-        <Button
-          size="sm"
-          className="sf-btn-primary"
-          onClick={() => setDialogOpen(true)}
-        >
-          Write Review
+    <section className="mt-16">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="sf-eyebrow">Reviews</p>
+          <h2 className="sf-display-lg mt-2 text-xl">Customer reviews</h2>
+        </div>
+        <Button size="sm" className="sf-btn-primary rounded-full px-5" onClick={() => setDialogOpen(true)}>
+          Write review
         </Button>
       </div>
 

@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { cssVarsToStyle } from "@/lib/storefront/cssVars";
 import { cn } from "@/lib/utils";
+import { storefrontFontClassName } from "./fonts";
 import { StorefrontThemeProvider, useStorefrontTheme } from "./StorefrontThemeContext";
 
 interface StorefrontThemeShellProps {
@@ -18,7 +19,7 @@ function StorefrontThemeShellInner({ children, className }: { children: ReactNod
 
   return (
     <div
-      className={cn("storefront-theme min-h-screen", className)}
+      className={cn("storefront-theme min-h-screen", storefrontFontClassName, className)}
       style={cssVarsToStyle(activeTheme.colors)}
       data-storefront-theme={activeTheme.templateId}
       data-color-mode={colorMode}

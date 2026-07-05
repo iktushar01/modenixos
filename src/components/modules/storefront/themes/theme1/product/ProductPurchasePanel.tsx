@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Minus, Phone, Plus, Share2, Star } from "lucide-react";
+import { Heart, Minus, Phone, Plus, Share2, Star, Facebook } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -127,14 +127,14 @@ export function ProductPurchasePanel({
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold leading-snug sf-fg sm:text-2xl">{product.name}</h1>
+        <h1 className="sf-display-lg text-2xl sm:text-3xl">{product.name}</h1>
         {product.sku && (
-          <p className="sf-muted-fg mt-1 text-sm">SKU: {product.sku}</p>
+          <p className="sf-eyebrow mt-2">SKU {product.sku}</p>
         )}
       </div>
 
       <div className="flex flex-wrap items-baseline gap-3">
-        <span className="text-2xl font-bold sf-fg">{formatPrice(price, store.currency)}</span>
+        <span className="sf-tabular-nums sf-display-lg text-2xl">{formatPrice(price, store.currency)}</span>
         {compareAt && (
           <span className="sf-muted-fg text-lg line-through">
             {formatPrice(compareAt, store.currency)}
@@ -301,25 +301,25 @@ export function ProductPurchasePanel({
         </button>
 
         <div className="flex items-center gap-2">
-          <Share2 className="sf-muted-fg h-4 w-4" />
-          <span className="sf-muted-fg text-sm">Share To:</span>
+          <Share2 className="sf-muted-fg h-4 w-4" strokeWidth={1.25} />
+          <span className="sf-eyebrow">Share</span>
           <a
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="sf-border flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold hover:opacity-80"
+            className="sf-btn-outline flex h-9 w-9 items-center justify-center rounded-full border transition-opacity hover:opacity-80"
             aria-label="Share on Facebook"
           >
-            f
+            <Facebook className="h-4 w-4" strokeWidth={1.25} />
           </a>
           <a
             href={`https://wa.me/?text=${encodeURIComponent(`${product.name} ${shareUrl}`)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="sf-border flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold hover:opacity-80"
+            className="sf-btn-outline flex h-9 w-9 items-center justify-center rounded-full border text-[10px] font-bold transition-opacity hover:opacity-80"
             aria-label="Share on WhatsApp"
           >
-            W
+            WA
           </a>
         </div>
       </div>
