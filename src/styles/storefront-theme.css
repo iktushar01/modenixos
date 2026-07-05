@@ -282,8 +282,13 @@
 }
 
 .storefront-theme .sf-announcement {
-  background-color: var(--sf-announcement);
-  color: var(--sf-announcement-fg);
+  background-color: var(--sf-primary);
+  color: var(--sf-primary-fg);
+}
+
+.storefront-theme .sf-announcement .sf-eyebrow,
+.storefront-theme .sf-announcement .sf-marquee {
+  color: inherit;
 }
 
 .storefront-theme .sf-section {

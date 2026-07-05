@@ -17,15 +17,10 @@ interface PresetDefinition {
   darkTweaks?: Partial<StorefrontColorPalette>;
 }
 
-const ANNOUNCEMENT = {
-  announcement: "#0f172a",
-  announcementForeground: "#ffffff",
-};
-
 function buildPreset(def: PresetDefinition): StorefrontPalettePreset {
   const generated = generatePalettePair(def.seed);
-  const light = harmonizePalette({ ...generated.light, ...def.lightTweaks, ...ANNOUNCEMENT });
-  const dark = harmonizePalette({ ...generated.dark, ...def.darkTweaks, ...ANNOUNCEMENT });
+  const light = harmonizePalette({ ...generated.light, ...def.lightTweaks });
+  const dark = harmonizePalette({ ...generated.dark, ...def.darkTweaks });
   return {
     id: def.id,
     name: def.name,
@@ -39,7 +34,7 @@ const PRESET_DEFINITIONS: PresetDefinition[] = [
   {
     id: "classic-retail",
     name: "Classic Retail",
-    description: "Light storefront with navy announcement bar",
+    description: "Light storefront with charcoal accents",
     seed: { brandPrimary: "#0f172a", brandAccent: "#0f172a" },
     lightTweaks: {
       background: "#ffffff",

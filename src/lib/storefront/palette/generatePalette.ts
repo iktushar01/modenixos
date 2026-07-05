@@ -1,6 +1,6 @@
 import type { StorefrontColorMode, StorefrontColorPalette } from "../types";
 import { ensureForeground } from "./contrast";
-import { adjustLightness, colorToHex, getLightness, mixHex, withAlpha } from "./colorMath";
+import { adjustLightness, colorToHex, getLightness, withAlpha } from "./colorMath";
 import { harmonizePalette } from "./harmonizePalette";
 
 export interface BrandSeed {
@@ -25,7 +25,6 @@ function generateLight(seed: BrandSeed): StorefrontColorPalette {
   const muted = "#f4f4f5";
   const navbar = "#ffffff";
   const footer = "#fafafa";
-  const announcement = mixHex(primary, "#ffffff", 0.12);
   const secondary = "#f4f4f5";
 
   const palette: StorefrontColorPalette = {
@@ -45,8 +44,8 @@ function generateLight(seed: BrandSeed): StorefrontColorPalette {
     card,
     cardForeground: ensureForeground(card),
     heroOverlay: withAlpha("#000000", 0.45),
-    announcement,
-    announcementForeground: ensureForeground(announcement),
+    announcement: primary,
+    announcementForeground: ensureForeground(primary),
     navbar,
     navbarForeground: ensureForeground(navbar),
     footer,
@@ -82,7 +81,6 @@ function generateDark(seed: BrandSeed): StorefrontColorPalette {
   const muted = "#262626";
   const navbar = "#0a0a0a";
   const footer = "#0a0a0a";
-  const announcement = mixHex(primary, "#0a0a0a", 0.35);
   const secondary = "#262626";
 
   const palette: StorefrontColorPalette = {
@@ -102,8 +100,8 @@ function generateDark(seed: BrandSeed): StorefrontColorPalette {
     card,
     cardForeground: ensureForeground(card),
     heroOverlay: withAlpha("#000000", 0.6),
-    announcement,
-    announcementForeground: ensureForeground(announcement),
+    announcement: primary,
+    announcementForeground: ensureForeground(primary),
     navbar,
     navbarForeground: ensureForeground(navbar),
     footer,
