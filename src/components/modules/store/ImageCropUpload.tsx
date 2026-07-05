@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Upload } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CropEditorDialog, CropRatioOption } from "./CropEditorDialog";
@@ -76,7 +75,8 @@ export function ImageCropUpload({
         <div
           className={`relative overflow-hidden rounded-lg border bg-muted ${previewClassName ?? "aspect-[3/1] max-w-md"}`}
         >
-          <Image src={preview} alt="" fill className="object-contain p-2" unoptimized />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={preview} alt="" className="h-full w-full object-contain p-2" />
         </div>
       ) : (
         <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors hover:border-primary/50 hover:bg-muted/50">

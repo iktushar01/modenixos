@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
@@ -20,6 +21,15 @@ const LOGO_RATIOS = [
   { label: "Free", value: undefined },
 ];
 
+function extractErrorMessage(err: unknown): string {
+  if (err && typeof err === "object") {
+    const ax = err as { response?: { data?: { message?: string } }; message?: string };
+    if (ax.response?.data?.message) return ax.response.data.message;
+    if (ax.message) return ax.message;
+  }
+  return "Failed to save branding";
+}
+
 export default function StoreBrandingPage() {
   const { data: store, refetch, isLoading } = useMyStore();
   const [saving, setSaving] = useState(false);
@@ -32,6 +42,8 @@ export default function StoreBrandingPage() {
     if (!store) return [];
     return parseStorefrontTheme(store).heroSlides;
   }, [store]);
+
+  const hasPendingChanges = Boolean(logoFile || clearLogo || slidesDirty);
 
   useEffect(() => {
     if (!store || slidesDirty) return;
@@ -51,29 +63,35 @@ export default function StoreBrandingPage() {
 
   const handleSave = async () => {
     if (!store) return;
+    if (!hasPendingChanges) {
+      toast.info("No changes to save");
+      return;
+    }
+
     setSaving(true);
     try {
       const fd = new FormData();
-      let hasChanges = false;
 
       if (logoFile) {
-        fd.append("logo", logoFile);
-        hasChanges = true;
+        if (logoFile.size === 0) {
+          toast.error("Logo file is empty — try cropping again");
+          return;
+        }
+        fd.append("logo", logoFile, logoFile.name);
       } else if (clearLogo) {
         fd.append("logo", "");
-        hasChanges = true;
       }
 
       if (slidesDirty) {
         const { meta, files } = buildHeroSlidesMeta(heroSlides);
         fd.append("heroSlidesMeta", JSON.stringify(meta));
-        files.forEach((file) => fd.append("heroSlides", file));
-        hasChanges = true;
-      }
-
-      if (!hasChanges) {
-        toast.info("No changes to save");
-        return;
+        for (const file of files) {
+          if (file.size === 0) {
+            toast.error("One of the hero images is empty — re-add that slide");
+            return;
+          }
+          fd.append("heroSlides", file, file.name);
+        }
       }
 
       await updateStoreAction(store.id, fd);
@@ -81,9 +99,10 @@ export default function StoreBrandingPage() {
       setLogoFile(null);
       setClearLogo(false);
       setSlidesDirty(false);
-      refetch();
-    } catch {
-      toast.error("Failed to save branding");
+      await refetch();
+    } catch (err) {
+      console.error("Branding save failed:", err);
+      toast.error(extractErrorMessage(err));
     } finally {
       setSaving(false);
     }
@@ -101,14 +120,21 @@ export default function StoreBrandingPage() {
     <div className="space-y-6">
       <PageHeader
         title="Branding"
-        description="Logo and hero slider for your storefront."
+        description="Logo and hero slider for your storefront. After cropping, click Save branding to upload."
+        action={
+          hasPendingChanges ? (
+            <Badge variant="secondary" className="shrink-0">
+              Unsaved changes
+            </Badge>
+          ) : undefined
+        }
       />
 
       <Card>
         <CardHeader>
           <CardTitle>Logo</CardTitle>
           <CardDescription>
-            Pick aspect ratio, rectangle or circle crop, zoom and rotation.
+            Crop your logo, then save. Appears in the storefront navbar and footer.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -125,7 +151,10 @@ export default function StoreBrandingPage() {
               setLogoFile(file);
               if (file) setClearLogo(false);
             }}
-            onClear={() => setClearLogo(true)}
+            onClear={() => {
+              setClearLogo(true);
+              setLogoFile(null);
+            }}
           />
         </CardContent>
       </Card>
@@ -134,7 +163,7 @@ export default function StoreBrandingPage() {
         <CardHeader>
           <CardTitle>Hero slider</CardTitle>
           <CardDescription>
-            Multiple full-width images that auto-rotate — no text or buttons on the slider.
+            Add multiple banner images. They auto-rotate on the storefront (images only).
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,7 +171,7 @@ export default function StoreBrandingPage() {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={saving}>
+      <Button onClick={handleSave} disabled={saving || !hasPendingChanges}>
         {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Save branding
       </Button>

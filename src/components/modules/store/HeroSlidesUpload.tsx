@@ -153,7 +153,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
         defaultAspect={16 / 9}
         ratioOptions={HERO_RATIOS}
         allowShapeSelection={false}
-        defaultShape="rect"
+        defaultShape="rectangle"
         outputFileName={`hero-slide-${Date.now()}.jpg`}
         onComplete={addCroppedSlide}
       />

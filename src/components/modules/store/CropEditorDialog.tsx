@@ -110,31 +110,16 @@ async function exportCrop(
   rotation: number,
   shape: CropShapeType,
 ): Promise<Blob> {
-  const scaleX = image.naturalWidth / image.width;
-  const scaleY = image.naturalHeight / image.height;
-  const naturalCrop: PixelCrop = {
-    unit: "px",
-    x: Math.round(pixelCrop.x * scaleX),
-    y: Math.round(pixelCrop.y * scaleY),
-    width: Math.round(pixelCrop.width * scaleX),
-    height: Math.round(pixelCrop.height * scaleY),
-  };
-
+  // cropToCanvas expects crop coords in displayed image pixels and scales to natural size internally
   const canvas = document.createElement("canvas");
-  await cropToCanvas(image, canvas, naturalCrop, 1, rotation);
+  await cropToCanvas(image, canvas, pixelCrop, 1, rotation);
 
   const masked = applyShapeMask(canvas, shape);
   const mimeType = shapeNeedsTransparency(shape) ? "image/png" : "image/jpeg";
-  const ext = mimeType === "image/png" ? "png" : "jpg";
-
-  return canvasToBlob(masked, mimeType, ext);
+  return canvasToBlob(masked, mimeType);
 }
 
-function canvasToBlob(
-  canvas: HTMLCanvasElement,
-  mimeType: string,
-  _ext: string,
-): Promise<Blob> {
+function canvasToBlob(canvas: HTMLCanvasElement, mimeType: string): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("Crop failed"))),
@@ -209,11 +194,18 @@ export function CropEditorDialog({
   };
 
   const applyCrop = async () => {
-    if (!imgRef.current || !pixelCrop?.width || !pixelCrop?.height) return;
+    const img = imgRef.current;
+    if (!img || !crop) return;
+
+    const px = convertToPixelCrop(crop, img.width, img.height);
+    if (!px.width || !px.height) return;
+
     setProcessing(true);
     try {
-      const blob = await exportCrop(imgRef.current, pixelCrop, rotation, shape);
-      const baseName = outputFileName.replace(/\.(jpg|jpeg|png)$/i, "");
+      const blob = await exportCrop(img, px, rotation, shape);
+      if (blob.size === 0) return;
+
+      const baseName = outputFileName.replace(/\.(jpg|jpeg|png|webp)$/i, "");
       const ext = shapeNeedsTransparency(shape) ? "png" : "jpg";
       const file = new File([blob], `${baseName}.${ext}`, { type: blob.type });
       onComplete(file);
@@ -238,8 +230,10 @@ export function CropEditorDialog({
               circularCrop={usesCircularCropPreview(shape)}
               ruleOfThirds
               keepSelection
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(px) => setPixelCrop(px)}
+              onChange={(pixelCrop, percentCrop) => {
+                setCrop(percentCrop);
+                setPixelCrop(pixelCrop);
+              }}
               className="max-w-full"
               renderSelectionAddon={() => <ShapeOverlay shape={shape} />}
             >
