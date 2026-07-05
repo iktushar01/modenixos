@@ -15,7 +15,7 @@ export function StorefrontThemeToggle() {
       onClick={toggleColorMode}
       aria-label={colorMode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       title={colorMode === "dark" ? "Light mode" : "Dark mode"}
-      className="shrink-0"
+      className="sf-navbar-fg shrink-0 hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]"
     >
       {colorMode === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>

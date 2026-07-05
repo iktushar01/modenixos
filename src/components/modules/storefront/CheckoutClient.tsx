@@ -114,7 +114,7 @@ export default function CheckoutClient({
     <StorefrontPageShell store={store} categories={categories}>
       <main className="sf-section w-full py-10 md:py-14">
         <div className="mx-auto max-w-2xl">
-          <h1 className="mb-8 text-3xl font-light">Checkout</h1>
+          <h1 className="sf-fg mb-8 text-3xl font-light">Checkout</h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">

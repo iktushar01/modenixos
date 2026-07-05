@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useStorefrontCssVars } from "./useStorefrontCssVars";
 
 interface ShopFilterSidebarProps {
   slug: string;
@@ -52,6 +53,7 @@ export function ShopFilterSidebar({
   className,
 }: ShopFilterSidebarProps) {
   const base = `/store/${slug}`;
+  const portalVars = useStorefrontCssVars();
 
   return (
     <aside className={cn("space-y-5", className)}>
@@ -79,7 +81,7 @@ export function ShopFilterSidebar({
           <SelectTrigger className="sf-input">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="storefront-theme sf-card sf-border" style={portalVars}>
             <SelectItem value="newest">Newest</SelectItem>
             <SelectItem value="price-asc">Price: Low to High</SelectItem>
             <SelectItem value="price-desc">Price: High to Low</SelectItem>

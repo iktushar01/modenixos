@@ -53,6 +53,7 @@ export default function StorefrontRegisterClient({
             <Label htmlFor="name">Full name</Label>
             <Input
               id="name"
+              className="sf-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -63,6 +64,7 @@ export default function StorefrontRegisterClient({
             <Input
               id="email"
               type="email"
+              className="sf-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -74,6 +76,7 @@ export default function StorefrontRegisterClient({
               id="password"
               type="password"
               minLength={6}
+              className="sf-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

@@ -148,7 +148,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               type="button"
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="sf-navbar-fg md:hidden hover:bg-[color-mix(in_srgb,var(--sf-muted)_50%,transparent)]"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label="Menu"
             >

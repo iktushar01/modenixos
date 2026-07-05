@@ -53,6 +53,7 @@ export default function StorefrontLoginClient({
             <Input
               id="email"
               type="email"
+              className="sf-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -63,6 +64,7 @@ export default function StorefrontLoginClient({
             <Input
               id="password"
               type="password"
+              className="sf-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

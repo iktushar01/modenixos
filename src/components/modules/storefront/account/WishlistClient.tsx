@@ -48,7 +48,7 @@ export default function WishlistClient({
             <h1 className="text-2xl font-bold sf-fg">My Wishlist</h1>
             <p className="sf-muted-fg text-sm">{list.length} saved items</p>
           </div>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="sf-btn-outline">
             <Link href={base}>Continue shopping</Link>
           </Button>
         </div>
@@ -101,7 +101,7 @@ export default function WishlistClient({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full"
+                      className="sf-btn-outline w-full"
                       disabled={removingId === item.productId}
                       onClick={() => handleRemove(item.productId)}
                     >

@@ -107,8 +107,8 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
               </Button>
               <Button
                 size="sm"
-                variant="secondary"
-                className="rounded-full sf-surface text-xs sf-surface-fg hover:opacity-90"
+                variant="outline"
+                className="sf-btn-outline rounded-full text-xs"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();

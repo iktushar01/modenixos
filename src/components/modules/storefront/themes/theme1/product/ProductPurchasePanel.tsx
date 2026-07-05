@@ -9,11 +9,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+  StorefrontDialogContent,
+} from "@/components/modules/storefront/StorefrontDialog";
 import { Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { formatPrice, productDisplayPrice } from "@/lib/storefrontTheme";
@@ -235,8 +235,7 @@ export function ProductPurchasePanel({
         <div className="flex flex-1 flex-wrap gap-2">
           <Button
             type="button"
-            variant="secondary"
-            className="sf-surface sf-surface-fg min-w-[140px] flex-1 rounded-md"
+            className="sf-btn-outline sf-surface sf-surface-fg min-w-[140px] flex-1 rounded-md"
             onClick={handleAddToCart}
             disabled={product.stock <= 0}
           >
@@ -306,7 +305,7 @@ export function ProductPurchasePanel({
       </div>
 
       <Dialog open={loginPrompt} onOpenChange={setLoginPrompt}>
-        <DialogContent>
+        <StorefrontDialogContent>
           <DialogHeader>
             <DialogTitle>Sign in to save items</DialogTitle>
             <DialogDescription>
@@ -314,14 +313,14 @@ export function ProductPurchasePanel({
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-2 pt-2">
-            <Button asChild className="flex-1">
+            <Button asChild className="sf-btn-primary flex-1">
               <Link href={`/store/${store.slug}/account/login`}>Log in</Link>
             </Button>
-            <Button asChild variant="outline" className="flex-1">
+            <Button asChild variant="outline" className="sf-btn-outline flex-1">
               <Link href={`/store/${store.slug}/account/register`}>Register</Link>
             </Button>
           </div>
-        </DialogContent>
+        </StorefrontDialogContent>
       </Dialog>
     </div>
   );

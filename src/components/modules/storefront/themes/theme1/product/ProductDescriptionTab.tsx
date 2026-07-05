@@ -20,7 +20,7 @@ export function ProductDescriptionTab({ product, theme }: ProductDescriptionTabP
           <div className="overflow-x-auto">
             <table className="w-full min-w-[500px] border-collapse text-sm">
               <thead>
-                <tr className="sf-border border-b bg-muted/30">
+                <tr className="sf-border sf-table-header border-b">
                   {chart.columns.map((col) => (
                     <th key={col} className="border px-3 py-2 text-left font-semibold sf-border">
                       {col}

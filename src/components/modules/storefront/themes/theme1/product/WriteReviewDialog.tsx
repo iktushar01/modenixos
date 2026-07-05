@@ -6,10 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+  StorefrontDialogContent,
+} from "@/components/modules/storefront/StorefrontDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,10 +60,10 @@ export function WriteReviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <StorefrontDialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Write a review</DialogTitle>
-          <p className="text-sm text-muted-foreground">{productName}</p>
+          <p className="sf-muted-fg text-sm">{productName}</p>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -75,10 +75,8 @@ export function WriteReviewDialog({
                   type="button"
                   onClick={() => setRating(n)}
                   className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded border text-sm font-semibold",
-                    rating === n
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-input hover:bg-muted",
+                    "flex h-10 w-10 items-center justify-center rounded border text-sm font-semibold transition-colors",
+                    rating === n ? "sf-filter-pill-active" : "sf-filter-pill",
                   )}
                 >
                   {n}
@@ -90,6 +88,7 @@ export function WriteReviewDialog({
             <Label htmlFor="reviewName">Your name</Label>
             <Input
               id="reviewName"
+              className="sf-input"
               value={guestName}
               onChange={(e) => setGuestName(e.target.value)}
               required
@@ -100,6 +99,7 @@ export function WriteReviewDialog({
             <Input
               id="reviewEmail"
               type="email"
+              className="sf-input"
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
             />
@@ -109,17 +109,18 @@ export function WriteReviewDialog({
             <Textarea
               id="reviewComment"
               rows={4}
+              className="sf-input min-h-[100px] resize-y"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Share your experience with this product..."
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="sf-btn-primary w-full" disabled={loading}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Submit review
           </Button>
         </form>
-      </DialogContent>
+      </StorefrontDialogContent>
     </Dialog>
   );
 }

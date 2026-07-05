@@ -267,3 +267,142 @@
 .storefront-theme .sf-hero-overlay {
   background-color: var(--sf-hero-overlay);
 }
+
+/* ── Shadcn/ui primitives → storefront tokens ── */
+.storefront-theme [data-slot="button"][data-variant="default"] {
+  background-color: var(--sf-primary);
+  color: var(--sf-primary-fg);
+  border-color: transparent;
+}
+
+.storefront-theme [data-slot="button"][data-variant="default"]:hover {
+  opacity: 0.9;
+}
+
+.storefront-theme [data-slot="button"][data-variant="ghost"] {
+  background-color: transparent;
+  color: inherit;
+  border-color: transparent;
+}
+
+.storefront-theme [data-slot="button"][data-variant="ghost"]:hover {
+  background-color: color-mix(in srgb, var(--sf-muted) 55%, transparent);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="button"][data-variant="secondary"] {
+  background-color: var(--sf-surface);
+  color: var(--sf-surface-fg);
+  border-color: var(--sf-border);
+}
+
+.storefront-theme [data-slot="button"][data-variant="secondary"]:hover {
+  background-color: color-mix(in srgb, var(--sf-muted) 70%, var(--sf-surface));
+}
+
+.storefront-theme [data-slot="button"][data-variant="outline"] {
+  background-color: transparent;
+  border-color: var(--sf-border);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="button"][data-variant="outline"]:hover {
+  background-color: color-mix(in srgb, var(--sf-muted) 60%, transparent);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="button"]:focus-visible {
+  border-color: var(--sf-primary);
+  --tw-ring-color: color-mix(in srgb, var(--sf-primary) 35%, transparent);
+}
+
+.storefront-theme [data-slot="input"] {
+  background-color: color-mix(in srgb, var(--sf-muted) 80%, transparent);
+  border-color: var(--sf-border);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="input"]::placeholder {
+  color: color-mix(in srgb, var(--sf-muted-fg) 70%, transparent);
+}
+
+.storefront-theme [data-slot="input"]:focus-visible {
+  border-color: var(--sf-primary);
+  --tw-ring-color: color-mix(in srgb, var(--sf-primary) 35%, transparent);
+}
+
+.storefront-theme [data-slot="label"] {
+  color: var(--sf-fg);
+}
+
+.storefront-theme textarea {
+  background-color: color-mix(in srgb, var(--sf-muted) 80%, transparent);
+  border-color: var(--sf-border);
+  color: var(--sf-fg);
+}
+
+.storefront-theme textarea::placeholder {
+  color: color-mix(in srgb, var(--sf-muted-fg) 70%, transparent);
+}
+
+.storefront-theme textarea:focus-visible {
+  border-color: var(--sf-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-primary) 25%, transparent);
+}
+
+.storefront-theme select {
+  background-color: color-mix(in srgb, var(--sf-muted) 80%, transparent);
+  border-color: var(--sf-border);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="checkbox"] {
+  border-color: var(--sf-border);
+  background-color: color-mix(in srgb, var(--sf-muted) 50%, transparent);
+}
+
+.storefront-theme [data-slot="checkbox"][data-state="checked"],
+.storefront-theme [data-slot="checkbox"][data-checked] {
+  background-color: var(--sf-primary);
+  border-color: var(--sf-primary);
+  color: var(--sf-primary-fg);
+}
+
+.storefront-theme [data-slot="select-trigger"] {
+  background-color: color-mix(in srgb, var(--sf-muted) 80%, transparent);
+  border-color: var(--sf-border);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="select-trigger"]:focus-visible {
+  border-color: var(--sf-primary);
+  --tw-ring-color: color-mix(in srgb, var(--sf-primary) 35%, transparent);
+}
+
+.storefront-theme [data-slot="select-content"] {
+  background-color: var(--sf-card);
+  color: var(--sf-card-fg);
+  border: 1px solid var(--sf-border);
+}
+
+.storefront-theme [data-slot="select-item"]:focus,
+.storefront-theme [data-slot="select-item"][data-highlighted] {
+  background-color: color-mix(in srgb, var(--sf-muted) 80%, transparent);
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="dialog-title"],
+.storefront-theme [data-slot="sheet-title"] {
+  color: var(--sf-fg);
+}
+
+.storefront-theme [data-slot="dialog-description"],
+.storefront-theme [data-slot="sheet-description"] {
+  color: var(--sf-muted-fg);
+}
+
+.storefront-theme .sf-table-header {
+  background-color: color-mix(in srgb, var(--sf-muted) 50%, transparent);
+}
+

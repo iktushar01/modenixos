@@ -18,7 +18,7 @@ import {
 import { ShopFilterSidebar, ShopActiveFilters } from "./ShopFilterSidebar";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetHeader, SheetTitle, SheetTrigger, StorefrontSheetContent } from "@/components/modules/storefront/StorefrontSheet";
 
 interface ShopSectionProps {
   store: Store;
@@ -121,14 +121,14 @@ export function ShopSection({
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="sf-card sf-fg w-[min(100%,320px)] overflow-y-auto border sf-border">
+            <StorefrontSheetContent side="left" className="w-[min(100%,320px)] overflow-y-auto">
               <SheetHeader>
-                <SheetTitle className="sf-fg">Filters</SheetTitle>
+                <SheetTitle>Filters</SheetTitle>
               </SheetHeader>
               <div className="mt-6">
                 <ShopFilterSidebar {...sidebarProps} />
               </div>
-            </SheetContent>
+            </StorefrontSheetContent>
           </Sheet>
         )}
       </div>
