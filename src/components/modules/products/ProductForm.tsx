@@ -320,10 +320,9 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const selectedCategory = categories.find((c) => c.id === values.categoryId);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 pb-24">
-      {/* Sticky action bar */}
-      <div className="sticky top-16 z-10 -mx-1 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/90 px-4 py-3 backdrop-blur-md">
-        <div className="flex items-center gap-3">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
           <Button type="button" variant="ghost" size="sm" asChild>
             <Link href="/dashboard/products">
               <ArrowLeft className="mr-1 h-4 w-4" />
@@ -331,14 +330,12 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
             </Link>
           </Button>
           <div>
-            <h1 className="text-lg font-semibold">
+            <h1 className="text-2xl font-bold">
               {mode === "create" ? "Add product" : "Edit product"}
             </h1>
-            <p className="text-xs text-muted-foreground">
-              {mode === "create"
-                ? "Fill in product details, pricing, and media"
-                : `Editing ${product?.name}`}
-            </p>
+            {mode === "edit" && (
+              <p className="text-sm text-muted-foreground">Editing {product?.name}</p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
