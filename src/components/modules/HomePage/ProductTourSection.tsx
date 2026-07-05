@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  LayoutDashboard,
-  Shield,
-  Store,
-} from "lucide-react";
+import { ArrowRight, LayoutDashboard, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedContent from "@/components/AnimatedContent";
 import { cn } from "@/lib/utils";
@@ -16,48 +11,72 @@ import { MarketingSectionHeader } from "./MarketingSectionHeader";
 const tabs = [
   {
     id: "dashboard",
-    label: "Owner Dashboard",
+    label: "Brand Dashboard",
     icon: LayoutDashboard,
-    href: "/login",
-    cta: "Open dashboard",
-    description: "Manage products, orders, customers, coupons, and analytics from one store-scoped hub.",
+    href: "/register",
+    cta: "Start free",
+    description:
+      "Your command center for products, orders, customers, and revenue. Everything you need to run your brand — in one beautiful dashboard.",
     preview: "dashboard" as const,
   },
   {
     id: "storefront",
-    label: "Public Storefront",
+    label: "Customer Storefront",
     icon: Store,
     href: "/store/luxe-threads",
-    cta: "Visit demo store",
-    description: "A live fashion storefront with cart, guest checkout, collections, and theme customization.",
+    cta: "View live demo",
+    description:
+      "A premium shopping experience for your customers. Collections, product pages, cart, and checkout — designed for fashion brands.",
     preview: "storefront" as const,
-  },
-  {
-    id: "admin",
-    label: "Platform Admin",
-    icon: Shield,
-    href: "/login",
-    cta: "Explore admin",
-    description: "Super-admin panel to manage all tenants, users, and platform-wide settings.",
-    preview: "admin" as const,
   },
 ];
 
 function DashboardPreview() {
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      {["Revenue $4.2k", "Orders 47", "Top product: Silk Blazer"].map((item) => (
-        <div key={item} className="rounded-lg border border-border/50 bg-muted/30 p-4 text-sm font-medium">
-          {item}
-        </div>
-      ))}
-      <div className="col-span-full flex h-32 items-end gap-1 rounded-lg border border-border/50 bg-muted/20 p-4">
-        {[35, 55, 40, 70, 50, 85, 60].map((h, i) => (
+    <div className="space-y-3">
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[
+          { label: "Revenue", value: "$4,280", change: "+12%" },
+          { label: "Orders", value: "47", change: "+8" },
+          { label: "Products", value: "12", change: "Live" },
+        ].map((stat) => (
           <div
-            key={i}
-            className="flex-1 rounded-sm bg-gradient-to-t from-violet-600/70 to-rose-500/50"
-            style={{ height: `${h}%` }}
-          />
+            key={stat.label}
+            className="rounded-lg border border-border/50 bg-card p-3"
+          >
+            <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+            <p className="text-sm font-bold">{stat.value}</p>
+            <p className="text-[10px] text-emerald-600 dark:text-emerald-400">{stat.change}</p>
+          </div>
+        ))}
+      </div>
+      <div className="rounded-lg border border-border/50 bg-muted/20 p-4">
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="font-medium">Revenue this week</span>
+          <span className="text-muted-foreground">+18% vs last week</span>
+        </div>
+        <div className="flex h-24 items-end gap-1.5">
+          {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-sm bg-gradient-to-t from-primary/80 to-primary/40"
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="rounded-lg border border-border/50 bg-card p-3">
+        <p className="text-xs font-medium">Recent orders</p>
+        {["Silk Blazer — $189", "Linen Dress — $124", "Cashmere Coat — $298"].map((order) => (
+          <div
+            key={order}
+            className="mt-2 flex items-center justify-between border-t border-border/50 pt-2 text-[11px]"
+          >
+            <span>{order}</span>
+            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-600 dark:text-emerald-400">
+              Paid
+            </span>
+          </div>
         ))}
       </div>
     </div>
@@ -66,58 +85,34 @@ function DashboardPreview() {
 
 function StorefrontPreview() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {["Silk Blazer", "Linen Dress", "Cashmere Coat", "Wide Trousers", "Knit Top", "Leather Bag"].map(
-        (name, i) => (
-          <div key={name} className="overflow-hidden rounded-lg border border-border/50 bg-card">
-            <div
-              className={cn(
-                "aspect-[4/5] bg-gradient-to-br",
-                i % 3 === 0 && "from-rose-200/80 to-rose-100/40 dark:from-rose-900/40 dark:to-rose-950/20",
-                i % 3 === 1 && "from-violet-200/80 to-violet-100/40 dark:from-violet-900/40 dark:to-violet-950/20",
-                i % 3 === 2 && "from-slate-200/80 to-slate-100/40 dark:from-slate-800/40 dark:to-slate-900/20"
-              )}
-            />
-            <div className="p-2.5">
-              <p className="truncate text-xs font-medium">{name}</p>
-              <p className="text-[10px] text-muted-foreground">${(89 + i * 23).toFixed(0)}</p>
-            </div>
-          </div>
-        )
-      )}
-    </div>
-  );
-}
-
-function AdminPreview() {
-  return (
-    <div className="overflow-hidden rounded-lg border border-border/50">
-      <div className="grid grid-cols-3 gap-px bg-border/50 text-[10px] font-medium sm:text-xs">
-        <div className="bg-muted/40 p-2.5">Store</div>
-        <div className="bg-muted/40 p-2.5">Owner</div>
-        <div className="bg-muted/40 p-2.5">Status</div>
-        {[
-          ["Luxe Threads", "demo@modenixos.com", "Active"],
-          ["Urban Edge", "owner@example.com", "Active"],
-          ["Nova Atelier", "brand@example.com", "Draft"],
-        ].map(([store, owner, status]) => (
-          <div key={store} className="contents">
-            <div className="bg-card p-2.5">{store}</div>
-            <div className="bg-card p-2.5 truncate text-muted-foreground">{owner}</div>
-            <div className="bg-card p-2.5">
-              <span
+    <div className="space-y-3">
+      <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card px-4 py-2.5">
+        <span className="text-xs font-semibold tracking-wide">LUXE THREADS</span>
+        <div className="flex gap-3 text-[10px] text-muted-foreground">
+          <span>Shop</span>
+          <span>Collections</span>
+          <span>Cart (2)</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {["Silk Blazer", "Linen Dress", "Cashmere Coat", "Wide Trousers", "Knit Top", "Leather Bag"].map(
+          (name, i) => (
+            <div key={name} className="overflow-hidden rounded-lg border border-border/50 bg-card">
+              <div
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px]",
-                  status === "Active"
-                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                    : "bg-muted text-muted-foreground"
+                  "aspect-[4/5] bg-gradient-to-br",
+                  i % 3 === 0 && "from-rose-200/80 to-rose-100/40 dark:from-rose-900/40 dark:to-rose-950/20",
+                  i % 3 === 1 && "from-violet-200/80 to-violet-100/40 dark:from-violet-900/40 dark:to-violet-950/20",
+                  i % 3 === 2 && "from-slate-200/80 to-slate-100/40 dark:from-slate-800/40 dark:to-slate-900/20"
                 )}
-              >
-                {status}
-              </span>
+              />
+              <div className="p-2">
+                <p className="truncate text-[11px] font-medium">{name}</p>
+                <p className="text-[10px] text-muted-foreground">${(89 + i * 23).toFixed(0)}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );
@@ -132,22 +127,22 @@ export default function ProductTourSection() {
       <div className="mkt-section">
         <AnimatedContent distance={50} duration={0.8}>
           <MarketingSectionHeader
-            label="Product tour"
-            title="One platform, three experiences"
-            description="Store owners run their brand, shoppers buy on a public storefront, and admins oversee the entire multi-tenant platform."
+            label="Product preview"
+            title="Run your brand. Delight your customers."
+            description="A powerful dashboard for you, and a beautiful storefront for every shopper."
           />
         </AnimatedContent>
 
         <AnimatedContent distance={40} duration={0.75} delay={0.1}>
-          <div className="mt-12 overflow-hidden rounded-md border border-border bg-card">
-            <div className="flex flex-wrap gap-1 border-b border-border bg-muted/20 p-2">
+          <div className="mt-12 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <div className="flex gap-1 border-b border-border bg-muted/30 p-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => setActive(tab.id)}
                   className={cn(
-                    "flex items-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                    "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 sm:flex-none",
                     active === tab.id
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
@@ -159,22 +154,21 @@ export default function ProductTourSection() {
               ))}
             </div>
             <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
-              <div>
+              <div className="flex flex-col justify-center">
                 <h3 className="text-xl font-semibold">{current.label}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {current.description}
                 </p>
-                <Button asChild className="mt-6 gap-2 rounded-md">
+                <Button asChild className="mt-6 w-fit gap-2 rounded-lg">
                   <Link href={current.href} target={current.id === "storefront" ? "_blank" : undefined}>
                     {current.cta}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>
-              <div className="rounded-md border border-border bg-muted/20 p-4">
+              <div className="rounded-xl border border-border bg-muted/20 p-4">
                 {current.preview === "dashboard" && <DashboardPreview />}
                 {current.preview === "storefront" && <StorefrontPreview />}
-                {current.preview === "admin" && <AdminPreview />}
               </div>
             </div>
           </div>

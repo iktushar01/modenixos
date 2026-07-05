@@ -35,8 +35,8 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/#product-tour", label: "Product" },
-  { href: "/#how-it-works", label: "How it works" },
   { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How it works" },
   { href: "/#pricing", label: "Pricing" },
 ];
 
@@ -120,7 +120,7 @@ const Navbar = () => {
               className="group relative rounded-lg px-3.5 py-2 text-muted-foreground transition-colors duration-300 hover:text-foreground"
             >
               {link.label}
-              <span className="absolute inset-x-3.5 -bottom-px h-px scale-x-0 bg-gradient-to-r from-rose-500 to-violet-500 transition-transform duration-300 group-hover:scale-x-100" />
+              <span className="absolute inset-x-3.5 -bottom-px h-px scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100" />
             </Link>
           ))}
         </nav>
@@ -201,12 +201,10 @@ const Navbar = () => {
                     className="mt-1 w-40 rounded-xl"
                   >
                     <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link href="/store/luxe-threads" target="_blank">
-                        Try demo
-                      </Link>
+                      <Link href="/login">Log In</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer rounded-lg font-medium text-primary">
-                      <Link href="/register">Sign Up</Link>
+                      <Link href="/register">Start free</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -219,12 +217,10 @@ const Navbar = () => {
                   asChild
                   className="h-9 font-medium text-muted-foreground hover:text-foreground"
                 >
-                  <Link href="/login">Log In</Link>
+                  <Link href="/login">Log in</Link>
                 </Button>
                 <Button size="sm" asChild className="h-9 rounded-lg px-4 font-semibold shadow-sm">
-                  <Link href="/store/luxe-threads" target="_blank">
-                    Try demo
-                  </Link>
+                  <Link href="/register">Start free</Link>
                 </Button>
               </div>
             </>
