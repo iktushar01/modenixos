@@ -120,7 +120,7 @@ function Theme1HomeContent({
       )}
 
       {activeTheme.sections.brandStory && !isShopFiltered && (
-        <BrandStory theme={activeTheme} slug={store.slug} />
+        <BrandStory theme={activeTheme} slug={store.slug} brandName={store.brandName} />
       )}
 
       {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}

@@ -506,9 +506,9 @@
 
 .storefront-theme .sf-brand-placeholder {
   background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--sf-secondary) 12%, transparent),
-    var(--sf-muted)
+    145deg,
+    color-mix(in srgb, var(--sf-primary) 8%, var(--sf-muted)),
+    color-mix(in srgb, var(--sf-secondary) 12%, var(--sf-card))
   );
 }
 
