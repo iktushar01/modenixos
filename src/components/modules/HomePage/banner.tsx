@@ -22,6 +22,7 @@ import ProductTourSection from "./ProductTourSection";
 import TechStackStrip from "./TechStackStrip";
 import DeveloperSection from "./DeveloperSection";
 import { APP_NAME } from "@/lib/app-config";
+import { MarketingSectionHeader } from "./MarketingSectionHeader";
 import { motion } from "motion/react";
 import AnimatedContent from "@/components/AnimatedContent";
 import FadeContent from "@/components/FadeContent";
@@ -34,50 +35,53 @@ const heroFade = {
 };
 
 const heroBtnClass =
-  "h-11 rounded-xl px-6 transition-all duration-200 hover:opacity-90 active:scale-[0.98] sm:h-12 sm:px-8";
+  "h-11 rounded-md px-6 transition-all duration-200 hover:opacity-90 active:scale-[0.98] sm:h-12 sm:px-8";
+
+const brandSpotlight = "rgba(112, 71, 235, 0.1)" as const;
+const brandIcon = "text-[#7047EB] bg-[#7047EB]/10";
 
 const features = [
   {
     icon: Store,
     title: "Multi-tenant stores",
     description: "Each brand gets an isolated store. Every API query is scoped by storeId.",
-    color: "text-rose-500 bg-rose-500/10",
-    spotlight: "rgba(244, 63, 94, 0.12)" as const,
+    color: brandIcon,
+    spotlight: brandSpotlight,
   },
   {
     icon: ShoppingBag,
     title: "Full commerce flow",
     description: "Storefront, cart, guest checkout, orders, coupons, and customer management.",
-    color: "text-violet-500 bg-violet-500/10",
-    spotlight: "rgba(139, 92, 246, 0.12)" as const,
+    color: brandIcon,
+    spotlight: brandSpotlight,
   },
   {
     icon: BarChart3,
     title: "Brand analytics",
     description: "Track revenue, orders, top products, and customer insights in real time.",
-    color: "text-blue-500 bg-blue-500/10",
-    spotlight: "rgba(59, 130, 246, 0.12)" as const,
+    color: brandIcon,
+    spotlight: brandSpotlight,
   },
   {
     icon: Layers,
     title: "Catalog management",
     description: "Categories, collections, products with images, variants, and SKU tracking.",
-    color: "text-amber-500 bg-amber-500/10",
-    spotlight: "rgba(245, 158, 11, 0.12)" as const,
+    color: brandIcon,
+    spotlight: brandSpotlight,
   },
   {
     icon: Shield,
     title: "Role-based access",
     description: "Store owners, platform admins, and guest shoppers — each with the right permissions.",
-    color: "text-emerald-500 bg-emerald-500/10",
-    spotlight: "rgba(16, 185, 129, 0.12)" as const,
+    color: brandIcon,
+    spotlight: brandSpotlight,
   },
   {
     icon: Sparkles,
     title: "Live customization",
     description: "Logo, banner, theme colors, and publish toggle applied instantly on your storefront.",
-    color: "text-indigo-500 bg-indigo-500/10",
-    spotlight: "rgba(99, 102, 241, 0.12)" as const,
+    color: brandIcon,
+    spotlight: brandSpotlight,
   },
 ];
 
@@ -135,27 +139,18 @@ const faqs = [
 
 export default function Homepage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      {/* Hero — split layout */}
-      <section className="relative overflow-hidden pb-16 pt-12 md:pb-24 md:pt-16">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rose-500/8 via-background to-background" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-violet-500/6 via-transparent to-transparent" />
-        </div>
-
-        <div className="container mx-auto grid max-w-6xl items-center gap-12 px-4 lg:grid-cols-2 lg:gap-16">
+    <div className="relative min-h-screen overflow-x-hidden">
+      <section className="relative overflow-hidden border-b border-border pb-16 pt-12 md:pb-24 md:pt-16">
+        <div className="mkt-section grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="text-center lg:text-left">
             <motion.div {...heroFade} transition={{ duration: 0.5 }}>
-              <Badge variant="outline" className="mb-6 gap-1.5 px-3 py-1">
-                <Sparkles className="h-3 w-3 text-rose-500" />
-                Fashion Brand SaaS · Multi-tenant
-              </Badge>
+              <p className="mkt-label mb-6">Fashion Brand SaaS · Multi-tenant</p>
             </motion.div>
 
             <motion.h1
               {...heroFade}
               transition={{ duration: 0.55, delay: 0.06 }}
-              className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl"
+              className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl"
             >
               Launch your fashion brand online —{" "}
               <span className="homepage-gradient-text">in one dashboard</span>
@@ -164,7 +159,7 @@ export default function Homepage() {
             <motion.p
               {...heroFade}
               transition={{ duration: 0.55, delay: 0.12 }}
-              className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground lg:mx-0"
+              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground lg:mx-0 md:text-lg"
             >
               {APP_NAME} gives brand owners a live storefront, order management, and analytics on a
               secure multi-tenant platform — no separate tools required.
@@ -175,7 +170,7 @@ export default function Homepage() {
               transition={{ duration: 0.55, delay: 0.18 }}
               className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start"
             >
-              <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-md`}>
+              <Button asChild size="lg" className={`${heroBtnClass} gap-2`}>
                 <Link href="/store/luxe-threads" target="_blank">
                   <ExternalLink className="h-4 w-4" />
                   Try demo store
@@ -195,9 +190,11 @@ export default function Homepage() {
             <motion.div
               {...heroFade}
               transition={{ duration: 0.5, delay: 0.24 }}
-              className="mt-8 inline-flex flex-col items-center gap-2 rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-left sm:flex-row sm:items-center lg:inline-flex"
+              className="mt-8 inline-flex flex-col items-center gap-2 rounded-md border border-border bg-muted/30 px-4 py-3 text-left sm:flex-row sm:items-center lg:inline-flex"
             >
-              <span className="text-xs font-medium text-muted-foreground">Demo credentials</span>
+              <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Demo credentials
+              </span>
               <code className="rounded-md bg-background px-2 py-0.5 text-xs font-mono">
                 demo@modenixos.com
               </code>
@@ -214,15 +211,14 @@ export default function Homepage() {
 
       <TechStackStrip />
 
-      {/* Stats */}
-      <section className="py-16 md:py-20">
-        <div className="container mx-auto max-w-6xl px-4">
+      <section className="border-b border-border py-16 md:py-20">
+        <div className="mkt-section">
           <AnimatedContent distance={50} duration={0.8}>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {stats.map((stat, i) => (
                 <FadeContent key={stat.label} delay={i * 100} duration={700}>
-                  <div className="rounded-2xl border border-border/60 bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md">
-                    <p className="text-3xl font-bold tracking-tight md:text-4xl">
+                  <div className="mkt-card rounded-md p-6 text-center transition-shadow hover:shadow-sm">
+                    <p className="text-3xl font-semibold tracking-tight md:text-4xl">
                       {stat.prefix}
                       <CountUp to={stat.to} duration={2} separator="," />
                       {stat.suffix}
@@ -240,21 +236,14 @@ export default function Homepage() {
 
       <HowItWorksSection />
 
-      {/* Features */}
-      <section id="features" className="scroll-mt-20 border-t border-border/60 py-20 md:py-28">
-        <div className="container mx-auto max-w-6xl px-4">
+      <section id="features" className="scroll-mt-28 border-b border-border py-20 md:py-28">
+        <div className="mkt-section">
           <AnimatedContent distance={50} duration={0.8}>
-            <div className="text-center">
-              <Badge variant="secondary" className="mb-4">
-                Platform capabilities
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Everything to run a fashion brand
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-                From catalog to checkout to analytics — built for real multi-tenant SaaS architecture.
-              </p>
-            </div>
+            <MarketingSectionHeader
+              label="Platform capabilities"
+              title="Everything to run a fashion brand"
+              description="From catalog to checkout to analytics — built for real multi-tenant SaaS architecture."
+            />
           </AnimatedContent>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -262,9 +251,9 @@ export default function Homepage() {
               <AnimatedContent key={f.title} distance={40} duration={0.7} delay={i * 0.08}>
                 <SpotlightCard
                   spotlightColor={f.spotlight}
-                  className="!border-border/60 !bg-card !p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:!bg-card/80"
+                  className="mkt-card !p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-sm"
                 >
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${f.color}`}>
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-md ${f.color}`}>
                     <f.icon className="h-5 w-5" />
                   </div>
                   <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>

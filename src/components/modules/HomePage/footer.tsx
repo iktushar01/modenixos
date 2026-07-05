@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Logo from "@/components/shared/logo/logo";
 import { APP_NAME } from "@/lib/app-config";
 
 const footerLinks = [
@@ -13,31 +14,63 @@ const footerLinks = [
 
 function Footer() {
   return (
-    <footer className="border-t border-border/40 py-12 md:py-14">
-      <div className="container mx-auto max-w-6xl px-4">
-        <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
-          <div className="text-center sm:text-left">
-            <p className="text-lg font-semibold">{APP_NAME}</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              The operating system for fashion brands.
+    <footer className="border-t border-border bg-background">
+      <div className="mkt-section w-full py-14">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div>
+            <Logo />
+            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
+              The operating system for fashion brands — storefront, dashboard, and analytics in one
+              platform.
             </p>
           </div>
-          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="transition-colors hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          <div>
+            <p className="mkt-label">Explore</p>
+            <ul className="mt-4 space-y-2">
+              {footerLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="mkt-nav-link text-sm transition-colors"
+                    {...(link.href.startsWith("/store") ? { target: "_blank" } : {})}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="mkt-label">Get started</p>
+            <ul className="mt-4 space-y-2">
+              <li>
+                <Link href="/register" className="mkt-nav-link text-sm transition-colors">
+                  Create account
+                </Link>
+              </li>
+              <li>
+                <Link href="/login" className="mkt-nav-link text-sm transition-colors">
+                  Log in
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/store/luxe-threads"
+                  target="_blank"
+                  className="mkt-nav-link text-sm transition-colors"
+                >
+                  Try demo store
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-        <p className="mt-10 text-center text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} {APP_NAME}. Built with Next.js, Express, Prisma &
-          PostgreSQL.
-        </p>
+        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row">
+          <p>
+            &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+          </p>
+          <p>Built with Next.js, Express, Prisma & PostgreSQL</p>
+        </div>
       </div>
     </footer>
   );

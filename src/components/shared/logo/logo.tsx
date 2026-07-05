@@ -20,9 +20,9 @@ const Logo = () => {
       <Image
         src={src}
         alt={`${APP_NAME} logo`}
-        width={36}
-        height={36}
-        className="h-9 w-9 rounded-md object-contain"
+        width={40}
+        height={40}
+        className="h-10 w-10 rounded-md object-contain md:h-11 md:w-11"
         priority
       />
     </Link>

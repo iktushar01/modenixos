@@ -7,10 +7,10 @@ export default function CommonLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="marketing-shell min-h-screen bg-background text-foreground">
       <Navbar />
       {children}
       <Footer />
-    </>
+    </div>
   );
 }
