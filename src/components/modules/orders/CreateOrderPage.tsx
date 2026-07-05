@@ -125,6 +125,7 @@ export default function CreateOrderPage() {
     onSuccess: () => {
       toast.success("Order created successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-stats"] });
       router.push("/dashboard/orders");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to create order"),

@@ -115,6 +115,15 @@ export async function getOrdersAction(params?: Record<string, unknown>) {
   return httpClient.get<Order[]>("/orders", { params });
 }
 
+export async function getOrderStatsAction() {
+  const res = await httpClient.get<{
+    totalConfirmed: number;
+    totalAmount: number;
+    customersServed: number;
+  }>("/orders/stats");
+  return res.data;
+}
+
 export async function updateOrderStatusAction(
   id: string,
   status: string,

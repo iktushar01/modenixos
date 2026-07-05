@@ -43,7 +43,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getOrdersAction, updateOrderStatusAction } from "@/actions/catalog.actions";
+import { getOrdersAction, getOrderStatsAction, updateOrderStatusAction } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Order } from "@/types/store.types";
@@ -55,7 +55,6 @@ import {
   exportOrdersCsv,
   filterOrdersByTab,
   formatTodayDate,
-  getOrderStats,
   searchOrders,
 } from "@/lib/orders";
 import { cn } from "@/lib/utils";
@@ -151,6 +150,11 @@ export default function OrdersPage() {
     queryFn: () => getOrdersAction({ limit: "200", sortBy: "createdAt", sortOrder: "desc" }),
   });
 
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ["order-stats"],
+    queryFn: getOrderStatsAction,
+  });
+
   const updateMutation = useMutation({
     mutationFn: ({
       id,
@@ -166,6 +170,7 @@ export default function OrdersPage() {
     onSuccess: () => {
       toast.success("Order updated");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-stats"] });
     },
   });
 
@@ -187,8 +192,6 @@ export default function OrdersPage() {
       return sortDir === "asc" ? cmp : -cmp;
     });
   }, [allOrders, statusTab, search, searchField, sortKey, sortDir]);
-
-  const stats = useMemo(() => getOrderStats(allOrders), [allOrders]);
 
   const toggleSort = () => {
     setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -218,19 +221,22 @@ export default function OrdersPage() {
         <StatCard
           icon={Tag}
           label="Total Orders (Confirmed)"
-          value={String(stats.totalConfirmed)}
+          value={statsLoading ? "—" : String(stats?.totalConfirmed ?? 0)}
+          loading={statsLoading}
           iconClass="bg-primary/10 text-primary"
         />
         <StatCard
           icon={Package}
           label="Total Amount"
-          value={formatPrice(stats.totalAmount, currency)}
+          value={statsLoading ? "—" : formatPrice(stats?.totalAmount ?? 0, currency)}
+          loading={statsLoading}
           iconClass="bg-primary/10 text-primary"
         />
         <StatCard
           icon={Users}
           label="Total Customer Served"
-          value={String(stats.customersServed)}
+          value={statsLoading ? "—" : String(stats?.customersServed ?? 0)}
+          loading={statsLoading}
           iconClass="bg-primary/10 text-primary"
         />
       </div>
@@ -455,11 +461,13 @@ function StatCard({
   label,
   value,
   iconClass,
+  loading,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
   iconClass: string;
+  loading?: boolean;
 }) {
   return (
     <Card>
@@ -467,9 +475,13 @@ function StatCard({
         <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", iconClass)}>
           <Icon className="h-5 w-5" />
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-lg font-semibold">{value}</p>
+          {loading ? (
+            <Skeleton className="mt-1 h-6 w-20" />
+          ) : (
+            <p className="text-lg font-semibold">{value}</p>
+          )}
         </div>
       </CardContent>
     </Card>
