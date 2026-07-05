@@ -14,6 +14,7 @@ export interface StorefrontSections {
 export interface StorefrontThemeConfig {
   primaryColor: string;
   secondaryColor: string;
+  heroSlides: string[];
   heroHeadline: string;
   heroSubtext: string;
   promoText: string;
@@ -45,10 +46,18 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
   const raw = (store.theme ?? {}) as Record<string, unknown>;
   const sectionsRaw = (raw.sections ?? {}) as Partial<StorefrontSections>;
   const social = (raw.social ?? {}) as StorefrontThemeConfig["social"];
+  const heroSlidesRaw = raw.heroSlides as string[] | undefined;
+  const heroSlides =
+    Array.isArray(heroSlidesRaw) && heroSlidesRaw.length > 0
+      ? heroSlidesRaw
+      : store.banner
+        ? [store.banner]
+        : [];
 
   return {
     primaryColor: (raw.primaryColor as string) ?? "#f5f5f5",
     secondaryColor: (raw.secondaryColor as string) ?? "#c9a962",
+    heroSlides,
     heroHeadline: (raw.heroHeadline as string) ?? store.brandName,
     heroSubtext: (raw.heroSubtext as string) ?? store.description ?? "Curated fashion for the modern wardrobe.",
     promoText: (raw.promoText as string) ?? "",

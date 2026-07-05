@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -8,27 +8,70 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
+import { parseStorefrontTheme } from "@/lib/storefrontTheme";
 import { ImageCropUpload } from "./ImageCropUpload";
+import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
+
+const LOGO_RATIOS = [
+  { label: "1:1", value: 1 },
+  { label: "4:3", value: 4 / 3 },
+  { label: "3:2", value: 3 / 2 },
+  { label: "16:9", value: 16 / 9 },
+  { label: "Free", value: undefined },
+];
 
 export default function StoreBrandingPage() {
   const { data: store, refetch, isLoading } = useMyStore();
   const [saving, setSaving] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [clearLogo, setClearLogo] = useState(false);
-  const [clearBanner, setClearBanner] = useState(false);
+  const [heroSlides, setHeroSlides] = useState<HeroSlideItem[]>([]);
+  const [slidesDirty, setSlidesDirty] = useState(false);
+
+  const existingHeroSlides = useMemo(() => {
+    if (!store) return [];
+    return parseStorefrontTheme(store).heroSlides;
+  }, [store]);
+
+  useEffect(() => {
+    if (!store || slidesDirty) return;
+    setHeroSlides(
+      existingHeroSlides.map((url, i) => ({
+        id: `existing-${i}-${url.slice(-8)}`,
+        url,
+        preview: url,
+      })),
+    );
+  }, [store?.id, store?.updatedAt, existingHeroSlides, store, slidesDirty]);
+
+  const handleSlidesChange = useCallback((slides: HeroSlideItem[]) => {
+    setHeroSlides(slides);
+    setSlidesDirty(true);
+  }, []);
 
   const handleSave = async () => {
     if (!store) return;
     setSaving(true);
     try {
       const fd = new FormData();
-      if (logoFile) fd.append("logo", logoFile);
-      else if (clearLogo) fd.append("logo", "");
-      if (bannerFile) fd.append("banner", bannerFile);
-      else if (clearBanner) fd.append("banner", "");
+      let hasChanges = false;
 
-      if (!logoFile && !bannerFile && !clearLogo && !clearBanner) {
+      if (logoFile) {
+        fd.append("logo", logoFile);
+        hasChanges = true;
+      } else if (clearLogo) {
+        fd.append("logo", "");
+        hasChanges = true;
+      }
+
+      if (slidesDirty) {
+        const { meta, files } = buildHeroSlidesMeta(heroSlides);
+        fd.append("heroSlidesMeta", JSON.stringify(meta));
+        files.forEach((file) => fd.append("heroSlides", file));
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
         toast.info("No changes to save");
         return;
       }
@@ -36,9 +79,8 @@ export default function StoreBrandingPage() {
       await updateStoreAction(store.id, fd);
       toast.success("Branding saved");
       setLogoFile(null);
-      setBannerFile(null);
       setClearLogo(false);
-      setClearBanner(false);
+      setSlidesDirty(false);
       refetch();
     } catch {
       toast.error("Failed to save branding");
@@ -59,18 +101,23 @@ export default function StoreBrandingPage() {
     <div className="space-y-6">
       <PageHeader
         title="Branding"
-        description="Upload your shop logo and hero banner. Logo appears in the navbar and footer."
+        description="Logo and hero slider for your storefront."
       />
 
       <Card>
         <CardHeader>
           <CardTitle>Logo</CardTitle>
-          <CardDescription>Square or horizontal logo, shown in your storefront header and footer.</CardDescription>
+          <CardDescription>
+            Pick aspect ratio, rectangle or circle crop, zoom and rotation.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ImageCropUpload
             label="Shop logo"
-            aspect={1}
+            defaultAspect={1}
+            ratioOptions={LOGO_RATIOS}
+            allowShapeSelection
+            defaultShape="rect"
             existingUrl={clearLogo ? null : store?.logo}
             outputFileName="logo.jpg"
             previewClassName="aspect-square max-w-[160px]"
@@ -85,22 +132,13 @@ export default function StoreBrandingPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Hero banner</CardTitle>
-          <CardDescription>Wide image for your storefront hero section.</CardDescription>
+          <CardTitle>Hero slider</CardTitle>
+          <CardDescription>
+            Multiple full-width images that auto-rotate — no text or buttons on the slider.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <ImageCropUpload
-            label="Hero banner"
-            aspect={16 / 9}
-            existingUrl={clearBanner ? null : store?.banner}
-            outputFileName="banner.jpg"
-            previewClassName="aspect-video max-w-xl"
-            onCroppedFile={(file) => {
-              setBannerFile(file);
-              if (file) setClearBanner(false);
-            }}
-            onClear={() => setClearBanner(true)}
-          />
+          <HeroSlidesUpload slides={heroSlides} onChange={handleSlidesChange} />
         </CardContent>
       </Card>
 
