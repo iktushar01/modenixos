@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { cssVarsToStyle } from "@/lib/storefront/cssVars";
 import { CLASSIC_RETAIL_LIGHT } from "@/lib/storefront/presets";
-import { storefrontFontClassName } from "@/components/modules/storefront/fonts";
+import { storefrontFontFallbackStyle } from "@/components/modules/storefront/fonts";
 
 interface StorefrontLoadingShellProps {
   children: ReactNode;
@@ -10,8 +10,8 @@ interface StorefrontLoadingShellProps {
 export function StorefrontLoadingShell({ children }: StorefrontLoadingShellProps) {
   return (
     <div
-      className={`storefront-theme sf-bg min-h-screen animate-pulse ${storefrontFontClassName}`}
-      style={cssVarsToStyle(CLASSIC_RETAIL_LIGHT)}
+      className="storefront-theme sf-bg min-h-screen animate-pulse"
+      style={{ ...cssVarsToStyle(CLASSIC_RETAIL_LIGHT), ...storefrontFontFallbackStyle }}
     >
       <div className="sf-announcement h-8" />
       <div className="sf-border sf-navbar border-b">
