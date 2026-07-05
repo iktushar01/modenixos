@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Menu, ChevronDown, Phone, Search, ShoppingBag, User, X } from "lucide-react";
 import { Category, Store } from "@/types/store.types";
 import { StorefrontThemeConfig, resolveStorefrontNavLinks } from "@/lib/storefront";
-import { buildStorefrontCategoryNav, type StorefrontNavItem } from "@/lib/catalog/categoryTree";
+import {
+  buildStorefrontCategoryNav,
+  type StorefrontNavItem,
+} from "@/lib/catalog/categoryTree";
+import { useStorefrontCssVars } from "../../useStorefrontCssVars";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartCount } from "@/hooks/useStoreCart";
 import { Button } from "@/components/ui/button";
@@ -27,6 +32,87 @@ function resolveUtilityHref(base: string, href: string) {
   if (href.startsWith("/store/")) return href;
   if (href === "/cart" || href.endsWith("/cart")) return `${base}/cart`;
   return href;
+}
+
+type NavGroupItem = Extract<StorefrontNavItem, { type: "group" }>;
+
+function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
+  const portalVars = useStorefrontCssVars();
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  const updatePosition = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setPosition({
+      top: rect.bottom,
+      left: rect.left + rect.width / 2,
+    });
+  }, []);
+
+  const show = useCallback(() => {
+    updatePosition();
+    setOpen(true);
+  }, [updatePosition]);
+
+  const hide = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onReposition = () => updatePosition();
+    window.addEventListener("scroll", onReposition, { passive: true, capture: true });
+    window.addEventListener("resize", onReposition);
+    return () => {
+      window.removeEventListener("scroll", onReposition, { capture: true });
+      window.removeEventListener("resize", onReposition);
+    };
+  }, [open, updatePosition]);
+
+  return (
+    <div
+      ref={triggerRef}
+      className="relative shrink-0"
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocus={show}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) hide();
+      }}
+    >
+      <Link href={item.href} className="sf-nav-menu-item inline-flex items-center gap-1">
+        {item.label}
+        <ChevronDown className="h-3 w-3 opacity-60" />
+      </Link>
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="storefront-theme pt-2"
+            style={{
+              position: "fixed",
+              top: position.top,
+              left: position.left,
+              transform: "translateX(-50%)",
+              zIndex: 60,
+              ...portalVars,
+            }}
+            onMouseEnter={show}
+            onMouseLeave={hide}
+          >
+            <div className="sf-nav-dropdown-panel">
+              {item.children.map((child) => (
+                <Link key={child.href} href={child.href} className="sf-nav-dropdown-item">
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+          </div>,
+          document.body,
+        )}
+    </div>
+  );
 }
 
 export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
@@ -214,39 +300,26 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
         </div>
 
         {menuItems.length > 0 && (
-          <nav className="sf-section hidden border-b sf-border md:block" aria-label="Store categories">
-            <div className="sf-nav-menu sf-carousel-fade-left sf-carousel-fade-right">
-              {menuItems.map((item) =>
-                item.type === "group" ? (
-                  <div key={item.label} className="group relative shrink-0">
-                    <Link href={item.href} className="sf-nav-menu-item inline-flex items-center gap-1">
+          <nav
+            className="sf-section hidden overflow-visible border-b sf-border md:block"
+            aria-label="Store categories"
+          >
+            <div className="sf-nav-menu-scroll">
+              <div className="sf-nav-menu">
+                {menuItems.map((item) =>
+                  item.type === "group" ? (
+                    <NavCategoryDropdown key={item.label} item={item} />
+                  ) : (
+                    <Link
+                      key={`${item.label}-${item.href}`}
+                      href={item.href}
+                      className="sf-nav-menu-item shrink-0"
+                    >
                       {item.label}
-                      <ChevronDown className="h-3 w-3 opacity-60" />
                     </Link>
-                    <div className="sf-card sf-border pointer-events-none absolute left-1/2 top-full z-50 min-w-[11rem] -translate-x-1/2 pt-2 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-                      <div className="rounded-md border py-1 shadow-lg sf-border">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="block px-4 py-2 text-xs font-medium tracking-wide uppercase transition-colors hover:bg-muted/60 sf-fg"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <Link
-                    key={`${item.label}-${item.href}`}
-                    href={item.href}
-                    className="sf-nav-menu-item"
-                  >
-                    {item.label}
-                  </Link>
-                ),
-              )}
+                  ),
+                )}
+              </div>
             </div>
           </nav>
         )}
