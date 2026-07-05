@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, GripVertical, Plus, Trash2, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, GripVertical, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CropEditorDialog } from "./CropEditorDialog";
@@ -19,24 +19,30 @@ interface HeroSlidesUploadProps {
   onChange: (slides: HeroSlideItem[]) => void;
 }
 
-const HERO_RATIOS = [
-  { label: "16:9", value: 16 / 9 },
+/** Hero slider supports only these aspect ratios */
+export const HERO_SLIDE_RATIOS = [
   { label: "21:9", value: 21 / 9 },
   { label: "3:1", value: 3 },
-  { label: "4:3", value: 4 / 3 },
-  { label: "Free", value: undefined },
-];
+] as const;
 
 function newId() {
   return `slide-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function revokePreviewIfBlob(preview: string) {
+  if (preview.startsWith("blob:")) {
+    URL.revokeObjectURL(preview);
+  }
+}
+
 export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
   const [cropOpen, setCropOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [editingSlideId, setEditingSlideId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
+    setEditingSlideId(null);
     const reader = new FileReader();
     reader.onload = () => {
       setImageSrc(reader.result as string);
@@ -45,13 +51,42 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
     reader.readAsDataURL(file);
   };
 
-  const addCroppedSlide = (file: File) => {
+  const startEditSlide = (slide: HeroSlideItem) => {
+    setEditingSlideId(slide.id);
+    setImageSrc(slide.preview);
+    setCropOpen(true);
+  };
+
+  const handleCropComplete = (file: File) => {
     const preview = URL.createObjectURL(file);
-    onChange([...slides, { id: newId(), preview, file }]);
+
+    if (editingSlideId) {
+      onChange(
+        slides.map((slide) => {
+          if (slide.id !== editingSlideId) return slide;
+          revokePreviewIfBlob(slide.preview);
+          return { ...slide, preview, file };
+        }),
+      );
+    } else {
+      onChange([...slides, { id: newId(), preview, file }]);
+    }
+
+    setEditingSlideId(null);
     setImageSrc(null);
   };
 
+  const handleCropOpenChange = (open: boolean) => {
+    setCropOpen(open);
+    if (!open) {
+      setEditingSlideId(null);
+      setImageSrc(null);
+    }
+  };
+
   const removeSlide = (id: string) => {
+    const slide = slides.find((s) => s.id === id);
+    if (slide) revokePreviewIfBlob(slide.preview);
     onChange(slides.filter((s) => s.id !== id));
   };
 
@@ -68,7 +103,8 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
       <div>
         <Label>Hero slider images</Label>
         <p className="mt-1 text-xs text-muted-foreground">
-          Upload multiple images. They auto-rotate on your storefront — images only, no text overlay.
+          Upload multiple images at <strong>21:9</strong> or <strong>3:1</strong> ratio. They auto-rotate on your
+          storefront — images only, no text overlay. Use <strong>Edit</strong> on any slide to re-crop.
         </p>
       </div>
 
@@ -76,7 +112,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {slides.map((slide, index) => (
             <div key={slide.id} className="group relative overflow-hidden rounded-lg border bg-muted">
-              <div className="relative aspect-video">
+              <div className="relative aspect-[21/9]">
                 <Image src={slide.preview} alt="" fill className="object-cover" unoptimized />
               </div>
               <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
@@ -88,6 +124,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
                     className="h-7 w-7"
                     disabled={index === 0}
                     onClick={() => moveSlide(index, -1)}
+                    aria-label="Move slide left"
                   >
                     <ChevronLeft className="h-3.5 w-3.5" />
                   </Button>
@@ -98,23 +135,49 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
                     className="h-7 w-7"
                     disabled={index === slides.length - 1}
                     onClick={() => moveSlide(index, 1)}
+                    aria-label="Move slide right"
                   >
                     <ChevronRight className="h-3.5 w-3.5" />
                   </Button>
                 </div>
+                <div className="flex gap-0.5">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => startEditSlide(slide)}
+                    aria-label="Edit slide crop"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => removeSlide(slide.id)}
+                    aria-label="Remove slide"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-1 border-t px-2 py-1.5 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <GripVertical className="h-3 w-3" />
+                  Slide {index + 1}
+                </span>
                 <Button
                   type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="h-7 w-7"
-                  onClick={() => removeSlide(slide.id)}
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 gap-1 px-2 text-xs md:hidden"
+                  onClick={() => startEditSlide(slide)}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Pencil className="h-3 w-3" />
+                  Edit
                 </Button>
-              </div>
-              <div className="flex items-center gap-1 border-t px-2 py-1.5 text-xs text-muted-foreground">
-                <GripVertical className="h-3 w-3" />
-                Slide {index + 1}
               </div>
             </div>
           ))}
@@ -124,7 +187,7 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
       <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors hover:border-primary/50 hover:bg-muted/50">
         <Plus className="mb-1.5 h-6 w-6 text-muted-foreground" />
         <span className="text-sm font-medium">Add slide</span>
-        <span className="mt-0.5 text-xs text-muted-foreground">Crop with ratio & rotation controls</span>
+        <span className="mt-0.5 text-xs text-muted-foreground">21:9 or 3:1 ratio only</span>
         <input
           ref={inputRef}
           type="file"
@@ -147,15 +210,17 @@ export function HeroSlidesUpload({ slides, onChange }: HeroSlidesUploadProps) {
 
       <CropEditorDialog
         open={cropOpen}
-        onOpenChange={setCropOpen}
+        onOpenChange={handleCropOpenChange}
         imageSrc={imageSrc}
-        title="Crop hero slide"
-        defaultAspect={16 / 9}
-        ratioOptions={HERO_RATIOS}
+        title={editingSlideId ? "Edit hero slide" : "Crop hero slide"}
+        defaultAspect={21 / 9}
+        ratioOptions={[...HERO_SLIDE_RATIOS]}
         allowShapeSelection={false}
         defaultShape="rectangle"
-        outputFileName={`hero-slide-${Date.now()}.jpg`}
-        onComplete={addCroppedSlide}
+        outputFileName={
+          editingSlideId ? `hero-slide-${editingSlideId}.jpg` : `hero-slide-${Date.now()}.jpg`
+        }
+        onComplete={handleCropComplete}
       />
     </div>
   );
