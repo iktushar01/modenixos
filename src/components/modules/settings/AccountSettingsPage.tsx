@@ -26,6 +26,9 @@ export default function AccountSettingsPage() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard/settings/users">Users & Permissions</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
             <Link href="/dashboard/store">Shop profile</Link>
           </Button>
           <Button asChild variant="outline" size="sm">

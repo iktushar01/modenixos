@@ -13,7 +13,7 @@ export type RouteConfig = {
 
 export const commonProtectedRoutes : RouteConfig = {
     exact : ["/my-profile", "/change-password", "/onboarding"],
-    pattern : []
+    pattern : [/^\/invite\//]
 }
 
 
