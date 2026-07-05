@@ -241,17 +241,24 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   };
 
   const setColors = (colors: string[]) => {
-    set("colors", colors);
-    const nextColorImages = { ...values.details.colorImages };
-    const nextColorFiles = { ...colorNewFiles };
-    for (const color of Object.keys(nextColorImages)) {
-      if (!colors.includes(color)) delete nextColorImages[color];
-    }
-    for (const color of Object.keys(nextColorFiles)) {
-      if (!colors.includes(color)) delete nextColorFiles[color];
-    }
-    set("details", { ...values.details, colorImages: nextColorImages });
-    setColorNewFiles(nextColorFiles);
+    setValues((prev) => {
+      const nextColorImages = { ...prev.details.colorImages };
+      for (const color of Object.keys(nextColorImages)) {
+        if (!colors.includes(color)) delete nextColorImages[color];
+      }
+      return {
+        ...prev,
+        colors,
+        details: { ...prev.details, colorImages: nextColorImages },
+      };
+    });
+    setColorNewFiles((prev) => {
+      const next = { ...prev };
+      for (const color of Object.keys(next)) {
+        if (!colors.includes(color)) delete next[color];
+      }
+      return next;
+    });
   };
 
   const handleImageModeChange = (next: ProductImageMode) => {
