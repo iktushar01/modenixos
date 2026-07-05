@@ -30,6 +30,8 @@ import {
 import { productFormSchema, ProductFormValues } from "@/zod/product.validation";
 import { Product } from "@/types/store.types";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
+import { formatPriceSample, getCurrencyName } from "@/lib/currency";
+import { useMyStore } from "@/hooks/useMyStore";
 
 const SIZE_PRESETS = ["XS", "S", "M", "L", "XL", "XXL"];
 const COLOR_PRESETS = ["Black", "White", "Navy", "Beige", "Red", "Green", "Gray"];
@@ -160,6 +162,8 @@ interface ProductFormProps {
 
 export default function ProductForm({ mode, product }: ProductFormProps) {
   const router = useRouter();
+  const { data: store } = useMyStore();
+  const storeCurrency = store?.currency ?? "USD";
   const [values, setValues] = useState<ProductFormValues>(
     product ? productToFormValues(product) : defaultValues,
   );
@@ -488,10 +492,14 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
           <Card>
             <CardHeader>
               <CardTitle>Pricing</CardTitle>
+              <CardDescription>
+                Amounts are in {getCurrencyName(storeCurrency)} ({storeCurrency}). Example:{" "}
+                {formatPriceSample(storeCurrency)}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="price">Price *</Label>
+                <Label htmlFor="price">Price ({storeCurrency}) *</Label>
                 <Input
                   id="price"
                   type="number"
@@ -503,7 +511,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                 {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="discountPrice">Sale price</Label>
+                <Label htmlFor="discountPrice">Sale price ({storeCurrency})</Label>
                 <Input
                   id="discountPrice"
                   type="number"

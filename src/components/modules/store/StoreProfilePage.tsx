@@ -11,10 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CurrencySelect } from "@/components/shared/CurrencySelect";
+import { formatPriceSample, getCurrencyName } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
-
-const CURRENCIES = ["USD", "EUR", "GBP", "BDT", "INR", "CAD", "AUD"];
 
 export default function StoreProfilePage() {
   const { data: store, refetch, isLoading } = useMyStore();
@@ -43,13 +43,17 @@ export default function StoreProfilePage() {
 
   const handleSave = async () => {
     if (!store) return;
+    if (form.currency.trim().length !== 3) {
+      toast.error("Choose a valid 3-letter currency code (e.g. BDT, USD)");
+      return;
+    }
     setSaving(true);
     try {
       await updateStoreAction(store.id, {
         brandName: form.brandName,
         slug: form.slug,
         country: form.country,
-        currency: form.currency,
+        currency: form.currency.trim().toUpperCase(),
         description: form.description,
         isPublished: form.isPublished,
       });
@@ -79,7 +83,7 @@ export default function StoreProfilePage() {
     <div className="space-y-6">
       <PageHeader
         title="Shop profile"
-        description="Name, URL, region, and visibility for your storefront."
+        description="Name, URL, region, currency, and visibility for your storefront."
         action={
           store?.slug && (
             <Button asChild variant="outline" size="sm">
@@ -122,31 +126,29 @@ export default function StoreProfilePage() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                value={form.country}
-                onChange={(e) => setForm({ ...form, country: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="currency">Currency</Label>
-              <select
-                id="currency"
-                value={form.currency}
-                onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="country">Country</Label>
+            <Input
+              id="country"
+              value={form.country}
+              onChange={(e) => setForm({ ...form, country: e.target.value })}
+            />
           </div>
+
+          <CurrencySelect
+            value={form.currency}
+            onChange={(currency) => setForm({ ...form, currency })}
+          />
+
+          {form.currency.length === 3 && (
+            <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm">
+              <p className="font-medium">Prices on your storefront use this currency</p>
+              <p className="mt-1 text-muted-foreground">
+                Example: {formatPriceSample(form.currency)} — all product, cart, and checkout amounts display as{" "}
+                {getCurrencyName(form.currency)} ({form.currency.toUpperCase()}).
+              </p>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>

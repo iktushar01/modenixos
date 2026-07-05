@@ -5,8 +5,12 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getCustomersAction } from "@/actions/catalog.actions";
+import { formatPrice } from "@/lib/currency";
+import { useMyStore } from "@/hooks/useMyStore";
 
 export default function CustomersPage() {
+  const { data: store } = useMyStore();
+  const currency = store?.currency ?? "USD";
   const { data, isLoading } = useQuery({ queryKey: ["customers"], queryFn: () => getCustomersAction() });
   const customers = data?.data ?? [];
 
@@ -31,7 +35,7 @@ export default function CustomersPage() {
                 <TableCell>{c.name}</TableCell>
                 <TableCell>{c.email}</TableCell>
                 <TableCell>{c.orderCount}</TableCell>
-                <TableCell>${c.totalSpent.toFixed(2)}</TableCell>
+                <TableCell>{formatPrice(c.totalSpent, currency)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

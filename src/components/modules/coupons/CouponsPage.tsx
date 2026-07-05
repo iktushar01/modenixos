@@ -12,11 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getCouponsAction, createCouponAction, deleteCouponAction } from "@/actions/catalog.actions";
+import { formatPrice } from "@/lib/currency";
+import { useMyStore } from "@/hooks/useMyStore";
 
 export default function CouponsPage() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ code: "", type: "PERCENT", value: "", minOrder: "0" });
   const queryClient = useQueryClient();
+  const { data: store } = useMyStore();
+  const currency = store?.currency ?? "USD";
   const { data, isLoading } = useQuery({ queryKey: ["coupons"], queryFn: () => getCouponsAction() });
 
   const createMutation = useMutation({
@@ -81,7 +85,7 @@ export default function CouponsPage() {
               <TableRow key={c.id}>
                 <TableCell className="font-mono">{c.code}</TableCell>
                 <TableCell>{c.type}</TableCell>
-                <TableCell>{c.type === "PERCENT" ? `${c.value}%` : `$${c.value}`}</TableCell>
+                <TableCell>{c.type === "PERCENT" ? `${c.value}%` : formatPrice(c.value, currency)}</TableCell>
                 <TableCell>{c.usedCount}{c.usageLimit ? `/${c.usageLimit}` : ""}</TableCell>
                 <TableCell><Button variant="destructive" size="sm" onClick={() => deleteMutation.mutate(c.id)}>Delete</Button></TableCell>
               </TableRow>

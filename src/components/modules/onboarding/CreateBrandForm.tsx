@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CurrencySelect } from "@/components/shared/CurrencySelect";
 import { createStoreAction } from "@/actions/store.actions";
 import { APP_NAME } from "@/lib/app-config";
 
@@ -36,6 +37,7 @@ export default function CreateBrandForm() {
   });
 
   const brandName = watch("brandName");
+  const currency = watch("currency");
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -78,16 +80,18 @@ export default function CreateBrandForm() {
             <Input id="slug" {...register("slug")} placeholder="my-brand" />
             {errors.slug && <p className="text-sm text-destructive">{errors.slug.message}</p>}
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
               <Input id="country" {...register("country")} placeholder="United States" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="currency">Currency</Label>
-              <Input id="currency" {...register("currency")} placeholder="USD" />
-            </div>
+            <CurrencySelect
+              value={currency ?? "USD"}
+              onChange={(value) => setValue("currency", value, { shouldValidate: true })}
+              showPreview={false}
+            />
           </div>
+          {errors.currency && <p className="text-sm text-destructive">{errors.currency.message}</p>}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" {...register("description")} rows={3} />

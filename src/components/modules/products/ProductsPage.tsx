@@ -43,6 +43,8 @@ import {
   getCategoriesAction,
 } from "@/actions/catalog.actions";
 import { Product } from "@/types/store.types";
+import { formatPrice } from "@/lib/currency";
+import { useMyStore } from "@/hooks/useMyStore";
 import { cn } from "@/lib/utils";
 
 function statusBadgeClass(status: Product["status"]) {
@@ -58,6 +60,8 @@ function statusBadgeClass(status: Product["status"]) {
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();
+  const { data: store } = useMyStore();
+  const storeCurrency = store?.currency ?? "USD";
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -195,13 +199,13 @@ export default function ProductsPage() {
                   <TableCell>
                     {p.discountPrice ? (
                       <div>
-                        <span className="font-medium">${p.discountPrice.toFixed(2)}</span>
+                        <span className="font-medium">{formatPrice(p.discountPrice, storeCurrency)}</span>
                         <span className="ml-1 text-xs text-muted-foreground line-through">
-                          ${p.price.toFixed(2)}
+                          {formatPrice(p.price, storeCurrency)}
                         </span>
                       </div>
                     ) : (
-                      <span className="font-medium">${p.price.toFixed(2)}</span>
+                      <span className="font-medium">{formatPrice(p.price, storeCurrency)}</span>
                     )}
                   </TableCell>
                   <TableCell>

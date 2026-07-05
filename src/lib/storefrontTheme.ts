@@ -11,15 +11,7 @@ export {
 
 import { Product } from "@/types/store.types";
 
-export function formatPrice(amount: number, currency = "USD") {
-  const value = Number(amount);
-  if (!Number.isFinite(value)) return "—";
-  try {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(value);
-  } catch {
-    return `$${value.toFixed(2)}`;
-  }
-}
+export { formatPrice } from "@/lib/currency";
 
 export function productDisplayPrice(product: { price: number; discountPrice?: number | null }) {
   const sale = product.discountPrice ?? null;

@@ -8,11 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getOrdersAction, updateOrderStatusAction } from "@/actions/catalog.actions";
+import { formatPrice } from "@/lib/currency";
+import { useMyStore } from "@/hooks/useMyStore";
 
 const STATUSES = ["PENDING", "CONFIRMED", "PACKED", "SHIPPED", "DELIVERED", "CANCELLED"];
 
 export default function OrdersPage() {
   const queryClient = useQueryClient();
+  const { data: store } = useMyStore();
+  const currency = store?.currency ?? "USD";
   const { data, isLoading } = useQuery({ queryKey: ["orders"], queryFn: () => getOrdersAction() });
 
   const updateMutation = useMutation({
@@ -46,7 +50,7 @@ export default function OrdersPage() {
               <TableRow key={order.id}>
                 <TableCell className="font-medium">{order.orderNumber}</TableCell>
                 <TableCell>{order.customerName}</TableCell>
-                <TableCell>${order.total.toFixed(2)}</TableCell>
+                <TableCell>{formatPrice(order.total, currency)}</TableCell>
                 <TableCell>
                   <Select value={order.status} onValueChange={(status) => updateMutation.mutate({ id: order.id, status })}>
                     <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>

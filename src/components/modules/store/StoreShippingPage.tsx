@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import { StoreShippingConfig } from "@/types/store.types";
+import { getCurrencyName } from "@/lib/currency";
 
 const defaultShipping: StoreShippingConfig = {
   deliveryPolicy: "",
@@ -102,7 +103,9 @@ export default function StoreShippingPage() {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="insideRate">Inside city rate</Label>
+            <Label htmlFor="insideRate">
+              Inside city rate ({store?.currency ?? "USD"} — {getCurrencyName(store?.currency ?? "USD")})
+            </Label>
             <Input
               id="insideRate"
               type="number"
@@ -118,7 +121,9 @@ export default function StoreShippingPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="outsideRate">Outside city rate</Label>
+            <Label htmlFor="outsideRate">
+              Outside city rate ({store?.currency ?? "USD"} — {getCurrencyName(store?.currency ?? "USD")})
+            </Label>
             <Input
               id="outsideRate"
               type="number"

@@ -4,10 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAnalyticsOverviewAction, getAnalyticsChartsAction } from "@/actions/catalog.actions";
+import { formatPrice } from "@/lib/currency";
+import { useMyStore } from "@/hooks/useMyStore";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 export default function AnalyticsPage() {
+  const { data: store } = useMyStore();
+  const currency = store?.currency ?? "USD";
   const { data: overview } = useQuery({ queryKey: ["analytics-overview"], queryFn: getAnalyticsOverviewAction });
   const { data: charts } = useQuery({ queryKey: ["analytics-charts"], queryFn: getAnalyticsChartsAction });
 
@@ -16,7 +20,7 @@ export default function AnalyticsPage() {
       <PageHeader title="Analytics" description="Detailed insights into your store performance." />
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: "Revenue", value: `$${(overview?.revenue ?? 0).toFixed(2)}` },
+          { label: "Revenue", value: formatPrice(overview?.revenue ?? 0, currency) },
           { label: "Orders", value: overview?.orders ?? 0 },
           { label: "Products", value: overview?.products ?? 0 },
           { label: "Customers", value: overview?.customers ?? 0 },

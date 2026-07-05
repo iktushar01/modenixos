@@ -6,6 +6,7 @@ import Image from "next/image";
 import { DollarSign, Package, Pencil, ShoppingCart, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { formatPrice, getCurrencyName } from "@/lib/currency";
 import { getAnalyticsOverviewAction } from "@/actions/catalog.actions";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,11 @@ export default function DashboardOverview() {
   });
 
   const stats = [
-    { label: "Revenue", value: `$${(overview?.revenue ?? 0).toFixed(2)}`, icon: DollarSign },
+    {
+      label: "Revenue",
+      value: formatPrice(overview?.revenue ?? 0, store?.currency ?? "USD"),
+      icon: DollarSign,
+    },
     { label: "Orders", value: overview?.orders ?? 0, icon: ShoppingCart },
     { label: "Products", value: overview?.products ?? 0, icon: Package },
     { label: "Customers", value: overview?.customers ?? 0, icon: Users },
@@ -58,6 +63,9 @@ export default function DashboardOverview() {
                 ) : (
                   <Badge variant="outline" className="ml-2">Draft</Badge>
                 )}
+                <Badge variant="outline" className="ml-2">
+                  {store.currency} · {getCurrencyName(store.currency)}
+                </Badge>
               </CardDescription>
             </div>
             <Button asChild size="sm" variant="outline" className="shrink-0 gap-1.5">
@@ -109,7 +117,7 @@ export default function DashboardOverview() {
                 </div>
                 <div className="text-right">
                   <Badge variant="outline">{order.status}</Badge>
-                  <p className="mt-1 text-sm font-medium">${order.total.toFixed(2)}</p>
+                  <p className="mt-1 text-sm font-medium">{formatPrice(order.total, store?.currency ?? "USD")}</p>
                 </div>
               </div>
             ))}
