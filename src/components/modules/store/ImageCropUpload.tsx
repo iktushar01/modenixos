@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CropEditorDialog, CropRatioOption } from "./CropEditorDialog";
-import { CropShape } from "@/lib/cropImage";
+import { CropShape } from "@/lib/cropShapes";
 
 interface ImageCropUploadProps {
   label: string;
@@ -28,7 +28,7 @@ export function ImageCropUpload({
   defaultAspect = 1,
   ratioOptions,
   allowShapeSelection = true,
-  defaultShape = "rect",
+  defaultShape = "rectangle",
   existingUrl,
   onCroppedFile,
   onClear,

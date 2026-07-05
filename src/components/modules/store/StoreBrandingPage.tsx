@@ -117,7 +117,7 @@ export default function StoreBrandingPage() {
             defaultAspect={1}
             ratioOptions={LOGO_RATIOS}
             allowShapeSelection
-            defaultShape="rect"
+            defaultShape="rectangle"
             existingUrl={clearLogo ? null : store?.logo}
             outputFileName="logo.jpg"
             previewClassName="aspect-square max-w-[160px]"

@@ -21,7 +21,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { CropShape } from "@/lib/cropImage";
+import {
+  CROP_SHAPE_GROUPS,
+  CropShapeType,
+  applyShapeMask,
+  normalizeCropShape,
+  shapeForcesSquareAspect,
+  shapeNeedsTransparency,
+  shapeSvgPathString,
+  usesCircularCropPreview,
+  type CropShape,
+} from "@/lib/cropShapes";
 
 export type CropRatioOption = {
   label: string;
@@ -72,11 +82,33 @@ function buildInitialCrop(
   );
 }
 
+function ShapeOverlay({ shape }: { shape: CropShapeType }) {
+  if (shape === "rectangle" || shape === "square" || usesCircularCropPreview(shape)) {
+    return null;
+  }
+
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+    >
+      <path
+        d={shapeSvgPathString(shape)}
+        fill="rgba(0,0,0,0.15)"
+        stroke="rgba(255,255,255,0.95)"
+        strokeWidth="1.5"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  );
+}
+
 async function exportCrop(
   image: HTMLImageElement,
   pixelCrop: PixelCrop,
   rotation: number,
-  shape: CropShape,
+  shape: CropShapeType,
 ): Promise<Blob> {
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
@@ -91,35 +123,23 @@ async function exportCrop(
   const canvas = document.createElement("canvas");
   await cropToCanvas(image, canvas, naturalCrop, 1, rotation);
 
-  if (shape === "round") {
-    const roundCanvas = document.createElement("canvas");
-    roundCanvas.width = canvas.width;
-    roundCanvas.height = canvas.height;
-    const ctx = roundCanvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas not supported");
-    ctx.beginPath();
-    ctx.arc(
-      canvas.width / 2,
-      canvas.height / 2,
-      Math.min(canvas.width, canvas.height) / 2,
-      0,
-      Math.PI * 2,
-    );
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(canvas, 0, 0);
-    return canvasToBlob(roundCanvas);
-  }
+  const masked = applyShapeMask(canvas, shape);
+  const mimeType = shapeNeedsTransparency(shape) ? "image/png" : "image/jpeg";
+  const ext = mimeType === "image/png" ? "png" : "jpg";
 
-  return canvasToBlob(canvas);
+  return canvasToBlob(masked, mimeType, ext);
 }
 
-function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  mimeType: string,
+  _ext: string,
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("Crop failed"))),
-      "image/jpeg",
-      0.92,
+      mimeType,
+      mimeType === "image/jpeg" ? 0.92 : undefined,
     );
   });
 }
@@ -132,7 +152,7 @@ export function CropEditorDialog({
   defaultAspect = 16 / 9,
   ratioOptions = CROP_RATIO_PRESETS,
   allowShapeSelection = true,
-  defaultShape = "rect",
+  defaultShape = "rectangle",
   outputFileName,
   onComplete,
 }: CropEditorDialogProps) {
@@ -141,15 +161,17 @@ export function CropEditorDialog({
   const [pixelCrop, setPixelCrop] = useState<PixelCrop>();
   const [rotation, setRotation] = useState(0);
   const [aspect, setAspect] = useState<number | undefined>(defaultAspect);
-  const [shape, setShape] = useState<CropShape>(defaultShape);
+  const [shape, setShape] = useState<CropShapeType>(normalizeCropShape(defaultShape));
   const [processing, setProcessing] = useState(false);
+
+  const effectiveAspect = shapeForcesSquareAspect(shape) ? 1 : aspect;
 
   const resetControls = useCallback(() => {
     setCrop(undefined);
     setPixelCrop(undefined);
     setRotation(0);
     setAspect(defaultAspect);
-    setShape(defaultShape);
+    setShape(normalizeCropShape(defaultShape));
   }, [defaultAspect, defaultShape]);
 
   const handleOpenChange = (next: boolean) => {
@@ -168,23 +190,32 @@ export function CropEditorDialog({
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
-    initCropFromImage(width, height, aspect);
+    initCropFromImage(width, height, effectiveAspect);
   };
 
   useEffect(() => {
     if (!open || !imgRef.current) return;
     const { width, height } = imgRef.current;
     if (width > 0 && height > 0) {
-      initCropFromImage(width, height, aspect);
+      initCropFromImage(width, height, effectiveAspect);
     }
-  }, [aspect, open, initCropFromImage]);
+  }, [effectiveAspect, open, initCropFromImage]);
+
+  const selectShape = (next: CropShapeType) => {
+    setShape(next);
+    if (shapeForcesSquareAspect(next)) {
+      setAspect(1);
+    }
+  };
 
   const applyCrop = async () => {
     if (!imgRef.current || !pixelCrop?.width || !pixelCrop?.height) return;
     setProcessing(true);
     try {
       const blob = await exportCrop(imgRef.current, pixelCrop, rotation, shape);
-      const file = new File([blob], outputFileName, { type: blob.type });
+      const baseName = outputFileName.replace(/\.(jpg|jpeg|png)$/i, "");
+      const ext = shapeNeedsTransparency(shape) ? "png" : "jpg";
+      const file = new File([blob], `${baseName}.${ext}`, { type: blob.type });
       onComplete(file);
       handleOpenChange(false);
     } finally {
@@ -194,85 +225,99 @@ export function CropEditorDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex max-h-[420px] items-center justify-center overflow-auto rounded-lg bg-muted p-2">
+        <div className="flex max-h-[380px] items-center justify-center overflow-auto rounded-lg bg-muted p-2">
           {imageSrc && (
             <ReactCrop
               crop={crop}
-              aspect={aspect}
-              circularCrop={shape === "round"}
+              aspect={effectiveAspect}
+              circularCrop={usesCircularCropPreview(shape)}
               ruleOfThirds
               keepSelection
               onChange={(_, percentCrop) => setCrop(percentCrop)}
               onComplete={(px) => setPixelCrop(px)}
               className="max-w-full"
+              renderSelectionAddon={() => <ShapeOverlay shape={shape} />}
             >
               <img
                 ref={imgRef}
                 src={imageSrc}
                 alt=""
                 onLoad={onImageLoad}
-                className="max-h-[360px] w-auto max-w-full"
+                className="max-h-[340px] w-auto max-w-full"
                 style={{ display: "block" }}
               />
             </ReactCrop>
           )}
         </div>
 
-        {aspect === undefined && (
-          <p className="text-xs text-muted-foreground">
-            Free crop — drag corners and edges to any size. Move the selection by dragging inside it.
-          </p>
-        )}
+        <p className="text-xs text-muted-foreground">
+          {effectiveAspect === undefined
+            ? "Free crop — drag corners and edges. Shape mask is applied on export."
+            : "Drag the selection box. Custom shapes clip to the selected area."}
+        </p>
 
         <div className="space-y-4">
+          {allowShapeSelection && (
+            <div className="space-y-3">
+              {CROP_SHAPE_GROUPS.map((group) => (
+                <div key={group.title} className="space-y-2">
+                  <Label className="text-xs font-medium">{group.title}</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.shapes.map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => selectShape(opt.id)}
+                        className={cn(
+                          "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+                          shape === opt.id
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background hover:bg-muted",
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label className="text-xs font-medium">Aspect ratio</Label>
             <div className="flex flex-wrap gap-1.5">
-              {ratioOptions.map((opt) => (
-                <button
-                  key={opt.label}
-                  type="button"
-                  onClick={() => setAspect(opt.value)}
-                  className={cn(
-                    "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
-                    isRatioActive(aspect, opt.value)
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-background hover:bg-muted",
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {allowShapeSelection && (
-            <div className="space-y-2">
-              <Label className="text-xs font-medium">Crop shape</Label>
-              <div className="flex gap-1.5">
-                {(["rect", "round"] as const).map((s) => (
+              {ratioOptions.map((opt) => {
+                const locked = shapeForcesSquareAspect(shape);
+                const disabled = locked && opt.value !== 1;
+                return (
                   <button
-                    key={s}
+                    key={opt.label}
                     type="button"
-                    onClick={() => setShape(s)}
+                    disabled={disabled}
+                    onClick={() => !disabled && setAspect(opt.value)}
                     className={cn(
-                      "rounded-md border px-3 py-1 text-xs font-medium capitalize transition-colors",
-                      shape === s
+                      "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+                      disabled && "cursor-not-allowed opacity-40",
+                      isRatioActive(effectiveAspect, opt.value)
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background hover:bg-muted",
                     )}
                   >
-                    {s === "rect" ? "Rectangle" : "Circle"}
+                    {opt.label}
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          )}
+            {shapeForcesSquareAspect(shape) && (
+              <p className="text-xs text-muted-foreground">Square / circle shapes lock to 1:1 ratio.</p>
+            )}
+          </div>
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
