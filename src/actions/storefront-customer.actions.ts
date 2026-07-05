@@ -71,13 +71,17 @@ export async function logoutStorefrontCustomerAction(slug: string) {
 }
 
 export async function getStorefrontCustomerAction(slug: string) {
-  const res = await publicFetchWithStoreCookie(
-    slug,
-    `/public/stores/${slug}/customers/me`,
-  );
-  if (!res.ok) return null;
-  const json = await res.json();
-  return json.data as StorefrontCustomer;
+  try {
+    const res = await publicFetchWithStoreCookie(
+      slug,
+      `/public/stores/${slug}/customers/me`,
+    );
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data as StorefrontCustomer;
+  } catch {
+    return null;
+  }
 }
 
 export async function getWishlistAction(slug: string) {

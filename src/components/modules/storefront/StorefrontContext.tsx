@@ -42,6 +42,9 @@ export function StorefrontContextProvider({
       .then((data) => {
         if (!cancelled) setCustomer(data);
       })
+      .catch(() => {
+        if (!cancelled) setCustomer(null);
+      })
       .finally(() => {
         if (!cancelled) setCustomerReady(true);
       });

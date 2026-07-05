@@ -271,30 +271,42 @@ export async function suspendStoreAction(id: string, isSuspended: boolean) {
 
 // Public
 export const getPublicStoreAction = cache(async (slug: string) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
-    next: { revalidate: 60, tags: [`store-public-${slug}`] },
-  });
-  if (!res.ok) return null;
-  const json = await res.json();
-  return json.data;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
+      next: { revalidate: 60, tags: [`store-public-${slug}`] },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data;
+  } catch {
+    return null;
+  }
 });
 
 export async function getPublicProductsAction(slug: string, params?: Record<string, string>) {
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products?${qs}`, {
-    next: { revalidate: 60, tags: [`store-products-${slug}`] },
-  });
-  if (!res.ok) return { data: [], meta: null };
-  return res.json();
+  try {
+    const qs = new URLSearchParams(params).toString();
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products?${qs}`, {
+      next: { revalidate: 60, tags: [`store-products-${slug}`] },
+    });
+    if (!res.ok) return { data: [], meta: null };
+    return res.json();
+  } catch {
+    return { data: [], meta: null };
+  }
 }
 
 export const getPublicProductAction = cache(async (slug: string, id: string) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products/${id}`, {
-    next: { revalidate: 60, tags: [`store-product-${slug}-${id}`] },
-  });
-  if (!res.ok) return null;
-  const json = await res.json();
-  return json.data;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products/${id}`, {
+      next: { revalidate: 60, tags: [`store-product-${slug}-${id}`] },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data;
+  } catch {
+    return null;
+  }
 });
 
 export async function getPublicCollectionsAction(slug: string, params?: Record<string, string>) {
