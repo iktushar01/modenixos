@@ -2,26 +2,21 @@ import { APP_NAME } from "@/lib/app-config";
 import { Toaster } from "@/components/ui/sonner";
 import QueryProviders from "@/providers/QueryProvider";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Sora, Geist_Mono } from "next/font/google";
 // @ts-ignore: side-effect CSS import
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -37,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} antialiased`}
+        className={`${sora.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
         <QueryProviders>

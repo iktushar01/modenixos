@@ -58,10 +58,10 @@
 }
 
 :root {
-  /* Typography — Geist for UI, Plus Jakarta for display headings */
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Typography — Sora: soft, refined, premium feel */
+  --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-heading: var(--font-plus-jakarta), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
 
   /* Light mode — warm ivory canvas with violet ink */
   --background: oklch(0.985 0.006 88);
@@ -177,9 +177,8 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    letter-spacing: -0.011em;
-    line-height: 1.6;
+    letter-spacing: 0.01em;
+    line-height: 1.65;
   }
 
   h1,
@@ -188,21 +187,9 @@
   h4,
   h5,
   h6 {
-    @apply font-heading tracking-tight text-foreground;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-  }
-
-  h1 {
-    @apply text-4xl font-bold md:text-5xl;
-  }
-
-  h2 {
-    @apply text-3xl font-semibold md:text-4xl;
-  }
-
-  h3 {
-    @apply text-2xl font-semibold;
+    @apply font-heading text-foreground;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
   }
 
   ::selection {
