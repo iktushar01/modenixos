@@ -115,7 +115,7 @@ export default function UsersPermissionsPage() {
       ) : (
         <div className="overflow-hidden rounded-xl border bg-card">
           {data?.owner && (
-            <UserRow user={data.owner} isOwner disableRemove />
+            <UserRow user={data.owner} disableRemove />
           )}
 
           {data?.members.map((member) => (

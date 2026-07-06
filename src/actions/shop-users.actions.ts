@@ -9,8 +9,11 @@ export async function getShopUsersAction() {
   return res.data;
 }
 
-export async function inviteShopUserAction(payload: { email: string; role: StoreMemberRole }) {
-  const res = await httpClient.post("/stores/me/members", payload);
+export async function inviteShopUserAction(payload: {
+  email: string;
+  role: StoreMemberRole;
+}): Promise<{ type: string }> {
+  const res = await httpClient.post<{ type: string }>("/stores/me/members", payload);
   revalidatePath("/dashboard/settings/users");
   return res.data;
 }
@@ -25,8 +28,13 @@ export async function revokeShopInvitationAction(invitationId: string) {
   revalidatePath("/dashboard/settings/users");
 }
 
-export async function acceptShopInvitationAction(token: string) {
-  const res = await httpClient.post(`/stores/invitations/${token}/accept`, {});
+export async function acceptShopInvitationAction(
+  token: string,
+): Promise<{ storeName: string }> {
+  const res = await httpClient.post<{ storeName: string }>(
+    `/stores/invitations/${token}/accept`,
+    {},
+  );
   revalidatePath("/dashboard");
   return res.data;
 }
