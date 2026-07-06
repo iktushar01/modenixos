@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/app-config";
+import { APP_NAME, LOGO_LIGHT } from "@/lib/app-config";
 import { Toaster } from "@/components/ui/sonner";
 import QueryProviders from "@/providers/QueryProvider";
 import type { Metadata } from "next";
@@ -22,6 +22,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "Full-stack project starter with role-based auth",
+  icons: {
+    icon: LOGO_LIGHT,
+    apple: LOGO_LIGHT,
+  },
 };
 
 export default function RootLayout({
