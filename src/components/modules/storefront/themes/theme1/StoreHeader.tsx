@@ -308,31 +308,9 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
           </div>
 
           {theme.header.tagline && (
-            <p className="sf-header-tagline -mt-1 pb-2.5 text-center sm:pb-3">
+            <p className="sf-header-tagline -mt-1 pb-2.5 text-center sm:pb-3 lg:pb-2.5">
               {theme.header.tagline}
             </p>
-          )}
-
-          {theme.header.showSearch && (
-            <form onSubmit={handleSearch} className="pb-3 lg:hidden">
-              <div className="sf-header-search w-full max-w-none">
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for products..."
-                  className="sf-input h-full border-0 px-3 text-sm shadow-none focus-visible:ring-0"
-                />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className="sf-navbar-fg h-10 w-10 shrink-0 rounded-none"
-                  aria-label="Search"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-            </form>
           )}
         </div>
 
