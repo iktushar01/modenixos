@@ -9,6 +9,16 @@ import { StorefrontThemeConfig, resolveStorefrontNavLinks, resolveStoreLogo } fr
 import { useStorefrontTheme } from "@/components/modules/storefront/StorefrontThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  storeAboutPath,
+  storeBasePath,
+  storeContactUsPath,
+  storePaymentRefundPolicyPath,
+  storePrivacyPolicyPath,
+  storeReturnExchangePolicyPath,
+  storeShippingPolicyPath,
+  storeTrackPath,
+} from "@/lib/storePaths";
 
 interface StoreFooterProps {
   store: Store;
@@ -16,11 +26,18 @@ interface StoreFooterProps {
   categories?: Category[];
 }
 
+const POLICY_LINKS = [
+  { label: "Privacy Policy", href: (slug: string) => storePrivacyPolicyPath(slug) },
+  { label: "Shipping Policy", href: (slug: string) => storeShippingPolicyPath(slug) },
+  { label: "Return & Exchange", href: (slug: string) => storeReturnExchangePolicyPath(slug) },
+  { label: "Payment & Refund", href: (slug: string) => storePaymentRefundPolicyPath(slug) },
+] as const;
+
 export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps) {
   const { colorMode } = useStorefrontTheme();
-  const base = `/store/${store.slug}`;
+  const base = storeBasePath(store.slug);
   const [email, setEmail] = useState("");
-  const navLinks = resolveStorefrontNavLinks(theme, store.slug, categories).slice(0, 6);
+  const navLinks = resolveStorefrontNavLinks(theme, store.slug, categories).slice(0, 5);
   const logoUrl = resolveStoreLogo(store, theme, colorMode);
 
   const handleNewsletter = (e: React.FormEvent) => {
@@ -30,28 +47,65 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
 
   return (
     <footer className="sf-border sf-footer border-t">
-      <div className="sf-section w-full py-16 md:py-20">
-        <div className="mb-14 text-center md:mb-16">
-          {logoUrl ? (
-            <Image
-              src={logoUrl}
-              alt={store.brandName}
-              width={180}
-              height={60}
-              className="mx-auto h-10 w-auto object-contain md:h-12"
-              unoptimized
-            />
-          ) : (
-            <p className="sf-display-lg text-3xl sm:text-4xl md:text-5xl">{store.brandName}</p>
-          )}
-          {theme.header.tagline && (
-            <p className="sf-body-lg sf-muted-fg mx-auto mt-3 max-w-md">{theme.header.tagline}</p>
-          )}
-        </div>
+      <div className="sf-section w-full py-14 md:py-20">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-10 xl:gap-14">
+          {/* Brand column */}
+          <div className="lg:pr-4">
+            {logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt={store.brandName}
+                width={160}
+                height={52}
+                className="h-9 w-auto object-contain md:h-10"
+                unoptimized
+              />
+            ) : (
+              <p className="sf-display-lg text-2xl md:text-3xl">{store.brandName}</p>
+            )}
+            {theme.header.tagline && (
+              <p className="sf-muted-fg mt-3 max-w-xs text-sm leading-relaxed">{theme.header.tagline}</p>
+            )}
+            <div className="mt-6 flex gap-2">
+              {theme.social.instagram && (
+                <a
+                  href={theme.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sf-link sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border transition-colors sf-hover-fg"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-4 w-4" strokeWidth={1.5} />
+                </a>
+              )}
+              {theme.social.twitter && (
+                <a
+                  href={theme.social.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sf-link sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border transition-colors sf-hover-fg"
+                  aria-label="Twitter"
+                >
+                  <Twitter className="h-4 w-4" strokeWidth={1.5} />
+                </a>
+              )}
+              {theme.social.facebook && (
+                <a
+                  href={theme.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sf-link sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border transition-colors sf-hover-fg"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="h-4 w-4" strokeWidth={1.5} />
+                </a>
+              )}
+            </div>
+          </div>
 
-        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:gap-16">
+          {/* Shop */}
           <div>
-            <p className="sf-eyebrow mb-4">Shop</p>
+            <p className="sf-eyebrow mb-5">Shop</p>
             <ul className="space-y-2.5">
               {navLinks.map((link) => (
                 <li key={`${link.label}-${link.href}`}>
@@ -65,25 +119,26 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                   Cart
                 </StorefrontNavLink>
               </li>
+              <li>
+                <StorefrontNavLink href={storeTrackPath(store.slug)} className="sf-link text-sm transition-colors sf-hover-fg">
+                  Track order
+                </StorefrontNavLink>
+              </li>
             </ul>
           </div>
 
+          {/* Company & policies */}
           <div>
-            <p className="sf-eyebrow mb-4">Support</p>
+            <p className="sf-eyebrow mb-5">Company</p>
             <ul className="space-y-2.5">
               <li>
-                <StorefrontNavLink href={`${base}#about`} className="sf-link text-sm sf-hover-fg">
+                <StorefrontNavLink href={storeAboutPath(store.slug)} className="sf-link text-sm sf-hover-fg">
                   About
                 </StorefrontNavLink>
               </li>
               <li>
-                <StorefrontNavLink href={`${base}/track`} className="sf-link text-sm sf-hover-fg">
-                  Track order
-                </StorefrontNavLink>
-              </li>
-              <li>
-                <StorefrontNavLink href={`${base}#contact`} className="sf-link text-sm sf-hover-fg">
-                  Contact
+                <StorefrontNavLink href={storeContactUsPath(store.slug)} className="sf-link text-sm sf-hover-fg">
+                  Contact Us
                 </StorefrontNavLink>
               </li>
               {theme.contact.phone && (
@@ -94,47 +149,60 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                 </li>
               )}
             </ul>
-            <div className="mt-6 flex gap-3">
-              {theme.social.instagram && (
-                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="sf-link sf-touch-target inline-flex items-center justify-center p-2 sf-hover-fg" aria-label="Instagram">
-                  <Instagram className="h-5 w-5" strokeWidth={1.5} />
-                </a>
-              )}
-              {theme.social.twitter && (
-                <a href={theme.social.twitter} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg" aria-label="Twitter">
-                  <Twitter className="h-5 w-5" strokeWidth={1.5} />
-                </a>
-              )}
-              {theme.social.facebook && (
-                <a href={theme.social.facebook} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg" aria-label="Facebook">
-                  <Facebook className="h-5 w-5" strokeWidth={1.5} />
-                </a>
-              )}
-            </div>
+
+            <p className="sf-eyebrow mb-4 mt-8">Policies</p>
+            <ul className="space-y-2.5">
+              {POLICY_LINKS.map((link) => (
+                <li key={link.label}>
+                  <StorefrontNavLink href={link.href(store.slug)} className="sf-link text-sm sf-hover-fg">
+                    {link.label}
+                  </StorefrontNavLink>
+                </li>
+              ))}
+            </ul>
           </div>
 
+          {/* Newsletter */}
           <div>
-            <p className="sf-eyebrow mb-4">Newsletter</p>
-            <p className="sf-muted-fg mb-4 text-sm">Exclusive offers and new arrivals.</p>
-            <form onSubmit={handleNewsletter} className="flex flex-col gap-2 sm:flex-row">
+            <p className="sf-eyebrow mb-5">Newsletter</p>
+            <p className="sf-muted-fg mb-4 text-sm leading-relaxed">
+              Exclusive offers, new arrivals, and style notes — straight to your inbox.
+            </p>
+            <form onSubmit={handleNewsletter} className="space-y-2">
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="sf-input min-w-0 flex-1"
+                className="sf-input w-full"
                 required
               />
-              <Button type="submit" className="sf-btn-primary w-full shrink-0 rounded-full px-5 sm:w-auto">
-                Join
+              <Button type="submit" className="sf-btn-primary w-full rounded-full">
+                Subscribe
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="sf-border mt-14 flex flex-col items-center justify-between gap-3 border-t pt-8 text-xs sf-muted-fg md:flex-row">
-          <p>&copy; {new Date().getFullYear()} {store.brandName}</p>
-          <p className="sf-eyebrow">Powered by ModenixOS</p>
+        {/* Bottom bar */}
+        <div className="sf-border mt-12 border-t pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <p className="sf-muted-fg text-center text-xs md:text-left">
+              &copy; {new Date().getFullYear()} {store.brandName}. All rights reserved.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              {POLICY_LINKS.map((link) => (
+                <StorefrontNavLink
+                  key={`bottom-${link.label}`}
+                  href={link.href(store.slug)}
+                  className="sf-muted-fg text-xs transition-colors sf-hover-fg"
+                >
+                  {link.label}
+                </StorefrontNavLink>
+              ))}
+            </div>
+            <p className="sf-eyebrow text-[10px]">Powered by ModenixOS</p>
+          </div>
         </div>
       </div>
     </footer>

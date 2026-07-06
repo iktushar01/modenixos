@@ -33,3 +33,31 @@ export function storeCollectionPath(slug: string, collectionSlug: string) {
 export function storeProductPath(slug: string, productId: string) {
   return `${storeBasePath(slug)}/products/${productId}`;
 }
+
+export function storeAboutPath(slug: string) {
+  return `${storeBasePath(slug)}/about`;
+}
+
+export function storePrivacyPolicyPath(slug: string) {
+  return `${storeBasePath(slug)}/privacy-policy`;
+}
+
+export function storeShippingPolicyPath(slug: string) {
+  return `${storeBasePath(slug)}/shipping-policy`;
+}
+
+export function storeReturnExchangePolicyPath(slug: string) {
+  return `${storeBasePath(slug)}/return-exchange-policy`;
+}
+
+export function storePaymentRefundPolicyPath(slug: string) {
+  return `${storeBasePath(slug)}/payment-refund-policy`;
+}
+
+export function storeContactUsPath(slug: string) {
+  return `${storeBasePath(slug)}/contact-us`;
+}
+
+export function storeTrackPath(slug: string) {
+  return `${storeBasePath(slug)}/track`;
+}
