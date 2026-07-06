@@ -225,7 +225,7 @@ export default function BillingPage() {
         })}
       </div>
 
-      {currentPlan !== "FREE" && overview?.subscription.stripeSubscriptionId && (
+      {currentPlan !== "FREE" && overview?.subscription?.stripeSubscriptionId && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">

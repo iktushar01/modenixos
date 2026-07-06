@@ -23,6 +23,7 @@ export type BillingOverview = {
     id: string;
     plan: string;
     status: string;
+    stripeSubscriptionId?: string | null;
     currentPeriodEnd: string | null;
     cancelAtPeriodEnd: boolean;
   };

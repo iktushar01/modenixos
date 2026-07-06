@@ -20,6 +20,7 @@ import {
   Store,
   Image,
   Palette,
+  CreditCard,
   type LucideProps,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
@@ -45,7 +46,8 @@ export type IconName =
   | "Ticket"
   | "Store"
   | "Image"
-  | "Palette";
+  | "Palette"
+  | "CreditCard";
 
 type LucideIcon = ForwardRefExoticComponent<
   Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
@@ -73,4 +75,5 @@ export const iconRegistry: Record<IconName, LucideIcon> = {
   Store,
   Image,
   Palette,
+  CreditCard,
 };
