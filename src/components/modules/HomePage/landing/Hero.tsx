@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/app-config";
 import { industries } from "../landing-data";
 import HeroDashboard from "./HeroDashboard";
+import { StartFreeLink } from "../StartFreeLink";
 import { cn } from "@/lib/utils";
 
 const heroBtnClass =
@@ -60,10 +61,10 @@ export default function Hero() {
             className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start"
           >
             <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-lg shadow-primary/15`}>
-              <Link href="/register">
+              <StartFreeLink>
                 Start free
                 <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
+              </StartFreeLink>
             </Button>
             <Button asChild size="lg" variant="outline" className={`${heroBtnClass} gap-2 homepage-glass`}>
               <Link href="/store/luxe-threads" target="_blank" rel="noreferrer">

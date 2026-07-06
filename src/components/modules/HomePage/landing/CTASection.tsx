@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import AnimatedContent from "@/components/AnimatedContent";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/app-config";
+import { StartFreeLink } from "../StartFreeLink";
 
 const heroBtnClass =
   "h-11 rounded-xl px-6 transition-all duration-200 hover:opacity-90 active:scale-[0.98] sm:h-12 sm:px-8";
@@ -23,10 +24,10 @@ export default function CTASection() {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-lg shadow-primary/15`}>
-              <Link href="/register">
+              <StartFreeLink>
                 Start building today
                 <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
+              </StartFreeLink>
             </Button>
             <Button asChild size="lg" variant="outline" className={`${heroBtnClass} gap-2 homepage-glass`}>
               <Link href="/store/luxe-threads" target="_blank" rel="noreferrer">
