@@ -7,7 +7,6 @@ import {
   Copy,
   ExternalLink,
   Globe,
-  Loader2,
   MapPin,
   Sparkles,
   Store,
@@ -33,7 +32,7 @@ import { formatPriceSample, getCurrencyName } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import { StorefrontShopProfile } from "@/types/store.types";
-import { cn } from "@/lib/utils";
+import { StoreSaveBar } from "./StoreSaveBar";
 
 function ProfileSkeleton() {
   return (
@@ -180,8 +179,9 @@ export default function StoreProfilePage() {
       : storefrontPath;
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6">
       <PageHeader
+        eyebrow="Shop"
         title="Shop profile"
         description="Name, URL, region, currency, and visibility for your storefront."
         action={
@@ -196,7 +196,7 @@ export default function StoreProfilePage() {
         }
       />
 
-      <section className="admin-panel overflow-hidden p-0">
+      <section className="dashboard-panel overflow-hidden p-0">
         <div className="relative border-b border-border/50 bg-gradient-to-br from-[var(--admin-accent-soft)] via-card to-[var(--admin-sky-soft)] p-6 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
@@ -256,7 +256,7 @@ export default function StoreProfilePage() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
-          <section className="admin-panel space-y-6 p-6">
+          <section className="dashboard-panel space-y-6 p-6">
             <div className="space-y-1">
               <p className="admin-section-label">Identity</p>
               <h3 className="text-base font-semibold">Basic information</h3>
@@ -330,7 +330,7 @@ export default function StoreProfilePage() {
             </div>
           </section>
 
-          <section className="admin-panel space-y-6 p-6">
+          <section className="dashboard-panel space-y-6 p-6">
             <div className="space-y-1">
               <p className="admin-section-label">Contact</p>
               <h3 className="text-base font-semibold">Shop contact details</h3>
@@ -377,7 +377,7 @@ export default function StoreProfilePage() {
             </div>
           </section>
 
-          <section className="admin-panel space-y-6 p-6">
+          <section className="dashboard-panel space-y-6 p-6">
             <div className="space-y-1">
               <p className="admin-section-label">Region</p>
               <h3 className="text-base font-semibold">Location & currency</h3>
@@ -426,7 +426,7 @@ export default function StoreProfilePage() {
             )}
           </section>
 
-          <section className="admin-panel p-6">
+          <section className="dashboard-panel p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
                 <p className="admin-section-label">Visibility</p>
@@ -448,7 +448,7 @@ export default function StoreProfilePage() {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-          <section className="admin-panel space-y-4 p-5">
+          <section className="dashboard-panel space-y-4 p-5">
             <div className="flex items-center gap-2">
               <div className="flex size-8 items-center justify-center rounded-lg admin-stat-sky">
                 <Globe className="size-4 text-foreground/70" />
@@ -480,7 +480,7 @@ export default function StoreProfilePage() {
             </div>
           </section>
 
-          <section className="admin-panel space-y-3 p-5">
+          <section className="dashboard-panel space-y-3 p-5">
             <div className="flex items-center gap-2">
               <div className="flex size-8 items-center justify-center rounded-lg admin-stat-slate">
                 <Store className="size-4 text-foreground/70" />
@@ -505,26 +505,13 @@ export default function StoreProfilePage() {
         </aside>
       </div>
 
-      <div
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-20 border-t border-border/60 bg-background/90 p-4 backdrop-blur-md sm:static sm:rounded-xl sm:border sm:p-4",
-          "lg:left-auto lg:right-auto",
-        )}
-      >
-        <div className="mx-auto flex max-w-none items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            {isDirty ? (
-              <span className="text-foreground">You have unsaved changes</span>
-            ) : (
-              "All changes saved"
-            )}
-          </p>
-          <Button onClick={handleSave} disabled={saving || !isDirty} className="min-w-[140px] shadow-sm">
-            {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-            Save profile
-          </Button>
-        </div>
-      </div>
+      <StoreSaveBar
+        label="Save profile"
+        onSave={handleSave}
+        saving={saving}
+        disabled={!isDirty}
+        hint={isDirty ? "You have unsaved changes" : "All changes saved"}
+      />
     </div>
   );
 }

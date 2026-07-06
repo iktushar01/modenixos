@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import {
@@ -30,6 +27,8 @@ import {
 import { StoreColorPaletteEditor } from "./StoreColorPaletteEditor";
 import { StoreTypographyEditor } from "./StoreTypographyEditor";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
+import { StoreSection } from "./StoreSection";
+import { StoreSaveBar } from "./StoreSaveBar";
 
 const SECTION_LABELS: Record<keyof StorefrontSections, string> = {
   categories: "Categories",
@@ -153,64 +152,53 @@ export default function StoreAppearancePage() {
     }));
   };
 
-
   if (isLoading) {
     return <DashboardFormSkeleton compact />;
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
+        eyebrow="Shop"
         title="Storefront appearance"
         description="Colors, homepage sections, and social links for your public shop."
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Theme & colors</CardTitle>
-          <CardDescription>
-            Choose a preset or customize brand colors. Light and dark palettes stay harmonious automatically.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <StoreColorPaletteEditor
-            defaultColorMode={form.colorMode}
-            previewMode={previewMode}
-            palettePreset={form.palettePreset}
-            brandColors={form.brandColors}
-            customColors={form.customColors}
-            onDefaultColorModeChange={(colorMode) => setForm((prev) => ({ ...prev, colorMode }))}
-            onPreviewModeChange={setPreviewMode}
-            onPresetChange={(palettePreset) => setForm((prev) => ({ ...prev, palettePreset }))}
-            onBrandColorsChange={(brandColors) => setForm((prev) => ({ ...prev, brandColors }))}
-            onCustomColorsChange={(customColors) =>
-              setForm((prev) => ({ ...prev, customColors, palettePreset: "custom" }))
-            }
-          />
-        </CardContent>
-      </Card>
+      <StoreSection
+        eyebrow="Theme"
+        title="Theme & colors"
+        description="Choose a preset or customize brand colors. Light and dark palettes stay harmonious automatically."
+      >
+        <StoreColorPaletteEditor
+          defaultColorMode={form.colorMode}
+          previewMode={previewMode}
+          palettePreset={form.palettePreset}
+          brandColors={form.brandColors}
+          customColors={form.customColors}
+          onDefaultColorModeChange={(colorMode) => setForm((prev) => ({ ...prev, colorMode }))}
+          onPreviewModeChange={setPreviewMode}
+          onPresetChange={(palettePreset) => setForm((prev) => ({ ...prev, palettePreset }))}
+          onBrandColorsChange={(brandColors) => setForm((prev) => ({ ...prev, brandColors }))}
+          onCustomColorsChange={(customColors) =>
+            setForm((prev) => ({ ...prev, customColors, palettePreset: "custom" }))
+          }
+        />
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Typography</CardTitle>
-          <CardDescription>
-            Choose font pairings for your public shop. Headlines and body text update across the full storefront.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <StoreTypographyEditor
-            typography={form.typography}
-            onTypographyChange={(typography) => setForm((prev) => ({ ...prev, typography }))}
-          />
-        </CardContent>
-      </Card>
+      <StoreSection
+        eyebrow="Fonts"
+        title="Typography"
+        description="Choose font pairings for your public shop. Headlines and body text update across the full storefront."
+      >
+        <StoreTypographyEditor
+          typography={form.typography}
+          onTypographyChange={(typography) => setForm((prev) => ({ ...prev, typography }))}
+        />
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Promo bar</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
+      <StoreSection eyebrow="Marketing" title="Promo bar">
+        <div className="space-y-4">
+          <div className="dashboard-toggle-row">
             <Label htmlFor="promoEnabled">Show promo bar</Label>
             <Switch
               id="promoEnabled"
@@ -222,23 +210,22 @@ export default function StoreAppearancePage() {
             <Label htmlFor="promoText">Promo text</Label>
             <Input
               id="promoText"
+              className="h-10"
               placeholder="Free shipping on orders over $100"
               value={form.promoText}
               onChange={(e) => setForm({ ...form, promoText: e.target.value })}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Brand story</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <StoreSection eyebrow="Story" title="Brand story">
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="brandStoryTitle">Title</Label>
             <Input
               id="brandStoryTitle"
+              className="h-10"
               value={form.brandStoryTitle}
               onChange={(e) => setForm({ ...form, brandStoryTitle: e.target.value })}
             />
@@ -250,19 +237,20 @@ export default function StoreAppearancePage() {
               rows={4}
               value={form.brandStoryContent}
               onChange={(e) => setForm({ ...form, brandStoryContent: e.target.value })}
+              className="min-h-[120px] resize-y"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Homepage sections</CardTitle>
-          <CardDescription>Toggle which sections appear on your storefront.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
+      <StoreSection
+        eyebrow="Layout"
+        title="Homepage sections"
+        description="Toggle which sections appear on your storefront."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
           {(Object.keys(SECTION_LABELS) as Array<keyof StorefrontSections>).map((key) => (
-            <div key={key} className="flex items-center justify-between rounded-lg border px-4 py-3">
+            <div key={key} className="dashboard-toggle-row py-3">
               <Label htmlFor={`section-${key}`}>{SECTION_LABELS[key]}</Label>
               <Switch
                 id={`section-${key}`}
@@ -271,18 +259,16 @@ export default function StoreAppearancePage() {
               />
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Social links</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-3">
+      <StoreSection eyebrow="Social" title="Social links">
+        <div className="grid gap-5 sm:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="instagram">Instagram</Label>
             <Input
               id="instagram"
+              className="h-10"
               placeholder="https://instagram.com/..."
               value={form.instagram}
               onChange={(e) => setForm({ ...form, instagram: e.target.value })}
@@ -292,6 +278,7 @@ export default function StoreAppearancePage() {
             <Label htmlFor="twitter">Twitter / X</Label>
             <Input
               id="twitter"
+              className="h-10"
               placeholder="https://x.com/..."
               value={form.twitter}
               onChange={(e) => setForm({ ...form, twitter: e.target.value })}
@@ -301,18 +288,21 @@ export default function StoreAppearancePage() {
             <Label htmlFor="facebook">Facebook</Label>
             <Input
               id="facebook"
+              className="h-10"
               placeholder="https://facebook.com/..."
               value={form.facebook}
               onChange={(e) => setForm({ ...form, facebook: e.target.value })}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Button onClick={handleSave} disabled={saving}>
-        {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save appearance
-      </Button>
-    </div>
+      <StoreSaveBar
+        label="Save appearance"
+        onSave={handleSave}
+        saving={saving}
+        hint="Updates colors, sections, and social links on your storefront."
+      />
+    </>
   );
 }

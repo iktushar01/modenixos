@@ -155,6 +155,7 @@ export default function ReviewsPage() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
+                          variant="destructive"
                           onClick={() =>
                             deleteMutation.mutate({ id: r.id, productId: r.productId })
                           }

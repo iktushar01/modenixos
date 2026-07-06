@@ -245,7 +245,7 @@ export default function CustomersPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              variant="destructive"
               onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
             >
               Delete

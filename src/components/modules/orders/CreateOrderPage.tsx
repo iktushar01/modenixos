@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/accordion";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -564,10 +565,11 @@ export default function CreateOrderPage() {
       </div>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent size="lg">
           <DialogHeader>
             <DialogTitle>Add product</DialogTitle>
           </DialogHeader>
+          <DialogBody className="space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -612,6 +614,7 @@ export default function CreateOrderPage() {
               ))
             )}
           </div>
+          </DialogBody>
         </DialogContent>
       </Dialog>
     </div>

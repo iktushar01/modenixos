@@ -14,6 +14,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -226,12 +227,13 @@ export function CropEditorDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[95vh] overflow-y-auto">
+      <DialogContent size="xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex max-h-[380px] items-center justify-center overflow-auto rounded-lg bg-muted p-2">
+        <DialogBody className="space-y-4">
+        <div className="flex max-h-[min(50vh,380px)] items-center justify-center overflow-auto rounded-xl border border-border/60 bg-muted/40 p-2">
           {imageSrc && (
             <ReactCrop
               crop={crop}
@@ -341,6 +343,7 @@ export function CropEditorDialog({
             />
           </div>
         </div>
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
