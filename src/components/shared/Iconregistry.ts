@@ -19,6 +19,7 @@ import {
   Ticket,
   Store,
   Image,
+  LayoutTemplate,
   Palette,
   CreditCard,
   Truck,
@@ -48,6 +49,7 @@ export type IconName =
   | "Ticket"
   | "Store"
   | "Image"
+  | "LayoutTemplate"
   | "Palette"
   | "CreditCard"
   | "Truck"
@@ -78,6 +80,7 @@ export const iconRegistry: Record<IconName, LucideIcon> = {
   Ticket,
   Store,
   Image,
+  LayoutTemplate,
   Palette,
   CreditCard,
   Truck,

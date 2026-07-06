@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Image, Layers, Palette, Store, Truck } from "lucide-react";
+import { Image, Layers, LayoutTemplate, Palette, Store, Truck } from "lucide-react";
 
 const LINKS = [
   { label: "Profile", href: "/dashboard/store", icon: Store },
   { label: "Branding", href: "/dashboard/store/branding", icon: Image },
+  { label: "Theme", href: "/dashboard/store/theme", icon: LayoutTemplate },
   { label: "Header", href: "/dashboard/store/header", icon: Layers },
   { label: "Shipping", href: "/dashboard/store/shipping", icon: Truck },
   { label: "Appearance", href: "/dashboard/store/appearance", icon: Palette },

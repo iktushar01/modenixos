@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./templates";
 export * from "./presets";
 export * from "./cssVars";
 export * from "./parseTheme";

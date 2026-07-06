@@ -165,8 +165,8 @@ export default function StoreAppearancePage() {
       />
 
       <StoreSection
-        eyebrow="Theme"
-        title="Theme & colors"
+        eyebrow="Colors"
+        title="Colors & palette"
         description="Choose a preset or customize brand colors. Light and dark palettes stay harmonious automatically."
       >
         <StoreColorPaletteEditor
