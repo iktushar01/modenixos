@@ -1,4 +1,4 @@
-/* Marketing site shell — SaaS product landing */
+/* Marketing site shell — premium SaaS landing */
 .marketing-shell {
   --mkt-brand: var(--brand);
   --mkt-brand-muted: color-mix(in srgb, var(--mkt-brand) 12%, transparent);
@@ -38,6 +38,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--primary);
+  backdrop-filter: blur(8px);
 }
 
 .marketing-shell .mkt-nav-link {
@@ -54,31 +55,46 @@
   background-color: color-mix(in srgb, var(--card) 92%, transparent);
 }
 
+.marketing-shell .mkt-glass-card {
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--card) 75%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.marketing-shell .mkt-glass-panel {
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--card) 65%, transparent);
+  backdrop-filter: blur(16px);
+}
+
 .marketing-shell .mkt-stat-card {
-  border: 1px solid var(--border);
-  background-color: color-mix(in srgb, var(--card) 90%, transparent);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .marketing-shell .mkt-stat-card:hover {
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 8%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
 .marketing-shell .mkt-pricing-highlight {
-  background-color: color-mix(in srgb, var(--primary) 4%, var(--card));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--primary) 6%, var(--card)) 0%,
+    color-mix(in srgb, var(--card) 90%, transparent) 100%
+  );
 }
 
 .marketing-shell .mkt-hero {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in srgb, var(--primary) 12%, transparent), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 0%, color-mix(in srgb, var(--admin-accent) 8%, transparent), transparent),
+    radial-gradient(ellipse 90% 55% at 50% -15%, color-mix(in srgb, var(--primary) 14%, transparent), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 0%, color-mix(in srgb, var(--admin-accent) 10%, transparent), transparent),
+    radial-gradient(ellipse 40% 35% at 0% 20%, color-mix(in srgb, var(--primary) 6%, transparent), transparent),
     var(--background);
 }
 
 .marketing-shell .mkt-cta {
   background:
-    radial-gradient(ellipse 70% 60% at 50% 100%, color-mix(in srgb, var(--primary) 10%, transparent), transparent),
-    color-mix(in srgb, var(--muted) 40%, var(--background));
+    radial-gradient(ellipse 70% 60% at 50% 100%, color-mix(in srgb, var(--primary) 12%, transparent), transparent),
+    color-mix(in srgb, var(--muted) 35%, var(--background));
 }
 
 .marketing-shell .mkt-accent-text {
@@ -91,4 +107,10 @@
 
 .marketing-shell .mkt-divider {
   border-color: var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-shell .mkt-stat-card {
+    transition: none;
+  }
 }

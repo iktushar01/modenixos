@@ -3,68 +3,107 @@
 import Link from "next/link";
 import Logo from "@/components/shared/logo/logo";
 import { APP_NAME } from "@/lib/app-config";
+import { Github, Linkedin, Twitter } from "lucide-react";
 
-const footerLinks = {
+const footerColumns = {
   product: [
-    { href: "#product-tour", label: "Product tour" },
-    { href: "#features", label: "Features" },
-    { href: "#how-it-works", label: "How it works" },
-    { href: "#pricing", label: "Pricing" },
+    { href: "/#product-tour", label: "Product tour" },
+    { href: "/#features", label: "Features" },
+    { href: "/#how-it-works", label: "How it works" },
+    { href: "/#pricing", label: "Pricing" },
+  ],
+  solutions: [
+    { href: "/#product-tour", label: "Fashion & apparel" },
+    { href: "/#product-tour", label: "Electronics" },
+    { href: "/#product-tour", label: "Furniture & home" },
+    { href: "/#product-tour", label: "Grocery & delivery" },
+    { href: "/#product-tour", label: "Beauty & cosmetics" },
+  ],
+  resources: [
+    { href: "/#faq", label: "FAQ" },
+    { href: "/store/luxe-threads", label: "Live demo", external: true },
+    { href: "/register", label: "Documentation" },
   ],
   company: [
-    { href: "#faq", label: "FAQ" },
-    { href: "/store/luxe-threads", label: "Live demo", external: true },
-    { href: "/login", label: "Log in" },
     { href: "/register", label: "Start free" },
+    { href: "/login", label: "Log in" },
+    { href: "mailto:support@modenixos.com", label: "Contact" },
+  ],
+  legal: [
+    { href: "#", label: "Privacy" },
+    { href: "#", label: "Terms" },
+    { href: "#", label: "Security" },
   ],
 };
 
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: { href: string; label: string; external?: boolean }[];
+}) {
+  return (
+    <div>
+      <p className="mkt-label">{title}</p>
+      <ul className="mt-4 space-y-2.5">
+        {links.map((link) => (
+          <li key={link.label}>
+            <Link
+              href={link.href}
+              className="mkt-nav-link text-sm transition-colors"
+              {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function Footer() {
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="mkt-section w-full py-14">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div className="md:col-span-2">
+    <footer className="border-t border-border/60 bg-background">
+      <div className="mkt-section w-full py-16">
+        <div className="grid gap-10 lg:grid-cols-6">
+          <div className="lg:col-span-2">
             <Logo />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              The operating system for fashion brands. Launch your storefront, manage orders, and
-              grow with analytics — all from one platform.
+              {APP_NAME} is the operating system for modern commerce. Launch storefronts, manage
+              operations, and scale revenue — from one beautifully designed platform.
             </p>
-          </div>
-          <div>
-            <p className="mkt-label">Product</p>
-            <ul className="mt-4 space-y-2.5">
-              {footerLinks.product.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="mkt-nav-link text-sm transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
+            <div className="mt-6 flex gap-3">
+              {[
+                { icon: Twitter, label: "Twitter" },
+                { icon: Github, label: "GitHub" },
+                { icon: Linkedin, label: "LinkedIn" },
+              ].map(({ icon: Icon, label }) => (
+                <a
+                  key={label}
+                  href="#"
+                  aria-label={label}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
-          <div>
-            <p className="mkt-label">Get started</p>
-            <ul className="mt-4 space-y-2.5">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="mkt-nav-link text-sm transition-colors"
-                    {...("external" in link && link.external ? { target: "_blank" } : {})}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <FooterColumn title="Product" links={footerColumns.product} />
+          <FooterColumn title="Solutions" links={footerColumns.solutions} />
+          <FooterColumn title="Resources" links={footerColumns.resources} />
+          <div className="space-y-8">
+            <FooterColumn title="Company" links={footerColumns.company} />
+            <FooterColumn title="Legal" links={footerColumns.legal} />
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-border/60 pt-8 text-xs text-muted-foreground md:flex-row">
           <p>
             &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
           </p>
-          <p>Built for fashion founders who move fast.</p>
+          <p>Build. Sell. Scale.</p>
         </div>
       </div>
     </footer>
