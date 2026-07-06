@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { storeShopPath } from "@/lib/storePaths";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Search, X } from "lucide-react";
+import { Search, X, ChevronRight } from "lucide-react";
 import { Category, Collection } from "@/types/store.types";
 import { ShopFacets, ShopFilters } from "@/lib/shopFilters";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
 import { formatPrice } from "@/lib/storefrontTheme";
+import { storeShopPath } from "@/lib/storePaths";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,9 +37,86 @@ interface ShopFilterSidebarProps {
 
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="sf-border border-b pb-5">
-      <p className="sf-muted-fg mb-3 text-xs font-medium uppercase tracking-wider">{title}</p>
+    <div className="sf-border border-b border-dashed pb-5 last:border-0 last:pb-0">
+      <p className="sf-eyebrow mb-3">{title}</p>
       {children}
+    </div>
+  );
+}
+
+function FilterOption({
+  active,
+  onClick,
+  children,
+  className,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm transition-all duration-200",
+        active
+          ? "sf-primary font-medium shadow-sm"
+          : "sf-muted-fg hover:sf-surface hover:sf-fg",
+        className,
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function DebouncedSearch({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string | undefined) => void;
+}) {
+  const [local, setLocal] = useState(value);
+
+  useEffect(() => {
+    setLocal(value);
+  }, [value]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const trimmed = local.trim();
+      if (trimmed !== (value ?? "")) {
+        onChange(trimmed || undefined);
+      }
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [local, onChange, value]);
+
+  return (
+    <div className="relative">
+      <Search className="sf-muted-fg pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      <Input
+        placeholder="Search products..."
+        value={local}
+        onChange={(e) => setLocal(e.target.value)}
+        className="sf-input rounded-full pl-9 pr-9"
+      />
+      {local && (
+        <button
+          type="button"
+          onClick={() => {
+            setLocal("");
+            onChange(undefined);
+          }}
+          className="sf-muted-fg absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 hover:sf-fg"
+          aria-label="Clear search"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -54,237 +132,213 @@ export function ShopFilterSidebar({
   onClear,
   className,
 }: ShopFilterSidebarProps) {
-  const base = `/store/${slug}`;
   const portalVars = useStorefrontCssVars();
   const categoryTree = buildCategoryTree(categories);
 
   return (
     <aside className={cn("space-y-5", className)}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold uppercase tracking-wider sf-fg">Filters</h2>
-        <Button variant="ghost" size="sm" className="sf-muted-fg h-8 text-xs hover:opacity-80" onClick={onClear}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="sf-muted-fg h-8 rounded-full px-3 text-xs hover:sf-fg"
+          onClick={onClear}
+        >
           Clear all
         </Button>
       </div>
 
-      <FilterGroup title="Search">
-        <div className="relative">
-          <Search className="sf-muted-fg absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-          <Input
-            placeholder="Search products..."
+      <div className="space-y-5">
+        <FilterGroup title="Search">
+          <DebouncedSearch
             value={filters.search ?? ""}
-            onChange={(e) => onChange({ search: e.target.value || undefined })}
-            className="sf-input pl-9"
+            onChange={(search) => onChange({ search })}
           />
-        </div>
-      </FilterGroup>
+        </FilterGroup>
 
-      <FilterGroup title="Sort by">
-        <Select value={filters.sort} onValueChange={(v) => onChange({ sort: v as ShopFilters["sort"] })}>
-          <SelectTrigger className="sf-input">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="storefront-theme sf-card sf-border" style={portalVars}>
-            <SelectItem value="newest">Newest</SelectItem>
-            <SelectItem value="price-asc">Price: Low to High</SelectItem>
-            <SelectItem value="price-desc">Price: High to Low</SelectItem>
-            <SelectItem value="name">Name A–Z</SelectItem>
-          </SelectContent>
-        </Select>
-      </FilterGroup>
+        <FilterGroup title="Sort by">
+          <Select value={filters.sort} onValueChange={(v) => onChange({ sort: v as ShopFilters["sort"] })}>
+            <SelectTrigger className="sf-input rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="storefront-theme sf-card sf-border" style={portalVars}>
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="price-asc">Price: Low to High</SelectItem>
+              <SelectItem value="price-desc">Price: High to Low</SelectItem>
+              <SelectItem value="name">Name A–Z</SelectItem>
+            </SelectContent>
+          </Select>
+        </FilterGroup>
 
-      {categories.length > 0 && (
-        <FilterGroup title="Category">
-          <div className="space-y-1">
-            <button
-              type="button"
-              onClick={() => onChange({ category: undefined })}
-              className={cn(
-                "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                !filters.category ? "sf-surface sf-fg" : "sf-muted-fg hover:sf-fg hover:opacity-90",
-              )}
-            >
-              All categories
-            </button>
-            {categoryTree.map((parent) => (
-              <div key={parent.id} className="space-y-1">
+        {categories.length > 0 && (
+          <FilterGroup title="Category">
+            <div className="space-y-1">
+              <FilterOption active={!filters.category} onClick={() => onChange({ category: undefined })}>
+                All categories
+              </FilterOption>
+              {categoryTree.map((parent) => (
+                <div key={parent.id} className="space-y-0.5">
+                  <FilterOption
+                    active={filters.category === parent.slug}
+                    onClick={() => onChange({ category: parent.slug })}
+                  >
+                    {parent.image ? (
+                      <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-lg ring-1 ring-[color-mix(in_srgb,var(--sf-border)_80%,transparent)]">
+                        <Image src={parent.image} alt="" fill className="object-cover" unoptimized />
+                      </span>
+                    ) : (
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--sf-muted)] text-[10px] font-semibold uppercase">
+                        {parent.name.slice(0, 1)}
+                      </span>
+                    )}
+                    <span className="min-w-0 flex-1 truncate">{parent.name}</span>
+                    {(parent.children?.length ?? 0) > 0 && (
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-40" />
+                    )}
+                  </FilterOption>
+                  {parent.children?.map((child) => (
+                    <FilterOption
+                      key={child.id}
+                      active={filters.category === child.slug}
+                      onClick={() => onChange({ category: child.slug })}
+                      className="ml-4"
+                    >
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
+                      <span className="min-w-0 flex-1 truncate">{child.name}</span>
+                    </FilterOption>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </FilterGroup>
+        )}
+
+        {collections.length > 0 && (
+          <FilterGroup title="Collection">
+            <div className="space-y-1">
+              <FilterOption active={!filters.collection} onClick={() => onChange({ collection: undefined })}>
+                All collections
+              </FilterOption>
+              {collections.map((col) => (
+                <FilterOption
+                  key={col.id}
+                  active={filters.collection === col.slug}
+                  onClick={() => onChange({ collection: col.slug })}
+                >
+                  <span className="min-w-0 flex-1 truncate">{col.name}</span>
+                </FilterOption>
+              ))}
+            </div>
+          </FilterGroup>
+        )}
+
+        <FilterGroup title="Price">
+          <p className="sf-muted-fg mb-3 text-xs">
+            {formatPrice(facets.minPrice, currency)} – {formatPrice(facets.maxPrice, currency)}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="sf-muted-fg text-xs">Min</Label>
+              <Input
+                type="number"
+                min={0}
+                placeholder={String(facets.minPrice)}
+                value={filters.minPrice ?? ""}
+                onChange={(e) =>
+                  onChange({ minPrice: e.target.value === "" ? undefined : Number(e.target.value) })
+                }
+                className="sf-input mt-1 rounded-xl"
+              />
+            </div>
+            <div>
+              <Label className="sf-muted-fg text-xs">Max</Label>
+              <Input
+                type="number"
+                min={0}
+                placeholder={String(facets.maxPrice)}
+                value={filters.maxPrice ?? ""}
+                onChange={(e) =>
+                  onChange({ maxPrice: e.target.value === "" ? undefined : Number(e.target.value) })
+                }
+                className="sf-input mt-1 rounded-xl"
+              />
+            </div>
+          </div>
+        </FilterGroup>
+
+        {facets.sizes.length > 0 && (
+          <FilterGroup title="Size">
+            <div className="flex flex-wrap gap-2">
+              {facets.sizes.map((size) => (
                 <button
+                  key={size}
                   type="button"
-                  onClick={() => onChange({ category: parent.slug })}
+                  onClick={() => onChange({ size: filters.size === size ? undefined : size })}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                    filters.category === parent.slug
-                      ? "sf-surface sf-fg"
-                      : "sf-muted-fg hover:sf-fg hover:opacity-90",
+                    "rounded-full border px-3 py-1.5 text-xs transition-all duration-200",
+                    filters.size === size ? "sf-filter-pill-active" : "sf-filter-pill",
                   )}
                 >
-                  {parent.image ? (
-                    <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md">
-                      <Image src={parent.image} alt="" fill className="object-cover" unoptimized />
-                    </span>
-                  ) : null}
-                  {parent.name}
+                  {size}
                 </button>
-                {parent.children?.map((child) => (
-                  <button
-                    key={child.id}
-                    type="button"
-                    onClick={() => onChange({ category: child.slug })}
-                    className={cn(
-                      "flex w-full items-center gap-2 rounded-lg py-1.5 pl-8 pr-2 text-left text-sm transition-colors",
-                      filters.category === child.slug
-                        ? "sf-surface sf-fg"
-                        : "sf-muted-fg hover:sf-fg hover:opacity-90",
-                    )}
-                  >
-                    {child.name}
-                  </button>
-                ))}
-              </div>
-            ))}
-          </div>
-        </FilterGroup>
-      )}
+              ))}
+            </div>
+          </FilterGroup>
+        )}
 
-      {collections.length > 0 && (
-        <FilterGroup title="Collection">
-          <div className="space-y-1">
-            <button
-              type="button"
-              onClick={() => onChange({ collection: undefined })}
-              className={cn(
-                "block w-full rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                !filters.collection ? "sf-surface sf-fg" : "sf-muted-fg hover:opacity-90",
-              )}
-            >
-              All collections
-            </button>
-            {collections.map((col) => (
-              <button
-                key={col.id}
-                type="button"
-                onClick={() => onChange({ collection: col.slug })}
-                className={cn(
-                  "block w-full rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
-                  filters.collection === col.slug ? "sf-surface sf-fg" : "sf-muted-fg hover:opacity-90",
-                )}
-              >
-                {col.name}
-              </button>
-            ))}
-          </div>
-        </FilterGroup>
-      )}
+        {facets.colors.length > 0 && (
+          <FilterGroup title="Color">
+            <div className="flex flex-wrap gap-2">
+              {facets.colors.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => onChange({ color: filters.color === color ? undefined : color })}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-xs capitalize transition-all duration-200",
+                    filters.color === color ? "sf-filter-pill-active" : "sf-filter-pill",
+                  )}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
+          </FilterGroup>
+        )}
 
-      <FilterGroup title="Price">
-        <p className="sf-muted-fg mb-2 text-xs">
-          {formatPrice(facets.minPrice, currency)} – {formatPrice(facets.maxPrice, currency)}
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <Label className="sf-muted-fg text-xs">Min</Label>
-            <Input
-              type="number"
-              min={0}
-              placeholder={String(facets.minPrice)}
-              value={filters.minPrice ?? ""}
-              onChange={(e) =>
-                onChange({ minPrice: e.target.value === "" ? undefined : Number(e.target.value) })
-              }
-              className="sf-input mt-1"
+        {facets.tags.length > 0 && (
+          <FilterGroup title="Tags">
+            <div className="flex flex-wrap gap-2">
+              {facets.tags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => onChange({ tag: filters.tag === tag ? undefined : tag })}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-xs capitalize transition-all duration-200",
+                    filters.tag === tag ? "sf-filter-pill-active" : "sf-filter-pill",
+                  )}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </FilterGroup>
+        )}
+
+        <FilterGroup title="Offers">
+          <label className="flex cursor-pointer items-center gap-3 rounded-xl px-1 py-1 text-sm sf-fg">
+            <Checkbox
+              checked={filters.sale ?? false}
+              onCheckedChange={(v) => onChange({ sale: v === true ? true : undefined })}
             />
-          </div>
-          <div>
-            <Label className="sf-muted-fg text-xs">Max</Label>
-            <Input
-              type="number"
-              min={0}
-              placeholder={String(facets.maxPrice)}
-              value={filters.maxPrice ?? ""}
-              onChange={(e) =>
-                onChange({ maxPrice: e.target.value === "" ? undefined : Number(e.target.value) })
-              }
-              className="sf-input mt-1"
-            />
-          </div>
-        </div>
-      </FilterGroup>
-
-      {facets.sizes.length > 0 && (
-        <FilterGroup title="Size">
-          <div className="flex flex-wrap gap-2">
-            {facets.sizes.map((size) => (
-              <button
-                key={size}
-                type="button"
-                onClick={() => onChange({ size: filters.size === size ? undefined : size })}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs transition-colors",
-                  filters.size === size ? "sf-filter-pill-active" : "sf-filter-pill",
-                )}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
+            On sale only
+          </label>
         </FilterGroup>
-      )}
+      </div>
 
-      {facets.colors.length > 0 && (
-        <FilterGroup title="Color">
-          <div className="flex flex-wrap gap-2">
-            {facets.colors.map((color) => (
-              <button
-                key={color}
-                type="button"
-                onClick={() => onChange({ color: filters.color === color ? undefined : color })}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs transition-colors",
-                  filters.color === color ? "sf-filter-pill-active" : "sf-filter-pill",
-                )}
-              >
-                {color}
-              </button>
-            ))}
-          </div>
-        </FilterGroup>
-      )}
-
-      {facets.tags.length > 0 && (
-        <FilterGroup title="Tags">
-          <div className="flex flex-wrap gap-2">
-            {facets.tags.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => onChange({ tag: filters.tag === tag ? undefined : tag })}
-                className={cn(
-                  "rounded-full border px-3 py-1 text-xs capitalize transition-colors",
-                  filters.tag === tag ? "sf-filter-pill-active" : "sf-filter-pill",
-                )}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </FilterGroup>
-      )}
-
-      <FilterGroup title="Offers">
-        <label className="flex cursor-pointer items-center gap-2 text-sm sf-fg">
-          <Checkbox
-            checked={filters.sale ?? false}
-            onCheckedChange={(v) => onChange({ sale: v === true ? true : undefined })}
-          />
-          On sale only
-        </label>
-      </FilterGroup>
-
-      <Link
-        href={storeShopPath(slug)}
-        className="sf-link inline-flex text-xs"
-        onClick={onClear}
-      >
+      <Link href={storeShopPath(slug)} className="sf-link inline-flex text-xs" onClick={onClear}>
         View full store
       </Link>
     </aside>
@@ -330,10 +384,10 @@ export function ShopActiveFilters({
           key={chip.label}
           type="button"
           onClick={chip.clear}
-          className="sf-border sf-surface inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs sf-fg hover:opacity-90"
+          className="sf-filter-pill sf-filter-pill-active inline-flex items-center gap-1.5 !px-3 !py-1.5"
         >
           {chip.label}
-          <X className="h-3 w-3" />
+          <X className="h-3 w-3 opacity-70" />
         </button>
       ))}
     </div>

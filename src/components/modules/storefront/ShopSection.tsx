@@ -214,8 +214,8 @@ export function ShopSection({
     >
       <div className={showFilters ? "flex flex-col gap-8 lg:flex-row lg:gap-14" : ""}>
         {showFilters && (
-          <div className="hidden w-64 shrink-0 lg:block">
-            <div className="sf-editorial-card sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto p-6">
+          <div className="hidden w-72 shrink-0 xl:w-80 lg:block">
+            <div className="sf-editorial-card sf-card-interactive sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto p-5 md:p-6">
               <ShopFilterSidebar {...sidebarProps} />
             </div>
           </div>

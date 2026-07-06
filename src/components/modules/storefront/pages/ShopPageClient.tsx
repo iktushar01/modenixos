@@ -11,7 +11,7 @@ import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontP
 import { useStorefrontTheme } from "@/components/modules/storefront/StorefrontThemeShell";
 import { ShopSection } from "@/components/modules/storefront/ShopSection";
 import { QuickViewModal } from "@/components/modules/storefront/QuickViewModal";
-import { parseShopFilters, shopFiltersToApiParams, hasActiveShopFiltersFromParams } from "@/lib/shopFilters";
+import { parseShopFilters, shopFiltersToApiParams } from "@/lib/shopFilters";
 import { Collection, Product } from "@/types/store.types";
 
 function ShopContent({

@@ -54,16 +54,13 @@ export default function StoreHomePageClient({
     let cancelled = false;
     setIsRefreshing(true);
 
-    const params = new URLSearchParams(filterKey);
+    const params = shopFiltersToApiParams(homeFilters, {
+      limit: filteredShop ? 100 : 36,
+      page: 1,
+    });
 
     Promise.all([
-      getPublicProductsAction(slug, {
-        limit: filteredShop ? "100" : "36",
-        sortBy: "sortOrder",
-        sortOrder: "asc",
-        ...(params.get("category") ? { category: params.get("category")! } : {}),
-        ...(params.get("collection") ? { collection: params.get("collection")! } : {}),
-      }),
+      getPublicProductsAction(slug, params),
       getPublicCollectionsAction(slug, { limit: "50", sortBy: "sortOrder", sortOrder: "asc" }),
       getPublicReviewsAction(slug, { limit: "10" }),
     ])
@@ -80,7 +77,7 @@ export default function StoreHomePageClient({
     return () => {
       cancelled = true;
     };
-  }, [slug, store, storeReady, filterKey, filteredShop]);
+  }, [slug, store, storeReady, filterKey, filteredShop, homeFilters]);
 
   if (!storeReady || !store) {
     return <StorefrontHomeSkeleton />;
