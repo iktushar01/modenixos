@@ -12,6 +12,8 @@ import { updateStoreAction } from "@/actions/store.actions";
 import {
   parseStorefrontTheme,
   buildThemePayload,
+  buildSiteTypography,
+  getSiteFont,
   StorefrontSections,
   StorefrontBrandColors,
   StorefrontColorMode,
@@ -75,7 +77,7 @@ export default function StoreAppearancePage() {
           accent: theme.secondaryColor,
         },
         customColors: theme.customColors,
-        typography: theme.typography ?? { ...DEFAULT_STOREFRONT_TYPOGRAPHY },
+        typography: buildSiteTypography(getSiteFont(theme.typography)),
         promoText: theme.promoText,
         promoEnabled: theme.promoEnabled,
         brandStoryTitle: theme.brandStoryTitle,
@@ -120,7 +122,7 @@ export default function StoreAppearancePage() {
         palettePreset: form.palettePreset,
         customColors,
         brandColors: form.brandColors,
-        typography: form.typography,
+        typography: buildSiteTypography(getSiteFont(form.typography)),
         promoText: form.promoText,
         promoEnabled: form.promoEnabled,
         brandStoryTitle: form.brandStoryTitle,
@@ -187,8 +189,8 @@ export default function StoreAppearancePage() {
 
       <StoreSection
         eyebrow="Fonts"
-        title="Typography"
-        description="Choose font pairings for your public shop. Headlines and body text update across the full storefront."
+        title="Store font"
+        description="Choose one font for your entire public shop — every page, heading, and button uses it."
       >
         <StoreTypographyEditor
           typography={form.typography}

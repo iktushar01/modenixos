@@ -92,6 +92,8 @@ export interface StorefrontBrandColors {
 
 export interface StorefrontTypography {
   preset: string;
+  /** Single font for the entire storefront (headlines + body). */
+  siteFont?: string;
   bodyFont?: string;
   displayFont?: string;
 }

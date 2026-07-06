@@ -75,31 +75,80 @@ export const STOREFRONT_FONT_PRESETS: StorefrontFontPreset[] = [
 ];
 
 export const DEFAULT_STOREFRONT_TYPOGRAPHY: StorefrontTypography = {
-  preset: "editorial-classic",
+  preset: "custom",
+  siteFont: "DM Sans",
+  bodyFont: "DM Sans",
+  displayFont: "DM Sans",
 };
+
+/** Recommended single fonts for the full storefront */
+export const STOREFRONT_SITE_FONT_PRESETS: {
+  id: string;
+  name: string;
+  font: StorefrontFontOption;
+  description: string;
+}[] = [
+  { id: "dm-sans", name: "DM Sans", font: "DM Sans", description: "Clean and versatile" },
+  { id: "inter", name: "Inter", font: "Inter", description: "Modern UI standard" },
+  { id: "outfit", name: "Outfit", font: "Outfit", description: "Geometric minimal" },
+  { id: "sora", name: "Sora", font: "Sora", description: "Soft contemporary" },
+  { id: "manrope", name: "Manrope", font: "Manrope", description: "Friendly geometric" },
+  { id: "montserrat", name: "Montserrat", font: "Montserrat", description: "Bold fashion feel" },
+  { id: "raleway", name: "Raleway", font: "Raleway", description: "Elegant sans" },
+  { id: "plus-jakarta", name: "Plus Jakarta Sans", font: "Plus Jakarta Sans", description: "Crisp and professional" },
+  { id: "playfair", name: "Playfair Display", font: "Playfair Display", description: "Classic serif" },
+  { id: "cormorant", name: "Cormorant Garamond", font: "Cormorant Garamond", description: "Editorial serif" },
+  { id: "lora", name: "Lora", font: "Lora", description: "Readable serif" },
+  { id: "fraunces", name: "Fraunces", font: "Fraunces", description: "Expressive display serif" },
+];
 
 export function getFontPresetById(id: string): StorefrontFontPreset | undefined {
   return STOREFRONT_FONT_PRESETS.find((preset) => preset.id === id);
+}
+
+/** Resolve the single site font from saved theme typography. */
+export function getSiteFont(typography?: StorefrontTypography): string {
+  const source = typography ?? DEFAULT_STOREFRONT_TYPOGRAPHY;
+
+  if (source.siteFont?.trim()) {
+    return source.siteFont.trim();
+  }
+
+  if (source.bodyFont && source.displayFont && source.bodyFont === source.displayFont) {
+    return source.bodyFont;
+  }
+
+  if (source.preset === "custom") {
+    return source.bodyFont ?? source.displayFont ?? DEFAULT_STOREFRONT_TYPOGRAPHY.siteFont!;
+  }
+
+  const preset = getFontPresetById(source.preset);
+  if (preset) {
+    return preset.bodyFont;
+  }
+
+  return DEFAULT_STOREFRONT_TYPOGRAPHY.siteFont!;
+}
+
+/** Build typography payload for a single site-wide font. */
+export function buildSiteTypography(font: string): StorefrontTypography {
+  const trimmed = font.trim();
+  return {
+    preset: "custom",
+    siteFont: trimmed,
+    bodyFont: trimmed,
+    displayFont: trimmed,
+  };
 }
 
 export function resolveTypography(typography?: StorefrontTypography): {
   bodyFont: string;
   displayFont: string;
 } {
-  const source = typography ?? DEFAULT_STOREFRONT_TYPOGRAPHY;
-
-  if (source.preset === "custom") {
-    const fallback = getFontPresetById("editorial-classic") ?? STOREFRONT_FONT_PRESETS[0];
-    return {
-      bodyFont: source.bodyFont ?? fallback.bodyFont,
-      displayFont: source.displayFont ?? fallback.displayFont,
-    };
-  }
-
-  const preset = getFontPresetById(source.preset) ?? STOREFRONT_FONT_PRESETS[0];
+  const siteFont = getSiteFont(typography);
   return {
-    bodyFont: preset.bodyFont,
-    displayFont: preset.displayFont,
+    bodyFont: siteFont,
+    displayFont: siteFont,
   };
 }
 

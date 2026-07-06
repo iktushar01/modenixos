@@ -128,6 +128,7 @@ function parseTypography(raw: Record<string, unknown>): StorefrontTypography {
 
   return {
     preset: typography.preset,
+    siteFont: typography.siteFont,
     bodyFont: typography.bodyFont,
     displayFont: typography.displayFont,
   };
