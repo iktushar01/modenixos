@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { DashboardNavProvider } from "@/components/shared/DashboardNavContext";
 import { DashboardNavContent } from "@/components/shared/DashboardNavContent";
 import { DashboardPageTransition } from "@/components/shared/DashboardPageTransition";
+import { useMyStore } from "@/hooks/useMyStore";
 
 interface DashboardLayoutClientProps {
   className?: string;
@@ -44,6 +45,11 @@ export function DashboardLayoutClient({
   user = null,
 }: DashboardLayoutClientProps) {
   const sidebarData = useMemo(() => getSidebarDataForRole(user?.role), [user?.role]);
+  const { data: store } = useMyStore();
+  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+  const breadcrumbLabel = isAdmin
+    ? sidebarData.logo.description
+    : store?.brandName ?? sidebarData.logo.description;
 
   return (
     <DashboardNavProvider>
@@ -70,7 +76,7 @@ export function DashboardLayoutClient({
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem className="min-w-0">
                   <BreadcrumbPage className="truncate rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary sm:text-sm">
-                    {sidebarData.logo.description}
+                    {breadcrumbLabel}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>

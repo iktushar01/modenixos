@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { Collection, Category, Product, Review, Store } from "@/types/store.types";
 import { parseStorefrontTheme } from "@/lib/storefront";
-import { Theme1Home } from "./themes/theme1";
+import { resolveThemeHome } from "./themes/registry";
 
 interface StorefrontRendererProps {
   store: Store;
@@ -31,14 +31,11 @@ function ShopFallback() {
 
 export function StorefrontRenderer(props: StorefrontRendererProps) {
   const theme = parseStorefrontTheme(props.store);
+  const ThemeHome = resolveThemeHome(theme.templateId);
 
-  switch (theme.templateId) {
-    case "theme1":
-    default:
-      return (
-        <Suspense fallback={<ShopFallback />}>
-          <Theme1Home {...props} theme={theme} />
-        </Suspense>
-      );
-  }
+  return (
+    <Suspense fallback={<ShopFallback />}>
+      <ThemeHome {...props} theme={theme} />
+    </Suspense>
+  );
 }

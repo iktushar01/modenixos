@@ -4,8 +4,7 @@ import { ReactNode } from "react";
 import { Category, Store } from "@/types/store.types";
 import { parseStorefrontTheme } from "@/lib/storefront";
 import { StorefrontThemeShell, useStorefrontTheme } from "./StorefrontThemeShell";
-import { AnnouncementBar } from "./themes/theme1/AnnouncementBar";
-import { StoreHeader } from "./themes/theme1/StoreHeader";
+import { resolveThemeShell } from "./themes/registry";
 import { StoreFooter } from "./StoreFooter";
 import { useStorefrontShellProvided } from "./StorefrontShellContext";
 
@@ -25,6 +24,8 @@ function StorefrontPageContent({
   children: ReactNode;
 }) {
   const { activeTheme } = useStorefrontTheme();
+  const { AnnouncementBar, StoreHeader } = resolveThemeShell(activeTheme.templateId);
+
   return (
     <>
       <AnnouncementBar theme={activeTheme} />

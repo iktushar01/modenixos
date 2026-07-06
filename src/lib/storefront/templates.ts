@@ -14,6 +14,12 @@ export const STOREFRONT_TEMPLATES: StorefrontTemplateOption[] = [
     description: "Clean layout with hero, categories, and product grids.",
     available: true,
   },
+  {
+    id: "theme2",
+    label: "Editorial",
+    description: "Magazine-style split hero with left-aligned navigation.",
+    available: true,
+  },
 ];
 
 export function getStorefrontTemplateById(id: StorefrontTemplateId): StorefrontTemplateOption | undefined {

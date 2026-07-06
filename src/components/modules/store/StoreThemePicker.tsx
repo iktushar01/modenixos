@@ -100,7 +100,6 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
         })}
 
         <ComingSoonCard />
-        <ComingSoonCard />
       </div>
     </div>
   );

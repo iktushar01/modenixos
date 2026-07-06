@@ -3,7 +3,7 @@
 import { Category, Product, Review, Store } from "@/types/store.types";
 import { StorefrontPageShell } from "./StorefrontPageShell";
 import { useStorefrontTheme } from "./StorefrontThemeShell";
-import { Theme1ProductDetail } from "./themes/theme1/product/Theme1ProductDetail";
+import { resolveThemeProductDetail } from "./themes/registry";
 
 interface ProductDetailClientProps {
   store: Store;
@@ -23,9 +23,10 @@ function ProductDetailContent({
 }: Omit<ProductDetailClientProps, "categories">) {
   const { activeTheme } = useStorefrontTheme();
   const reviews = (product.reviews ?? []) as Review[];
+  const ThemeProductDetail = resolveThemeProductDetail(activeTheme.templateId);
 
   return (
-    <Theme1ProductDetail
+    <ThemeProductDetail
       store={store}
       product={product}
       theme={activeTheme}
