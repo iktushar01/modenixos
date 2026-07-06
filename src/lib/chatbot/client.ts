@@ -61,6 +61,9 @@ export async function sendChatMessage(
   const json = (await res.json()) as ApiEnvelope<ChatbotReply>;
 
   if (!res.ok || !json.success || !json.data) {
+    if (res.status === 429) {
+      throw new Error(json.message ?? "Too many requests. Please wait a moment and try again.");
+    }
     throw new Error(json.message ?? "Failed to send message");
   }
 
