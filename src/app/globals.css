@@ -263,12 +263,80 @@
     @apply rounded-2xl border border-border/55 bg-card/85 shadow-[0_1px_2px_oklch(0.20_0.03_285/0.04),0_8px_24px_oklch(0.20_0.03_285/0.03)] backdrop-blur-md flex flex-col gap-3 p-3 sm:flex-row sm:items-center;
   }
 
+  .dashboard-toolbar :is(input, [data-slot="select-trigger"], button[role="combobox"]) {
+    @apply border-border/60 bg-background/85 shadow-sm transition-colors hover:border-primary/25;
+  }
+
+  .dark .dashboard-toolbar {
+    @apply border-border/50 bg-card/90;
+  }
+
+  .dashboard-chrome-header {
+    @apply sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b border-border/45 px-4 sm:h-[4.25rem] sm:px-6;
+    @apply bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65;
+    @apply relative;
+  }
+
+  .dashboard-page-header {
+    @apply rounded-2xl border border-border/55 bg-card/80 p-5 shadow-[0_1px_2px_oklch(0.20_0.03_285/0.04),0_10px_30px_oklch(0.20_0.03_285/0.04)] backdrop-blur-md sm:p-6;
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--primary) 4%, transparent),
+      transparent 42%
+    );
+  }
+
+  .dark .dashboard-page-header {
+    @apply border-border/50 bg-card/85;
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--primary) 8%, transparent),
+      transparent 45%
+    );
+  }
+
   .dashboard-table-shell {
     @apply rounded-2xl border border-border/55 bg-card/85 shadow-[0_1px_2px_oklch(0.20_0.03_285/0.04),0_8px_24px_oklch(0.20_0.03_285/0.03)] backdrop-blur-md overflow-hidden;
   }
 
+  .dark .dashboard-table-shell {
+    @apply border-border/50 bg-card/90;
+  }
+
+  .dashboard-table-meta {
+    @apply flex items-center justify-between gap-3 border-b border-border/55 bg-muted/25 px-4 py-2.5 sm:px-5;
+  }
+
+  .dashboard-table-meta-label {
+    @apply text-xs font-semibold tracking-wide text-muted-foreground uppercase;
+  }
+
+  .dashboard-table-meta-count {
+    @apply inline-flex min-w-7 items-center justify-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary;
+  }
+
+  .dashboard-table-shell [data-slot=table-header] {
+    @apply bg-muted/40 backdrop-blur-sm;
+  }
+
+  .dashboard-table-shell [data-slot=table-head] {
+    @apply h-11 px-4 py-3 first:pl-5 last:pr-5;
+  }
+
+  .dashboard-table-shell [data-slot=table-cell] {
+    @apply px-4 py-3.5 first:pl-5 last:pr-5;
+  }
+
+  .dashboard-table-shell [data-slot=table-body] [data-slot=table-row]:nth-child(even) {
+    @apply bg-muted/15;
+  }
+
+  .dashboard-table-shell [data-slot=table-body] [data-slot=table-row]:hover {
+    @apply bg-primary/[0.05];
+  }
+
   .dashboard-table-shell tbody tr {
-    @apply transition-colors duration-150 hover:bg-muted/45;
+    @apply transition-colors duration-150;
   }
 
   .dashboard-action-tile {

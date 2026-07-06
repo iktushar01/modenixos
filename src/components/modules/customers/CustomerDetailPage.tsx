@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Pencil, UserCircle } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -140,7 +141,7 @@ export default function CustomerDetailPage({ customerId }: { customerId: string 
         {orders.length === 0 ? (
           <p className="text-sm text-muted-foreground">No orders placed yet.</p>
         ) : (
-          <div className="rounded-lg border">
+          <DashboardTable label="Order history" count={customer.orders?.length ?? 0}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -171,7 +172,7 @@ export default function CustomerDetailPage({ customerId }: { customerId: string 
                 ))}
               </TableBody>
             </Table>
-          </div>
+          </DashboardTable>
         )}
       </div>
 

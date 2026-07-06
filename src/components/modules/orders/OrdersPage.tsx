@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { DashboardStatCard } from "@/components/shared/DashboardStatCard";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -363,7 +364,7 @@ export default function OrdersPage() {
           <p className="mt-2 text-sm text-muted-foreground">Try adjusting the status tab or search terms.</p>
         </div>
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Orders" count={filteredOrders.length}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -457,7 +458,7 @@ export default function OrdersPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </DashboardTable>
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -63,7 +64,7 @@ export default function ReviewsPage() {
       {reviews.length === 0 ? (
         <EmptyState title="No reviews yet" description="Customer reviews will appear here for moderation." />
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Reviews" count={reviews.length}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -168,7 +169,7 @@ export default function ReviewsPage() {
             ))}
           </TableBody>
         </Table>
-        </div>
+        </DashboardTable>
       )}
     </div>
   );

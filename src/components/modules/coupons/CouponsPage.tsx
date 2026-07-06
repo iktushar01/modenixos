@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,7 +78,7 @@ export default function CouponsPage() {
       {coupons.length === 0 ? (
         <EmptyState title="No coupons yet" description="Create discount codes to boost sales." actionLabel="Create Coupon" onAction={() => setOpen(true)} />
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Coupons" count={coupons.length}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -100,7 +101,7 @@ export default function CouponsPage() {
             ))}
           </TableBody>
         </Table>
-        </div>
+        </DashboardTable>
       )}
     </div>
   );

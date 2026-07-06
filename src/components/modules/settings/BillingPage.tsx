@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
@@ -331,6 +332,7 @@ export default function BillingPage() {
           {(overview?.invoices?.length ?? 0) === 0 ? (
             <p className="text-sm text-muted-foreground">No invoices yet.</p>
           ) : (
+            <DashboardTable label="Invoices" count={overview?.invoices?.length ?? 0}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -365,6 +367,7 @@ export default function BillingPage() {
                 ))}
               </TableBody>
             </Table>
+            </DashboardTable>
           )}
         </CardContent>
       </Card>

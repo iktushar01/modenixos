@@ -52,19 +52,26 @@ export function DashboardLayoutClient({
 
         <SidebarInset className="admin-shell">
           <DashboardHeader>
-            <SidebarTrigger className="-ml-1" />
+            <SidebarTrigger className="-ml-1 size-8 rounded-lg border border-transparent transition-colors hover:border-border/60 hover:bg-muted/60" />
             <Separator
               orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
+              className="mr-1 hidden h-5 sm:block"
             />
-            <Breadcrumb>
-              <BreadcrumbList>
+            <Breadcrumb className="min-w-0">
+              <BreadcrumbList className="gap-1 sm:gap-1.5">
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+                  <BreadcrumbLink
+                    href="/dashboard"
+                    className="rounded-md px-2 py-1 text-xs font-medium transition-colors hover:bg-muted/60 hover:text-foreground sm:text-sm"
+                  >
+                    Dashboard
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{sidebarData.logo.description}</BreadcrumbPage>
+                <BreadcrumbItem className="min-w-0">
+                  <BreadcrumbPage className="truncate rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary sm:text-sm">
+                    {sidebarData.logo.description}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

@@ -7,6 +7,7 @@ import { Eye, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -169,7 +170,7 @@ export default function CustomersPage() {
           icon={Users}
         />
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Customers" count={customers.length}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -226,7 +227,7 @@ export default function CustomersPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </DashboardTable>
       )}
 
       <CustomerFormDialog open={formOpen} onOpenChange={setFormOpen} customer={editing} />

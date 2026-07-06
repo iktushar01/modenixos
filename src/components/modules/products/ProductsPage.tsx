@@ -47,6 +47,7 @@ import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { useDashboardQuery } from "@/hooks/useDashboardQuery";
 import { DashboardAsyncContent } from "@/components/shared/DashboardAsyncContent";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { cn } from "@/lib/utils";
 
 function statusBadgeClass(status: Product["status"]) {
@@ -167,7 +168,7 @@ export default function ProductsPage() {
           icon={Package}
         />
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Catalog" count={products.length}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -250,7 +251,7 @@ export default function ProductsPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </DashboardTable>
         )}
       </DashboardAsyncContent>
 

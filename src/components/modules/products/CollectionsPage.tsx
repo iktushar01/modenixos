@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -86,7 +87,7 @@ export default function CollectionsPage() {
           icon={Layers}
         />
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Collections" count={collections.length}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -125,7 +126,7 @@ export default function CollectionsPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </DashboardTable>
       )}
 
       <CollectionFormDialog open={formOpen} onOpenChange={setFormOpen} collection={editing} />

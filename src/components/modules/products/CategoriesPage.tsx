@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Tags } from "lucide-re
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -110,7 +111,7 @@ export default function CategoriesPage() {
           icon={Tags}
         />
       ) : (
-        <div className="dashboard-table-shell">
+        <DashboardTable label="Categories" count={categories.length}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -228,7 +229,7 @@ export default function CategoriesPage() {
               })}
             </TableBody>
           </Table>
-        </div>
+        </DashboardTable>
       )}
 
       <CategoryFormDialog
