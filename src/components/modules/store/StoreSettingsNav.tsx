@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Image, Layers, Palette, Store, Truck } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const LINKS = [
   { label: "Profile", href: "/dashboard/store", icon: Store },
@@ -17,8 +16,8 @@ export function StoreSettingsNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Store settings" className="dashboard-toolbar overflow-x-auto">
-      <div className="dashboard-segment-group min-w-max flex-1">
+    <nav aria-label="Store settings" className="dashboard-settings-nav">
+      <div className="dashboard-segment-group">
         {LINKS.map((link) => {
           const active =
             link.href === "/dashboard/store"
@@ -31,10 +30,7 @@ export function StoreSettingsNav() {
               key={link.href}
               href={link.href}
               data-active={active ? "true" : undefined}
-              className={cn(
-                "dashboard-segment-btn flex items-center gap-2 whitespace-nowrap",
-                active && "text-[var(--admin-accent-strong)]",
-              )}
+              className="dashboard-segment-btn"
             >
               <Icon className="size-4 shrink-0" />
               {link.label}

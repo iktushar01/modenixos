@@ -12,10 +12,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: [
-          "bg-primary text-primary-foreground",
+          "bg-[linear-gradient(180deg,color-mix(in_oklch,var(--primary),white_14%)_0%,var(--primary)_100%)] text-primary-foreground",
           "shadow-[0_1px_2px_oklch(0.25_0.04_285/0.12),0_4px_16px_color-mix(in_oklch,var(--primary)_32%,transparent)]",
-          "hover:bg-[color-mix(in_oklch,var(--primary),white_10%)] hover:shadow-[0_2px_6px_oklch(0.25_0.04_285/0.14),0_10px_28px_color-mix(in_oklch,var(--primary)_40%,transparent)] hover:-translate-y-px",
-          "before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/15 before:to-transparent before:opacity-80",
+          "hover:bg-[linear-gradient(180deg,color-mix(in_oklch,var(--primary),white_18%)_0%,color-mix(in_oklch,var(--primary),white_4%)_100%)] hover:shadow-[0_2px_6px_oklch(0.25_0.04_285/0.14),0_10px_28px_color-mix(in_oklch,var(--primary)_40%,transparent)] hover:-translate-y-px",
         ].join(" "),
         outline: [
           "border-border/70 bg-background/85 text-foreground shadow-sm",

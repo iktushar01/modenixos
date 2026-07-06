@@ -54,8 +54,8 @@ export default function StoreHomePageClient() {
     Promise.all([
       getPublicProductsAction(slug, {
         limit: filteredShop ? "100" : "36",
-        sortBy: "createdAt",
-        sortOrder: "desc",
+        sortBy: "sortOrder",
+        sortOrder: "asc",
         ...(params.get("category") ? { category: params.get("category")! } : {}),
         ...(params.get("collection") ? { collection: params.get("collection")! } : {}),
       }),

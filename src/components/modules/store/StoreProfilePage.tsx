@@ -186,8 +186,8 @@ export default function StoreProfilePage() {
         description="Name, URL, region, currency, and visibility for your storefront."
         action={
           store?.slug && (
-            <Button asChild variant="outline" size="sm" className="gap-1.5 shadow-sm">
-              <Link href={storefrontPath} target="_blank">
+            <Button asChild variant="outline">
+              <Link href={storefrontPath} target="_blank" className="gap-2">
                 <ExternalLink className="size-4" />
                 View storefront
               </Link>
@@ -239,13 +239,13 @@ export default function StoreProfilePage() {
             </div>
 
             <div className="flex flex-wrap gap-2 sm:justify-end">
-              <Button type="button" variant="secondary" size="sm" className="gap-1.5" onClick={copyStoreUrl}>
-                <Copy className="size-3.5" />
+              <Button type="button" variant="outline" onClick={copyStoreUrl} className="gap-2">
+                <Copy className="size-4" />
                 Copy URL
               </Button>
-              <Button asChild size="sm" className="gap-1.5">
+              <Button asChild className="gap-2">
                 <Link href={storefrontPath} target="_blank">
-                  <ExternalLink className="size-3.5" />
+                  <ExternalLink className="size-4" />
                   Open shop
                 </Link>
               </Button>
@@ -467,13 +467,13 @@ export default function StoreProfilePage() {
               </Link>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={copyStoreUrl}>
-                <Copy className="size-3.5" />
+              <Button type="button" variant="outline" onClick={copyStoreUrl} className="gap-2">
+                <Copy className="size-4" />
                 Copy
               </Button>
-              <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <Button asChild variant="outline" className="gap-2">
                 <Link href={storefrontPath} target="_blank">
-                  <ExternalLink className="size-3.5" />
+                  <ExternalLink className="size-4" />
                   Visit
                 </Link>
               </Button>

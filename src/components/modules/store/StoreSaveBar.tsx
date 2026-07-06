@@ -37,9 +37,10 @@ export function StoreSaveBar({
       )}
       <Button
         type="button"
+        size="lg"
         onClick={onSave}
         disabled={disabled || saving}
-        className="dashboard-cta h-11 w-full sm:w-auto sm:min-w-[11rem]"
+        className="w-full sm:w-auto sm:min-w-[11rem]"
       >
         {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {label}
