@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { getCookie } from "cookies-next";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,17 +28,7 @@ import { DashboardPageTransition } from "@/components/shared/DashboardPageTransi
 interface DashboardLayoutClientProps {
   className?: string;
   children?: React.ReactNode;
-}
-
-function readUserFromCookie(): UserFromCookie | null {
-  const userCookie = getCookie("user");
-  if (!userCookie || typeof userCookie !== "string") return null;
-
-  try {
-    return JSON.parse(userCookie) as UserFromCookie;
-  } catch {
-    return null;
-  }
+  user?: UserFromCookie | null;
 }
 
 function getSidebarDataForRole(role: UserFromCookie["role"] | undefined) {
@@ -49,8 +38,11 @@ function getSidebarDataForRole(role: UserFromCookie["role"] | undefined) {
   return clientSidebarData;
 }
 
-export function DashboardLayoutClient({ className, children }: DashboardLayoutClientProps) {
-  const user = useMemo(() => readUserFromCookie(), []);
+export function DashboardLayoutClient({
+  className,
+  children,
+  user = null,
+}: DashboardLayoutClientProps) {
   const sidebarData = useMemo(() => getSidebarDataForRole(user?.role), [user?.role]);
 
   return (

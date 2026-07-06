@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { getCookie } from "cookies-next";
 import {
   ArrowRight,
   Check,
@@ -36,7 +35,6 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StoreShippingConfig } from "@/types/store.types";
-import type { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
 
 function StepBadge({
@@ -62,15 +60,6 @@ function StepBadge({
 
 export default function DashboardOverview() {
   const { data: store, isLoading: storeLoading } = useMyStore();
-  const [user] = useState<UserFromCookie | null>(() => {
-    const cookie = getCookie("user");
-    if (!cookie) return null;
-    try {
-      return JSON.parse(cookie as string) as UserFromCookie;
-    } catch {
-      return null;
-    }
-  });
 
   const { data: overview, isPending: overviewPending } = useDashboardQuery({
     queryKey: ["analytics-overview"],
@@ -124,7 +113,7 @@ export default function DashboardOverview() {
   const progressPercent = Math.round((completedCount / setupSteps.length) * 100);
   const storefrontPath = store?.slug ? `/store/${store.slug}` : "";
 
-  const welcomeName = store?.brandName ?? user?.name?.split(" ")[0] ?? "there";
+  const welcomeName = store?.brandName ?? "there";
 
   const copyStoreUrl = async () => {
     if (!store?.slug) return;
