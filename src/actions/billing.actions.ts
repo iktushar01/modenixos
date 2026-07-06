@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import axios from "axios";
 import { httpClient } from "@/lib/axios/httpClient";
 
 export type BillingPlan = {
@@ -61,13 +62,27 @@ export async function getBillingOverviewAction() {
 }
 
 export async function createBillingCheckoutAction(plan: "PRO") {
-  const res = await httpClient.post<{ url: string | null }>("/billing/checkout", { plan });
-  return res.data;
+  try {
+    const res = await httpClient.post<{ url: string | null }>("/billing/checkout", { plan });
+    return res.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message ?? "Failed to start checkout.");
+    }
+    throw error;
+  }
 }
 
 export async function createBillingPortalAction() {
-  const res = await httpClient.post<{ url: string | null }>("/billing/portal", {});
-  return res.data;
+  try {
+    const res = await httpClient.post<{ url: string | null }>("/billing/portal", {});
+    return res.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message ?? "Failed to open billing portal.");
+    }
+    throw error;
+  }
 }
 
 export async function cancelBillingSubscriptionAction() {

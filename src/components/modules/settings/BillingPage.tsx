@@ -65,7 +65,7 @@ export default function BillingPage() {
       if (data?.url) window.location.href = data.url;
       else toast.error("Could not start checkout. Check Stripe configuration.");
     },
-    onError: () => toast.error("Failed to start checkout."),
+    onError: (error: Error) => toast.error(error.message || "Failed to start checkout."),
   });
 
   const portalMutation = useMutation({
@@ -74,7 +74,7 @@ export default function BillingPage() {
       if (data?.url) window.location.href = data.url;
       else toast.error("Could not open billing portal.");
     },
-    onError: () => toast.error("Failed to open billing portal."),
+    onError: (error: Error) => toast.error(error.message || "Failed to open billing portal."),
   });
 
   const cancelMutation = useMutation({
