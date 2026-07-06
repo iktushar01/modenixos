@@ -38,16 +38,15 @@ import {
 import { useMyStore } from "@/hooks/useMyStore";
 import {
   ProductBasicInfo,
-  ProductPricing,
-  ProductInventory,
   ProductMedia,
-  ProductSEO,
-  ProductStatus,
   CategoryFields,
-  ProductAttributes,
-  ProductVariants,
-  ProductExtras,
+  ProductCategoryPicker,
+  ProductPricingInventory,
+  ProductOptions,
+  ProductAdvanced,
+  ProductFormSidebar,
 } from "./form";
+import type { ProductOptionMode } from "./form/ProductOptions";
 
 const defaultDetails: ProductFormValues["details"] = {
   specifications: [],
@@ -164,6 +163,12 @@ function detectImageMode(product?: Product): ProductImageMode {
   return hasColorImages ? "color" : "standard";
 }
 
+function resolveOptionMode(values: ProductFormValues): ProductOptionMode {
+  if (values.details.enableVariants) return "variants";
+  if (values.sizes.length > 0 || values.colors.length > 0) return "simple";
+  return "none";
+}
+
 function productToFormValues(product: Product): ProductFormValues {
   const d = product.details;
   const enableVariants = d?.enableVariants ?? false;
@@ -238,6 +243,9 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const [colorNewFiles, setColorNewFiles] = useState<Record<string, File>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(Boolean(product?.details?.slug));
+  const [optionMode, setOptionMode] = useState<ProductOptionMode>(() =>
+    product ? resolveOptionMode(productToFormValues(product)) : "none",
+  );
 
   useEffect(() => {
     if (product) {
@@ -246,6 +254,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       setImageMode(detectImageMode(product));
       setColorNewFiles({});
       setSlugManuallyEdited(Boolean(product.details?.slug));
+      setOptionMode(resolveOptionMode(productToFormValues(product)));
     }
   }, [product]);
 
@@ -317,8 +326,21 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       variantAttributes: [],
       variants: [],
     });
+    setOptionMode("none");
     if (!nextConfig.features.colorImages && imageMode === "color") {
       setImageMode("standard");
+    }
+  };
+
+  const handleOptionModeChange = (mode: ProductOptionMode) => {
+    setOptionMode(mode);
+    if (mode === "none") {
+      handleEnableVariantsChange(false);
+      setValues((prev) => ({ ...prev, sizes: [], colors: [] }));
+    } else if (mode === "simple") {
+      handleEnableVariantsChange(false);
+    } else if (mode === "variants") {
+      handleEnableVariantsChange(true);
     }
   };
 
@@ -413,12 +435,19 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   };
 
   const variantColors =
-    variantsEnabled
+    optionMode === "variants"
       ? syncLegacySizeColor(values.details.variantAttributes ?? []).colors
       : values.colors;
 
+  const previewImageUrl =
+    existingUrls[0] ??
+    (newFiles[0] ? URL.createObjectURL(newFiles[0]) : null) ??
+    (variantColors[0] && values.details.colorImages[variantColors[0]]
+      ? values.details.colorImages[variantColors[0]]
+      : null);
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 pb-24">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button type="button" variant="ghost" size="sm" asChild>
@@ -454,34 +483,23 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
+          <ProductCategoryPicker
+            categoryId={values.categoryId}
+            categoryTree={categoryTree}
+            selectedCategory={selectedCategory}
+            productType={productType}
+            onCategoryChange={handleCategoryChange}
+          />
+
           <ProductBasicInfo
             values={values}
             errors={errors}
-            slugManuallyEdited={slugManuallyEdited}
             onNameChange={handleNameChange}
-            onSlugChange={(slug) => setDetails({ slug })}
-            onSlugManualEdit={() => setSlugManuallyEdited(true)}
             onShortDescriptionChange={(v) => setDetails({ shortDescription: v })}
             onDescriptionChange={(v) => set("description", v)}
             onBrandChange={(v) => setDetails({ brand: v })}
-            onSkuChange={(v) => set("sku", v)}
-            onBarcodeChange={(v) => setDetails({ barcode: v })}
-          />
-
-          <CategoryFields
-            fields={typeConfig.categoryFields}
-            values={values.details.categoryAttributes ?? {}}
-            errors={errors}
-            onChange={(key, value) =>
-              setDetails({
-                categoryAttributes: {
-                  ...values.details.categoryAttributes,
-                  [key]: value,
-                },
-              })
-            }
           />
 
           <ProductMedia
@@ -501,110 +519,103 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
             showColorMode={typeConfig.features.colorImages}
           />
 
-          <ProductPricing
+          <ProductPricingInventory
             values={values}
             errors={errors}
             currency={storeCurrency}
+            variantsEnabled={variantsEnabled}
             onPriceChange={(v) => set("price", v)}
             onDiscountPriceChange={(v) => set("discountPrice", v)}
             onCostPriceChange={(v) => setDetails({ buyingPrice: v })}
-            variantsEnabled={variantsEnabled}
-          />
-
-          <ProductInventory
-            values={values}
-            errors={errors}
-            variantsEnabled={variantsEnabled}
             onTrackInventoryChange={(v) => setDetails({ trackInventory: v })}
             onStockChange={(v) => set("stock", v)}
             onLowStockAlertChange={(v) => setDetails({ lowStockAlert: v })}
             onUnitNameChange={(v) => setDetails({ unitName: v })}
-            onProductSerialChange={(v) => setDetails({ productSerial: v })}
-            onInitialSoldCountChange={(v) => setDetails({ initialSoldCount: v })}
           />
 
           {canEnableVariants && (
-            <Card className="rounded-xl shadow-sm">
-              <CardHeader>
-                <CardTitle>Product variants</CardTitle>
-                <CardDescription>
-                  Enable variants to manage price, stock, and SKU per combination (e.g. Size ×
-                  Color).
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
-                  <div>
-                    <Label htmlFor="enableVariants" className="text-sm font-medium">
-                      Enable variants
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      Generate all combinations from attribute options
-                    </p>
-                  </div>
-                  <Switch
-                    id="enableVariants"
-                    checked={variantsEnabled}
-                    onCheckedChange={handleEnableVariantsChange}
-                  />
-                </div>
-                {variantsEnabled && (
-                  <>
-                    <ProductAttributes
-                      availableAttributes={typeConfig.variantAttributes}
-                      attributes={values.details.variantAttributes ?? []}
-                      errors={errors}
-                      onChange={handleVariantAttributesChange}
-                    />
-                    <ProductVariants
-                      variants={values.details.variants ?? []}
-                      currency={storeCurrency}
-                      errors={errors}
-                      onChange={(variants) => setDetails({ variants })}
-                    />
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            <ProductOptions
+              mode={optionMode}
+              canEnableVariants={canEnableVariants}
+              values={values}
+              errors={errors}
+              currency={storeCurrency}
+              availableAttributes={typeConfig.variantAttributes}
+              imageMode={imageMode}
+              existingUrls={existingUrls}
+              onModeChange={handleOptionModeChange}
+              onSizesChange={(v) => set("sizes", v)}
+              onColorsChange={setColors}
+              onColorImagesChange={(map) => setDetails({ colorImages: map })}
+              onVariantAttributesChange={handleVariantAttributesChange}
+              onVariantsChange={(variants) => setDetails({ variants })}
+            />
           )}
 
-          <ProductExtras
+          <CategoryFields
+            fields={typeConfig.categoryFields}
+            values={values.details.categoryAttributes ?? {}}
+            errors={errors}
+            onChange={(key, value) =>
+              setDetails({
+                categoryAttributes: {
+                  ...values.details.categoryAttributes,
+                  [key]: value,
+                },
+              })
+            }
+          />
+
+          <ProductAdvanced
             values={values}
+            slugManuallyEdited={slugManuallyEdited}
             showShipping={typeConfig.features.shipping}
             showSizeChart={typeConfig.features.sizeChart}
             showCareInstructions={typeConfig.features.careInstructions}
             showWeightDimensions={typeConfig.features.weightDimensions}
-            variantsEnabled={variantsEnabled}
-            imageMode={imageMode}
-            existingUrls={existingUrls}
-            onDetailsChange={setDetails}
-            onTagsChange={(v) => set("tags", v)}
-            onLegacySizesChange={(v) => set("sizes", v)}
-            onLegacyColorsChange={setColors}
-          />
-
-          <ProductSEO
-            metaTitle={values.details.metaTitle ?? ""}
-            metaDescription={values.details.metaDescription ?? ""}
+            onSlugChange={(slug) => setDetails({ slug })}
+            onSlugManualEdit={() => setSlugManuallyEdited(true)}
+            onSkuChange={(v) => set("sku", v)}
+            onBarcodeChange={(v) => setDetails({ barcode: v })}
+            onProductSerialChange={(v) => setDetails({ productSerial: v })}
+            onInitialSoldCountChange={(v) => setDetails({ initialSoldCount: v })}
             onMetaTitleChange={(v) => setDetails({ metaTitle: v })}
             onMetaDescriptionChange={(v) => setDetails({ metaDescription: v })}
+            onTagsChange={(v) => set("tags", v)}
+            onDetailsChange={setDetails}
           />
         </div>
 
-        <ProductStatus
+        <ProductFormSidebar
           values={values}
           currency={storeCurrency}
-          productType={productType}
-          categoryTree={categoryTree}
           collections={collections}
-          selectedCategory={selectedCategory}
-          showCondition={typeConfig.features.condition}
-          onCategoryChange={handleCategoryChange}
+          previewImageUrl={previewImageUrl}
           onCollectionChange={(v) => set("collectionId", v)}
           onStatusChange={(v) => set("status", v)}
           onFeaturedChange={(v) => setDetails({ featured: v })}
           onConditionChange={(v) => setDetails({ condition: v })}
+          showCondition={typeConfig.features.condition}
         />
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:pl-[var(--sidebar-width,0px)]">
+        <div className="mx-auto flex max-w-6xl items-center justify-end gap-2">
+          <Button type="button" variant="outline" size="sm" className="gap-1.5" asChild>
+            <Link href="/dashboard/products">
+              <X className="h-4 w-4" />
+              Discard
+            </Link>
+          </Button>
+          <Button type="submit" size="sm" disabled={mutation.isPending} className="gap-1.5">
+            {mutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Check className="h-4 w-4" />
+            )}
+            {mode === "create" ? "Save product" : "Save changes"}
+          </Button>
+        </div>
       </div>
     </form>
   );

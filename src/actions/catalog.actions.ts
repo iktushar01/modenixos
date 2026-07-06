@@ -243,6 +243,12 @@ export async function createCouponAction(data: Record<string, unknown>) {
   return res;
 }
 
+export async function updateCouponAction(id: string, data: Record<string, unknown>) {
+  const res = await httpClient.patch<Coupon>(`/coupons/${id}`, data);
+  revalidatePath("/dashboard/coupons");
+  return res;
+}
+
 export async function deleteCouponAction(id: string) {
   await httpClient.delete(`/coupons/${id}`);
   revalidatePath("/dashboard/coupons");

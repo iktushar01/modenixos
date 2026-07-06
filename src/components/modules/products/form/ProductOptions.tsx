@@ -148,12 +148,14 @@ export function ProductOptions({
         {mode === "variants" && canEnableVariants && (
           <div className="space-y-4 border-t border-border pt-4">
             <ProductAttributes
+              embedded
               availableAttributes={availableAttributes}
               attributes={values.details.variantAttributes ?? []}
               errors={errors}
               onChange={onVariantAttributesChange}
             />
             <ProductVariants
+              embedded
               variants={values.details.variants ?? []}
               currency={currency}
               errors={errors}
