@@ -1,9 +1,14 @@
 export { ProductBasicInfo } from "./ProductBasicInfo";
 export { ProductPricing } from "./ProductPricing";
 export { ProductInventory } from "./ProductInventory";
+export { ProductPricingInventory } from "./ProductPricingInventory";
 export { ProductMedia } from "./ProductMedia";
 export { ProductSEO } from "./ProductSEO";
 export { ProductStatus } from "./ProductStatus";
+export { ProductFormSidebar } from "./ProductFormSidebar";
+export { ProductCategoryPicker } from "./ProductCategoryPicker";
+export { ProductOptions } from "./ProductOptions";
+export { ProductAdvanced } from "./ProductAdvanced";
 export { CategoryFields } from "./CategoryFields";
 export { ProductAttributes } from "./ProductAttributes";
 export { ProductVariants } from "./ProductVariants";

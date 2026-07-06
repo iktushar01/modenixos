@@ -330,6 +330,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   };
 
   const handleOptionModeChange = (mode: ProductOptionMode) => {
+    if (!canEnableVariants && mode === "variants") return;
     setOptionMode(mode);
     if (mode === "none") {
       handleEnableVariantsChange(false);
@@ -436,12 +437,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       ? syncLegacySizeColor(values.details.variantAttributes ?? []).colors
       : values.colors;
 
-  const previewImageUrl =
-    existingUrls[0] ??
-    (newFiles[0] ? URL.createObjectURL(newFiles[0]) : null) ??
-    (variantColors[0] && values.details.colorImages[variantColors[0]]
-      ? values.details.colorImages[variantColors[0]]
-      : null);
+  const previewImageUrl = existingUrls[0] ?? null;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pb-24">
@@ -530,24 +526,26 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
             onUnitNameChange={(v) => setDetails({ unitName: v })}
           />
 
-          {canEnableVariants && (
-            <ProductOptions
-              mode={optionMode}
-              canEnableVariants={canEnableVariants}
-              values={values}
-              errors={errors}
-              currency={storeCurrency}
-              availableAttributes={typeConfig.variantAttributes}
-              imageMode={imageMode}
-              existingUrls={existingUrls}
-              onModeChange={handleOptionModeChange}
-              onSizesChange={(v) => set("sizes", v)}
-              onColorsChange={setColors}
-              onColorImagesChange={(map) => setDetails({ colorImages: map })}
-              onVariantAttributesChange={handleVariantAttributesChange}
-              onVariantsChange={(variants) => setDetails({ variants })}
-            />
-          )}
+          <ProductOptions
+            mode={
+              !canEnableVariants && optionMode === "variants"
+                ? "simple"
+                : optionMode
+            }
+            canEnableVariants={canEnableVariants}
+            values={values}
+            errors={errors}
+            currency={storeCurrency}
+            availableAttributes={typeConfig.variantAttributes}
+            imageMode={imageMode}
+            existingUrls={existingUrls}
+            onModeChange={handleOptionModeChange}
+            onSizesChange={(v) => set("sizes", v)}
+            onColorsChange={setColors}
+            onColorImagesChange={(map) => setDetails({ colorImages: map })}
+            onVariantAttributesChange={handleVariantAttributesChange}
+            onVariantsChange={(variants) => setDetails({ variants })}
+          />
 
           <CategoryFields
             fields={typeConfig.categoryFields}

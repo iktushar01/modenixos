@@ -64,7 +64,7 @@ function couponToForm(coupon: Coupon): CouponFormState {
   };
 }
 
-function buildPayload(form: CouponFormState) {
+function buildPayload(form: CouponFormState, isEdit = false) {
   const hasAmount = form.amount.trim() !== "";
   const hasPercent = form.percent.trim() !== "";
 
@@ -77,13 +77,17 @@ function buildPayload(form: CouponFormState) {
   if (!Number.isFinite(value) || value <= 0) throw new Error("Discount must be greater than zero");
   if (type === "PERCENT" && value > 100) throw new Error("Percentage cannot exceed 100");
 
+  const emptyOptional = isEdit ? null : undefined;
+
   return {
     code: form.code.trim().toUpperCase(),
     type,
     value,
     minOrder: form.enableMinPurchase ? Number(form.minOrder || 0) : 0,
-    usageLimit: form.enableUsageLimit ? Number(form.usageLimit) : undefined,
-    expiresAt: form.expiresAt ? new Date(`${form.expiresAt}T23:59:59`).toISOString() : undefined,
+    usageLimit: form.enableUsageLimit ? Number(form.usageLimit) : emptyOptional,
+    expiresAt: form.expiresAt
+      ? new Date(`${form.expiresAt}T23:59:59`).toISOString()
+      : emptyOptional,
     isActive: form.isActive,
   };
 }
@@ -107,7 +111,7 @@ export function CouponFormDialog({ open, onOpenChange, coupon }: CouponFormDialo
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload = buildPayload(form);
+      const payload = buildPayload(form, isEdit);
       if (isEdit && coupon) {
         return updateCouponAction(coupon.id, payload);
       }
