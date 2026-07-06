@@ -11,7 +11,7 @@ import { StorefrontWishlistSkeleton } from "@/components/modules/storefront/skel
 
 export default function WishlistPageClient() {
   const router = useRouter();
-  const { slug, store, categories, customer, customerReady } = useStorefront();
+  const { slug, store, categories, customer, customerReady, storeReady } = useStorefront();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [itemsReady, setItemsReady] = useState(false);
 
@@ -26,7 +26,7 @@ export default function WishlistPageClient() {
       .finally(() => setItemsReady(true));
   }, [customer, customerReady, router, slug]);
 
-  if (!customerReady || !customer || !itemsReady) {
+  if (!storeReady || !store || !customerReady || !customer || !itemsReady) {
     return <StorefrontWishlistSkeleton />;
   }
 

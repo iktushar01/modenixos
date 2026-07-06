@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
 import StorefrontLoginClient from "@/components/modules/storefront/account/StorefrontLoginClient";
 
@@ -9,17 +9,23 @@ import { StorefrontAuthSkeleton } from "@/components/modules/storefront/skeleton
 
 export default function LoginPageClient() {
   const router = useRouter();
-  const { slug, store, categories, customer, customerReady } = useStorefront();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next") ?? undefined;
+  const { slug, store, categories, customer, customerReady, storeReady } = useStorefront();
 
   useEffect(() => {
-    if (customerReady && customer) {
-      router.replace(`/store/${slug}/account/wishlist`);
+    if (!customerReady) return;
+    if (customer) {
+      const destination = nextPath
+        ? `/store/${slug}${nextPath.startsWith("/") ? nextPath : `/${nextPath}`}`
+        : `/store/${slug}/account/orders`;
+      router.replace(destination);
     }
-  }, [customer, customerReady, router, slug]);
+  }, [customer, customerReady, nextPath, router, slug]);
 
-  if (!customerReady || customer) {
+  if (!storeReady || !store || !customerReady || customer) {
     return <StorefrontAuthSkeleton fieldCount={2} />;
   }
 
-  return <StorefrontLoginClient store={store} categories={categories} />;
+  return <StorefrontLoginClient store={store} categories={categories} nextPath={nextPath} />;
 }

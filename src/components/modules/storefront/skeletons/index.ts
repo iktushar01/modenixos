@@ -5,3 +5,4 @@ export { StorefrontCheckoutSkeleton } from "./StorefrontCheckoutSkeleton";
 export { StorefrontProductSkeleton } from "./StorefrontProductSkeleton";
 export { StorefrontAuthSkeleton } from "./StorefrontAuthSkeleton";
 export { StorefrontWishlistSkeleton } from "./StorefrontWishlistSkeleton";
+export { StorefrontOrdersSkeleton } from "./StorefrontOrdersSkeleton";

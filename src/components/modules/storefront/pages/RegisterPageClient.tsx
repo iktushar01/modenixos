@@ -9,7 +9,7 @@ import { StorefrontAuthSkeleton } from "@/components/modules/storefront/skeleton
 
 export default function RegisterPageClient() {
   const router = useRouter();
-  const { slug, store, categories, customer, customerReady } = useStorefront();
+  const { slug, store, categories, customer, customerReady, storeReady } = useStorefront();
 
   useEffect(() => {
     if (customerReady && customer) {
@@ -17,7 +17,7 @@ export default function RegisterPageClient() {
     }
   }, [customer, customerReady, router, slug]);
 
-  if (!customerReady || customer) {
+  if (!storeReady || !store || !customerReady || customer) {
     return <StorefrontAuthSkeleton fieldCount={3} />;
   }
 

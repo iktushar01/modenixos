@@ -1,3 +1,7 @@
+"use client";
+
+import { useMemo } from "react";
+import { getCookie } from "cookies-next";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,31 +18,37 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/modules/dashboard/Sidebar";
 import { DashboardHeader } from "@/components/modules/dashboard/DashboardHeader";
-import { getSidebarData } from "@/lib/getSidebarData";
-import { getCookie } from "@/lib/cookieUtils";
+import { adminSidebar } from "@/components/data/adminSidebar";
+import { clientSidebarData } from "@/components/data/clientSidebar";
 import { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
 
-interface Sidebar1Props {
+interface DashboardLayoutClientProps {
   className?: string;
   children?: React.ReactNode;
 }
 
-const Sidebar1 = async ({ className, children }: Sidebar1Props) => {
-  // Read user from cookie server-side
-  const userCookie = await getCookie("user");
-  let user: UserFromCookie | null = null;
+function readUserFromCookie(): UserFromCookie | null {
+  const userCookie = getCookie("user");
+  if (!userCookie || typeof userCookie !== "string") return null;
 
-  if (userCookie) {
-    try {
-      user = JSON.parse(userCookie) as UserFromCookie;
-    } catch (error) {
-      console.error("Failed to parse user cookie:", error);
-    }
+  try {
+    return JSON.parse(userCookie) as UserFromCookie;
+  } catch {
+    return null;
   }
+}
 
-  const userRole = user?.role ?? "CLIENT";
-  const sidebarData = await getSidebarData(userRole as "ADMIN" | "CLIENT");
+function getSidebarDataForRole(role: UserFromCookie["role"] | undefined) {
+  if (role === "ADMIN" || role === "SUPER_ADMIN") {
+    return adminSidebar;
+  }
+  return clientSidebarData;
+}
+
+export function DashboardLayoutClient({ className, children }: DashboardLayoutClientProps) {
+  const user = useMemo(() => readUserFromCookie(), []);
+  const sidebarData = useMemo(() => getSidebarDataForRole(user?.role), [user?.role]);
 
   return (
     <SidebarProvider className={cn(className)}>
@@ -58,22 +68,16 @@ const Sidebar1 = async ({ className, children }: Sidebar1Props) => {
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>
-                  {sidebarData.logo.description}
-                </BreadcrumbPage>
+                <BreadcrumbPage>{sidebarData.logo.description}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </DashboardHeader>
 
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {children ?? (
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-          )}
-        </div>
+        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
-};
+}
 
-export { Sidebar1 };
+export { DashboardLayoutClient as Sidebar1 };

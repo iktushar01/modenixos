@@ -9,7 +9,7 @@ import { Product } from "@/types/store.types";
 import { StorefrontProductSkeleton } from "@/components/modules/storefront/skeletons";
 
 export default function ProductPageClient({ productId }: { productId: string }) {
-  const { slug, store, categories, customer, customerReady } = useStorefront();
+  const { slug, store, categories, customer, customerReady, storeReady } = useStorefront();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [inWishlist, setInWishlist] = useState(false);
@@ -17,7 +17,11 @@ export default function ProductPageClient({ productId }: { productId: string }) 
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    if (!storeReady) return;
+
     let cancelled = false;
+    setReady(false);
+    setNotFound(false);
 
     async function load() {
       try {
@@ -59,9 +63,9 @@ export default function ProductPageClient({ productId }: { productId: string }) 
     return () => {
       cancelled = true;
     };
-  }, [slug, productId, customer, customerReady]);
+  }, [slug, productId, customer, customerReady, storeReady]);
 
-  if (!ready) {
+  if (!storeReady || !store || !ready) {
     return <StorefrontProductSkeleton />;
   }
 

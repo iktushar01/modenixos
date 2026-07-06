@@ -1,36 +1,7 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import {
-  getPublicStoreAction,
-  getPublicProductsAction,
-  getPublicCollectionsAction,
-  getPublicCategoriesAction,
-  getPublicReviewsAction,
-} from "@/actions/catalog.actions";
-import { StorefrontHomeClient } from "@/components/modules/storefront/StorefrontHomeClient";
+import StoreHomePageClient from "@/components/modules/storefront/pages/StoreHomePageClient";
 import { StorefrontHomeSkeleton } from "@/components/modules/storefront/skeletons";
-import { Category, Collection, Product, Review } from "@/types/store.types";
-
-const SHOP_FILTER_KEYS = [
-  "category",
-  "collection",
-  "minPrice",
-  "maxPrice",
-  "size",
-  "color",
-  "tag",
-  "sale",
-  "search",
-  "q",
-] as const;
-
-function hasActiveShopFilters(searchParams: Record<string, string | string[] | undefined>) {
-  return SHOP_FILTER_KEYS.some((key) => {
-    const value = searchParams[key];
-    if (Array.isArray(value)) return value.length > 0;
-    return Boolean(value);
-  });
-}
+import { getPublicStoreAction } from "@/actions/catalog.actions";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -41,60 +12,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-async function StoreHomeContent({
-  slug,
-  searchParams,
-}: {
-  slug: string;
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
-  const filteredShop = hasActiveShopFilters(searchParams);
-
-  const [store, catalogRes, categoriesRes, collectionsRes, reviewsRes] = await Promise.all([
-    getPublicStoreAction(slug),
-    getPublicProductsAction(slug, {
-      limit: filteredShop ? "100" : "36",
-      sortBy: "createdAt",
-      sortOrder: "desc",
-      ...(typeof searchParams.category === "string" ? { category: searchParams.category } : {}),
-      ...(typeof searchParams.collection === "string" ? { collection: searchParams.collection } : {}),
-    }),
-    getPublicCategoriesAction(slug, { limit: "50" }),
-    getPublicCollectionsAction(slug, { limit: "50" }),
-    getPublicReviewsAction(slug, { limit: "10" }),
-  ]);
-
-  if (!store) notFound();
-
-  const catalog = (catalogRes.data ?? []) as Product[];
-  const categories = (categoriesRes.data ?? []) as Category[];
-  const collections = (collectionsRes.data ?? []) as Collection[];
-  const reviews = (reviewsRes.data ?? []) as Review[];
-
-  return (
-    <StorefrontHomeClient
-      store={store}
-      catalog={catalog}
-      categories={categories}
-      collections={collections}
-      reviews={reviews}
-    />
-  );
-}
-
-export default async function StorePage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const { slug } = await params;
-  const resolvedSearchParams = await searchParams;
-
+export default function StorePage() {
   return (
     <Suspense fallback={<StorefrontHomeSkeleton />}>
-      <StoreHomeContent slug={slug} searchParams={resolvedSearchParams} />
+      <StoreHomePageClient />
     </Suspense>
   );
 }
