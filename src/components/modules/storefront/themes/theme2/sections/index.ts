@@ -1,0 +1,11 @@
+export { CategoriesSection } from "./CategoriesSection";
+export { CollectionsSection } from "./CollectionsSection";
+export { ShopSection } from "./ShopSection";
+export { TrendingSection } from "./TrendingSection";
+export { PromoSection } from "./PromoSection";
+export { BrandStorySection } from "./BrandStorySection";
+export { ReviewsSection } from "./ReviewsSection";
+export { NewsletterSection } from "./NewsletterSection";
+export { Footer } from "./Footer";
+export { QuickViewModal } from "./QuickViewModal";
+export { Theme2ProductCard } from "./Theme2ProductCard";
