@@ -394,7 +394,46 @@
   }
 
   .dashboard-cta {
-    @apply h-12 w-full gap-2 text-base shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-primary/15;
+    @apply h-11 w-full gap-2 rounded-xl text-base font-semibold;
+    @apply shadow-[0_2px_6px_oklch(0.25_0.04_285/0.12),0_10px_28px_color-mix(in_oklch,var(--primary)_38%,transparent)];
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_oklch(0.25_0.04_285/0.16),0_16px_40px_color-mix(in_oklch,var(--primary)_45%,transparent)];
+  }
+
+  .dashboard-segment-group {
+    @apply flex flex-wrap gap-1 rounded-xl border border-border/55 bg-muted/30 p-1.5;
+  }
+
+  .dashboard-segment-btn {
+    @apply rounded-lg px-3.5 py-2 text-sm font-semibold transition-all duration-200;
+    @apply text-muted-foreground hover:bg-background/70 hover:text-foreground;
+  }
+
+  .dashboard-segment-btn[data-active="true"] {
+    @apply bg-background text-foreground shadow-[0_1px_3px_oklch(0.20_0.03_285/0.08),0_4px_12px_oklch(0.20_0.03_285/0.05)] ring-1 ring-border/60;
+  }
+
+  .dashboard-option-card {
+    @apply rounded-xl border border-border/60 bg-background/80 p-4 text-left shadow-sm transition-all duration-200;
+    @apply hover:border-primary/35 hover:bg-primary/[0.04] hover:shadow-md;
+  }
+
+  .dashboard-option-card[data-selected="true"] {
+    @apply border-primary/50 bg-primary/[0.06] shadow-md ring-2 ring-primary/20;
+  }
+
+  .admin-shell [data-slot="page-header"] [data-slot="button"][data-variant="default"],
+  .admin-shell .dashboard-page-header [data-slot="button"][data-variant="default"] {
+    @apply min-w-[7.5rem];
+  }
+
+  .admin-shell [data-slot=table-cell] [data-slot=button][data-variant=ghost][data-size=icon],
+  .admin-shell [data-slot=table-cell] [data-slot=button][data-variant=ghost][data-size=icon-sm] {
+    @apply rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary;
+  }
+
+  .admin-shell [data-slot=table-cell] [data-slot=button][data-variant=ghost].text-destructive,
+  .admin-shell [data-slot=table-cell] [data-slot=button][data-variant=ghost]:hover:text-destructive {
+    @apply hover:bg-destructive/10 hover:text-destructive;
   }
 }
 

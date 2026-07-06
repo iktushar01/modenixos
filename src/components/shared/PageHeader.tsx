@@ -16,7 +16,7 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn("dashboard-page-header", className)}>
+    <div className={cn("dashboard-page-header", className)} data-slot="page-header">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-4">
           <div

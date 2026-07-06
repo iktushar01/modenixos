@@ -106,7 +106,7 @@ export default function ProductsPage() {
         title="Products"
         description="Manage your fashion catalog with images, variants, and pricing."
         action={
-          <Button asChild className="shadow-sm transition-shadow hover:shadow-md">
+          <Button asChild size="default">
             <Link href="/dashboard/products/new">
               <Plus className="mr-2 h-4 w-4" />
               Add product

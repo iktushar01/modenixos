@@ -205,7 +205,7 @@ export default function OrdersPage() {
         eyebrow="Commerce"
         title="Orders"
         action={
-          <Button asChild className="shadow-sm transition-shadow hover:shadow-md">
+          <Button asChild size="default">
             <Link href="/dashboard/orders/new">
               <Plus className="mr-2 h-4 w-4" />
               Create Order
@@ -272,17 +272,15 @@ export default function OrdersPage() {
       </div>
 
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <div className="dashboard-panel flex flex-wrap gap-1 p-1.5">
+        <div className="dashboard-segment-group">
           {ORDER_STATUS_TABS.map((tab) => (
             <button
               key={tab.value}
               type="button"
               onClick={() => setStatusTab(tab.value)}
+              data-active={statusTab === tab.value}
               className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                statusTab === tab.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                "dashboard-segment-btn",
                 statusTab !== tab.value && tab.colorClass,
               )}
             >

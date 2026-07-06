@@ -215,13 +215,13 @@ export default function DashboardOverview() {
               )}
 
               <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm" className="flex-1 gap-1.5 transition-colors hover:border-primary/30 hover:bg-primary/5">
+                <Button asChild variant="outline" size="sm" className="flex-1 gap-1.5">
                   <Link href={storefrontPath || "#"} target="_blank">
                     <Eye className="h-3.5 w-3.5" />
                     Visit
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="sm" className="flex-1 transition-colors hover:border-primary/30 hover:bg-primary/5">
+                <Button asChild variant="outline" size="sm" className="flex-1">
                   <Link href="/dashboard/store">Manage</Link>
                 </Button>
               </div>
@@ -261,7 +261,7 @@ export default function DashboardOverview() {
                 </Link>
               </div>
 
-              <Button asChild className="w-full gap-1.5 shadow-sm transition-shadow hover:shadow-md">
+              <Button asChild className="w-full gap-1.5">
                 <Link href="/dashboard/products/new">
                   <Plus className="h-4 w-4" />
                   Add your own
@@ -361,7 +361,7 @@ export default function DashboardOverview() {
             <div className="p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold tracking-tight">Recent orders</h2>
-                <Button asChild variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">
+                <Button asChild variant="ghost" size="sm">
                   <Link href="/dashboard/orders">View all</Link>
                 </Button>
               </div>

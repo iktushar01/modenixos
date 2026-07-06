@@ -141,9 +141,9 @@ export default function BillingPage() {
               type="button"
               disabled={!overview?.stripeConfigured}
               onClick={() => setPaymentProvider("STRIPE")}
+              data-selected={paymentProvider === "STRIPE"}
               className={cn(
-                "rounded-xl border p-4 text-left transition-all",
-                paymentProvider === "STRIPE" && "border-primary ring-2 ring-primary/20",
+                "dashboard-option-card",
                 !overview?.stripeConfigured && "cursor-not-allowed opacity-50",
               )}
             >
@@ -157,9 +157,9 @@ export default function BillingPage() {
               type="button"
               disabled={!overview?.sslConfigured}
               onClick={() => setPaymentProvider("SSLCOMMERZ")}
+              data-selected={paymentProvider === "SSLCOMMERZ"}
               className={cn(
-                "rounded-xl border p-4 text-left transition-all",
-                paymentProvider === "SSLCOMMERZ" && "border-primary ring-2 ring-primary/20",
+                "dashboard-option-card",
                 !overview?.sslConfigured && "cursor-not-allowed opacity-50",
               )}
             >

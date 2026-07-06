@@ -127,7 +127,6 @@ export default function CustomersPage() {
               variant={filter === option.value ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter(option.value)}
-              className={cn(filter !== option.value && "bg-transparent")}
             >
               {option.label}
             </Button>
