@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Package, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Package, Eye, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -49,6 +49,7 @@ import { useDashboardQuery } from "@/hooks/useDashboardQuery";
 import { DashboardAsyncContent } from "@/components/shared/DashboardAsyncContent";
 import { DashboardTable } from "@/components/shared/DashboardTable";
 import { cn } from "@/lib/utils";
+import { ProductViewDialog } from "./CatalogViewDialogs";
 
 function statusBadgeClass(status: Product["status"]) {
   switch (status) {
@@ -69,6 +70,7 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewId, setViewId] = useState<string | null>(null);
 
   const queryParams: Record<string, string> = { limit: "50" };
   if (search.trim()) queryParams.searchTerm = search.trim();
@@ -232,6 +234,14 @@ export default function ProductsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setViewId(p.id)}
+                        aria-label={`View ${p.name}`}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" asChild>
                         <Link href={`/dashboard/products/${p.id}/edit`}>
                           <Pencil className="h-4 w-4" />
@@ -254,6 +264,13 @@ export default function ProductsPage() {
         </DashboardTable>
         )}
       </DashboardAsyncContent>
+
+      <ProductViewDialog
+        productId={viewId}
+        open={Boolean(viewId)}
+        onOpenChange={(open) => !open && setViewId(null)}
+        currency={storeCurrency}
+      />
 
       <AlertDialog open={Boolean(deleteId)} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>

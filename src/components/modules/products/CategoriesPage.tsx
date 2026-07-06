@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Tags } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Eye, Pencil, Trash2, Tags } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -31,6 +31,7 @@ import { getCategoriesAction, deleteCategoryAction } from "@/actions/catalog.act
 import { CategoryFormDialog, CategoryThumbnail } from "./CategoryFormDialog";
 import { Category } from "@/types/store.types";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
+import { CategoryViewDialog } from "./CatalogViewDialogs";
 
 export default function CategoriesPage() {
   const queryClient = useQueryClient();
@@ -38,6 +39,7 @@ export default function CategoriesPage() {
   const [editing, setEditing] = useState<Category | null>(null);
   const [parentForCreate, setParentForCreate] = useState<Category | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<Category | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data, isLoading } = useQuery({
@@ -179,6 +181,9 @@ export default function CategoriesPage() {
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
+                          <Button variant="ghost" size="icon" onClick={() => setViewing(parent)} aria-label={`View ${parent.name}`}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => openEdit(parent)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -209,6 +214,9 @@ export default function CategoriesPage() {
                           <TableCell className="text-muted-foreground">{child.slug}</TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-1">
+                              <Button variant="ghost" size="icon" onClick={() => setViewing(child)} aria-label={`View ${child.name}`}>
+                                <Eye className="h-4 w-4" />
+                              </Button>
                               <Button variant="ghost" size="icon" onClick={() => openEdit(child)}>
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -231,6 +239,14 @@ export default function CategoriesPage() {
           </Table>
         </DashboardTable>
       )}
+
+      <CategoryViewDialog
+        category={viewing}
+        categories={categories}
+        open={Boolean(viewing)}
+        onOpenChange={(open) => !open && setViewing(null)}
+        onEdit={openEdit}
+      />
 
       <CategoryFormDialog
         open={formOpen}

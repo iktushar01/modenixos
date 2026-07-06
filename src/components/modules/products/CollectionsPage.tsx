@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Layers } from "lucide-react";
+import { Plus, Eye, Pencil, Trash2, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -23,12 +23,14 @@ import {
 import { getCollectionsAction, deleteCollectionAction } from "@/actions/catalog.actions";
 import { CollectionFormDialog, CollectionThumbnail } from "./CollectionFormDialog";
 import { Collection } from "@/types/store.types";
+import { CollectionViewDialog } from "./CatalogViewDialogs";
 
 export default function CollectionsPage() {
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Collection | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<Collection | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["collections"],
@@ -109,6 +111,9 @@ export default function CollectionsPage() {
                   <TableCell>{col.isFeatured ? "Yes" : "No"}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => setViewing(col)} aria-label={`View ${col.name}`}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" onClick={() => openEdit(col)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -128,6 +133,13 @@ export default function CollectionsPage() {
           </Table>
         </DashboardTable>
       )}
+
+      <CollectionViewDialog
+        collection={viewing}
+        open={Boolean(viewing)}
+        onOpenChange={(open) => !open && setViewing(null)}
+        onEdit={openEdit}
+      />
 
       <CollectionFormDialog open={formOpen} onOpenChange={setFormOpen} collection={editing} />
 
