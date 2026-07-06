@@ -30,8 +30,10 @@ import {
   getAnalyticsOverviewAction,
   getCategoriesAction,
 } from "@/actions/catalog.actions";
+import { useDashboardQuery } from "@/hooks/useDashboardQuery";
+import { DashboardAsyncContent } from "@/components/shared/DashboardAsyncContent";
+import { DashboardOverviewSkeleton } from "@/components/shared/DashboardPageSkeleton";
 import { useMyStore } from "@/hooks/useMyStore";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StoreShippingConfig } from "@/types/store.types";
@@ -71,17 +73,19 @@ export default function DashboardOverview() {
     }
   });
 
-  const { data: overview, isLoading } = useQuery({
+  const { data: overview, isPending: overviewPending } = useDashboardQuery({
     queryKey: ["analytics-overview"],
     queryFn: getAnalyticsOverviewAction,
   });
 
-  const { data: categoriesRes } = useQuery({
+  const { data: categoriesRes } = useDashboardQuery({
     queryKey: ["dashboard-categories-count"],
     queryFn: () => getCategoriesAction({ limit: 200 }),
   });
 
-  useDashboardReady(!isLoading && !storeLoading);
+  const showPlaceholder =
+    (storeLoading && !store) || (overviewPending && overview === undefined);
+
 
   const categoryCount = categoriesRes?.meta?.total ?? categoriesRes?.data?.length ?? 0;
   const productCount = overview?.products ?? 0;
@@ -161,6 +165,10 @@ export default function DashboardOverview() {
             : { href: "/dashboard/products", label: "Go to products" };
 
   return (
+    <DashboardAsyncContent
+      showPlaceholder={showPlaceholder}
+      skeleton={<DashboardOverviewSkeleton />}
+    >
     <div className="space-y-8">
       {/* Welcome header */}
       <div>
@@ -361,7 +369,7 @@ export default function DashboardOverview() {
                 <div>
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
                   <p className="mt-1 text-2xl font-bold">
-                    {isLoading ? "…" : stat.value}
+                    {stat.value}
                   </p>
                 </div>
                 <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -405,5 +413,6 @@ export default function DashboardOverview() {
         </Card>
       )}
     </div>
+    </DashboardAsyncContent>
   );
 }

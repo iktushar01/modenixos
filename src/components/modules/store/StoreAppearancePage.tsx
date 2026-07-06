@@ -29,7 +29,6 @@ import {
 } from "@/lib/storefront";
 import { StoreColorPaletteEditor } from "./StoreColorPaletteEditor";
 import { StoreTypographyEditor } from "./StoreTypographyEditor";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 const SECTION_LABELS: Record<keyof StorefrontSections, string> = {
@@ -154,7 +153,6 @@ export default function StoreAppearancePage() {
     }));
   };
 
-  useDashboardReady(!isLoading);
 
   if (isLoading) {
     return <DashboardFormSkeleton compact />;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Package, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -45,7 +45,8 @@ import {
 import { Product } from "@/types/store.types";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
+import { useDashboardQuery } from "@/hooks/useDashboardQuery";
+import { DashboardAsyncContent } from "@/components/shared/DashboardAsyncContent";
 import { cn } from "@/lib/utils";
 
 function statusBadgeClass(status: Product["status"]) {
@@ -73,12 +74,12 @@ export default function ProductsPage() {
   if (statusFilter !== "all") queryParams.status = statusFilter;
   if (categoryFilter !== "all") queryParams.categoryId = categoryFilter;
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useDashboardQuery({
     queryKey: ["products", search, statusFilter, categoryFilter],
     queryFn: () => getProductsAction(queryParams),
   });
 
-  const { data: categoriesRes } = useQuery({
+  const { data: categoriesRes } = useDashboardQuery({
     queryKey: ["categories"],
     queryFn: () => getCategoriesAction({ limit: 100 }),
   });
@@ -96,7 +97,6 @@ export default function ProductsPage() {
   const products = data?.data ?? [];
   const categories = categoriesRes?.data ?? [];
 
-  useDashboardReady(!isLoading);
 
   return (
     <div className="space-y-6">
@@ -147,13 +147,17 @@ export default function ProductsPage() {
         </Select>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full rounded-lg" />
-          ))}
-        </div>
-      ) : products.length === 0 ? (
+      <DashboardAsyncContent
+        showPlaceholder={isPending && products.length === 0}
+        skeleton={
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full rounded-lg" />
+            ))}
+          </div>
+        }
+      >
+        {products.length === 0 ? (
         <EmptyState
           title="No products yet"
           description="Add your first product with images, sizes, and pricing."
@@ -246,7 +250,8 @@ export default function ProductsPage() {
             </TableBody>
           </Table>
         </div>
-      )}
+        )}
+      </DashboardAsyncContent>
 
       <AlertDialog open={Boolean(deleteId)} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>

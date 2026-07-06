@@ -25,7 +25,6 @@ import {
 } from "@/actions/catalog.actions";
 import { Review } from "@/types/store.types";
 import { DashboardPageSkeleton } from "@/components/shared/DashboardPageSkeleton";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function ReviewsPage() {
   const queryClient = useQueryClient();
@@ -53,7 +52,6 @@ export default function ReviewsPage() {
 
   const reviews = (data?.data ?? []) as Review[];
 
-  useDashboardReady(!isLoading);
 
   if (isLoading) {
     return <DashboardPageSkeleton />;

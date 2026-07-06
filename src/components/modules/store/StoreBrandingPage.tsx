@@ -14,7 +14,6 @@ import { parseStorefrontTheme } from "@/lib/storefrontTheme";
 import { uploadStoreBranding } from "@/lib/uploadStoreBranding";
 import { ImageCropUpload } from "./ImageCropUpload";
 import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 const LOGO_RATIOS = [
@@ -51,7 +50,6 @@ export default function StoreBrandingPage() {
 
   const hasPendingChanges = Boolean(logoFile || clearLogo || slidesDirty);
 
-  useDashboardReady(!isLoading);
 
   useEffect(() => {
     if (!store || slidesDirty) return;

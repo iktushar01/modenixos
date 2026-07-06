@@ -5,13 +5,11 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useMyStore } from "@/hooks/useMyStore";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import ThemeSettingsPage from "@/components/modules/settings/ThemeSettingsPage";
 
 export default function AccountSettingsPage() {
   const { data: store, isLoading } = useMyStore();
 
-  useDashboardReady(!isLoading);
 
   return (
     <div className="space-y-6">

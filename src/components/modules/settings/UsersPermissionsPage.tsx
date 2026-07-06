@@ -36,7 +36,6 @@ import {
   StoreMemberRole,
 } from "@/types/shop-users.types";
 import { cn } from "@/lib/utils";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const ROLE_OPTIONS: StoreMemberRole[] = ["ADMIN", "STAFF", "VIEWER"];
 
@@ -51,7 +50,6 @@ export default function UsersPermissionsPage() {
     queryFn: getShopUsersAction,
   });
 
-  useDashboardReady(!isLoading);
 
   const inviteMutation = useMutation({
     mutationFn: inviteShopUserAction,

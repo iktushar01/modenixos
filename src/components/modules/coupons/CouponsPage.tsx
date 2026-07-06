@@ -15,7 +15,6 @@ import { getCouponsAction, createCouponAction, deleteCouponAction } from "@/acti
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { DashboardPageSkeleton } from "@/components/shared/DashboardPageSkeleton";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function CouponsPage() {
   const [open, setOpen] = useState(false);
@@ -41,7 +40,6 @@ export default function CouponsPage() {
 
   const coupons = data?.data ?? [];
 
-  useDashboardReady(!isLoading);
 
   if (isLoading) {
     return <DashboardPageSkeleton />;

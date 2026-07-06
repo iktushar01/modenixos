@@ -5,39 +5,53 @@ import {
   useCallback,
   useContext,
   useLayoutEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
 import { usePathname } from "next/navigation";
 
 interface DashboardNavContextValue {
-  pendingHref: string | null;
-  startNavigation: (href: string) => void;
+  /** Resolved or optimistic path — use for sidebar active state. */
+  activePath: string;
+  /** Set on click before the router updates the URL. */
+  navigate: (href: string) => void;
+  isNavigating: boolean;
 }
 
 const DashboardNavContext = createContext<DashboardNavContextValue | null>(null);
 
 export function DashboardNavProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [pendingHref, setPendingHref] = useState<string | null>(null);
-
-  const startNavigation = useCallback((href: string) => {
-    if (href !== pathname) {
-      window.dispatchEvent(new Event("dashboard:nav-start"));
-      setPendingHref(href);
-    }
-  }, [pathname]);
+  const [optimisticPath, setOptimisticPath] = useState<string | null>(null);
 
   useLayoutEffect(() => {
-    if (pendingHref && pathname === pendingHref) {
-      setPendingHref(null);
+    if (optimisticPath !== null && optimisticPath === pathname) {
+      setOptimisticPath(null);
     }
-  }, [pathname, pendingHref]);
+  }, [pathname, optimisticPath]);
+
+  const navigate = useCallback(
+    (href: string) => {
+      if (href !== pathname && href !== optimisticPath) {
+        setOptimisticPath(href);
+        window.dispatchEvent(new Event("dashboard:nav-start"));
+      }
+    },
+    [pathname, optimisticPath],
+  );
+
+  const value = useMemo<DashboardNavContextValue>(
+    () => ({
+      activePath: optimisticPath ?? pathname,
+      navigate,
+      isNavigating: optimisticPath !== null,
+    }),
+    [optimisticPath, pathname, navigate],
+  );
 
   return (
-    <DashboardNavContext.Provider value={{ pendingHref, startNavigation }}>
-      {children}
-    </DashboardNavContext.Provider>
+    <DashboardNavContext.Provider value={value}>{children}</DashboardNavContext.Provider>
   );
 }
 
@@ -47,9 +61,4 @@ export function useDashboardNav() {
     throw new Error("useDashboardNav must be used within DashboardNavProvider");
   }
   return ctx;
-}
-
-/** @deprecated Pages render their own loading UI; kept for compatibility. */
-export function useDashboardReady(_ready: boolean) {
-  // no-op — navigation skeleton is driven by click + pathname, not API readiness
 }

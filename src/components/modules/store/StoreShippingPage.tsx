@@ -13,7 +13,6 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import { StoreShippingConfig } from "@/types/store.types";
 import { getCurrencyName } from "@/lib/currency";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 const defaultShipping: StoreShippingConfig = {
@@ -62,7 +61,6 @@ export default function StoreShippingPage() {
     }
   };
 
-  useDashboardReady(!isLoading);
 
   if (isLoading) {
     return <DashboardFormSkeleton compact />;

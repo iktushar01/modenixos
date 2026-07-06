@@ -20,7 +20,6 @@ import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { useState } from "react";
 import { CustomerFormDialog } from "./CustomerFormDialog";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { DashboardPageSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 function formatDate(value?: string) {
@@ -44,7 +43,6 @@ export default function CustomerDetailPage({ customerId }: { customerId: string 
 
   const customer = data?.data;
 
-  useDashboardReady(!isLoading);
 
   if (isLoading) {
     return <DashboardPageSkeleton />;

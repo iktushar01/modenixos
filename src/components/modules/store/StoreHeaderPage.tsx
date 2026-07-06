@@ -18,7 +18,6 @@ import {
   StorefrontNavSource,
 } from "@/lib/storefront";
 import { EditableLinkList } from "./EditableLinkList";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 export default function StoreHeaderPage() {
@@ -45,7 +44,6 @@ export default function StoreHeaderPage() {
     }
   }, [store]);
 
-  useDashboardReady(!isLoading);
 
   const handleSave = async () => {
     if (!store) return;
