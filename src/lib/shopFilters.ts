@@ -88,6 +88,52 @@ export function shopFiltersToSearchParams(filters: ShopFilters): URLSearchParams
   return p;
 }
 
+/** Map storefront filters to public products API query params */
+export function shopFiltersToApiParams(
+  filters: ShopFilters,
+  options?: { page?: number; limit?: number },
+): Record<string, string> {
+  const params: Record<string, string> = {
+    limit: String(options?.limit ?? 48),
+    page: String(options?.page ?? 1),
+  };
+
+  if (filters.category) params.category = filters.category;
+  if (filters.collection) params.collection = filters.collection;
+  if (filters.size) params.size = filters.size;
+  if (filters.color) params.color = filters.color;
+  if (filters.tag) params.tag = filters.tag;
+  if (filters.sale) params.sale = "true";
+  if (filters.minPrice != null && !Number.isNaN(filters.minPrice)) {
+    params.minPrice = String(filters.minPrice);
+  }
+  if (filters.maxPrice != null && !Number.isNaN(filters.maxPrice)) {
+    params.maxPrice = String(filters.maxPrice);
+  }
+  if (filters.sort) params.sort = filters.sort;
+  if (filters.search?.trim()) params.search = filters.search.trim();
+
+  return params;
+}
+
+export function hasActiveShopFiltersFromParams(params: URLSearchParams): boolean {
+  return SHOP_FILTER_PARAM_KEYS.some((key) => params.getAll(key).length > 0);
+}
+
+const SHOP_FILTER_PARAM_KEYS = [
+  "category",
+  "collection",
+  "minPrice",
+  "maxPrice",
+  "size",
+  "color",
+  "tag",
+  "sale",
+  "search",
+  "q",
+  "sort",
+] as const;
+
 export function countActiveFilters(filters: ShopFilters): number {
   let n = 0;
   if (filters.category) n++;
