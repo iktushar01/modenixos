@@ -35,7 +35,6 @@ export function DashboardNavProvider({ children }: { children: ReactNode }) {
     (href: string) => {
       if (href !== pathname && href !== optimisticPath) {
         setOptimisticPath(href);
-        window.dispatchEvent(new Event("dashboard:nav-start"));
       }
     },
     [pathname, optimisticPath],

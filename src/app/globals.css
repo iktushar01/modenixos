@@ -232,15 +232,6 @@
   }
 }
 
-@keyframes navigation-progress {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
-}
-
 @keyframes star-movement-bottom {
   0% {
     transform: translate(0%, 0%);
@@ -300,14 +291,5 @@
 
   .homepage-glass {
     @apply border border-border/50 bg-background/65 backdrop-blur-xl;
-  }
-}
-
-@keyframes navigation-progress {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
   }
 }

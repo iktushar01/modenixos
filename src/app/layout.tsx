@@ -1,7 +1,6 @@
 import { APP_NAME } from "@/lib/app-config";
 import { Toaster } from "@/components/ui/sonner";
 import QueryProviders from "@/providers/QueryProvider";
-import { NavigationProgress } from "@/components/shared/NavigationProgress";
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 // @ts-ignore: side-effect CSS import
@@ -45,7 +44,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <NavigationProgress />
             {children}
             <Toaster position="top-center" richColors />
           </ThemeProvider>
