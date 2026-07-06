@@ -28,7 +28,7 @@ export default function AboutPageClient() {
 
 function AboutPageContent({ store }: { store: Store }) {
   const { colorMode } = useStorefrontTheme();
-  const page = getStoreStaticPage(store.brandName, "about");
+  const page = getStoreStaticPage(store.brandName, "about", store.theme);
   const theme = parseStorefrontTheme(store);
   const base = storeBasePath(store.slug);
   const logoUrl = resolveStoreLogo(store, theme, colorMode);

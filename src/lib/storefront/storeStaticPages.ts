@@ -40,7 +40,7 @@ function withBrand(brandName: string, pages: Record<StoreStaticPageId, Omit<Stor
   return result;
 }
 
-const DEMO_PAGES: Record<StoreStaticPageId, Omit<StoreStaticPageMeta, "id">> = {
+const DEFAULT_STATIC_PAGES: Record<StoreStaticPageId, Omit<StoreStaticPageMeta, "id">> = {
   about: {
     eyebrow: "Our story",
     title: "About {brand}",
@@ -298,8 +298,47 @@ const DEMO_PAGES: Record<StoreStaticPageId, Omit<StoreStaticPageMeta, "id">> = {
   },
 };
 
-export function getStoreStaticPage(brandName: string, pageId: StoreStaticPageId): StoreStaticPageMeta {
-  const pages = withBrand(brandName, DEMO_PAGES);
+export type StoreStaticPageContent = Omit<StoreStaticPageMeta, "id">;
+
+export const STATIC_PAGE_IDS: StoreStaticPageId[] = [
+  "about",
+  "privacy-policy",
+  "shipping-policy",
+  "return-exchange-policy",
+  "payment-refund-policy",
+  "contact-us",
+];
+
+export const STATIC_PAGE_LABELS: Record<StoreStaticPageId, string> = {
+  about: "About",
+  "privacy-policy": "Privacy Policy",
+  "shipping-policy": "Shipping Policy",
+  "return-exchange-policy": "Return & Exchange",
+  "payment-refund-policy": "Payment & Refund",
+  "contact-us": "Contact Us",
+};
+
+export function readStaticPagesFromTheme(
+  theme: Record<string, unknown> | null | undefined,
+): Record<StoreStaticPageId, StoreStaticPageContent> {
+  const stored = (theme?.staticPages ?? {}) as Partial<Record<StoreStaticPageId, StoreStaticPageContent>>;
+  const result = {} as Record<StoreStaticPageId, StoreStaticPageContent>;
+  for (const id of STATIC_PAGE_IDS) {
+    result[id] = stored[id] ?? DEFAULT_STATIC_PAGES[id];
+  }
+  return result;
+}
+
+export function getDefaultStaticPage(pageId: StoreStaticPageId): StoreStaticPageContent {
+  return structuredClone(DEFAULT_STATIC_PAGES[pageId]);
+}
+
+export function getStoreStaticPage(
+  brandName: string,
+  pageId: StoreStaticPageId,
+  theme?: Record<string, unknown> | null,
+): StoreStaticPageMeta {
+  const pages = withBrand(brandName, readStaticPagesFromTheme(theme));
   return pages[pageId];
 }
 

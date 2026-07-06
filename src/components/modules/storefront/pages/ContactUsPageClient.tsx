@@ -24,7 +24,7 @@ export default function ContactUsPageClient() {
     return null;
   }
 
-  const page = getStoreStaticPage(store.brandName, "contact-us");
+  const page = getStoreStaticPage(store.brandName, "contact-us", store.theme);
   const theme = parseStorefrontTheme(store);
   const profile = (store.theme?.profile ?? {}) as StorefrontShopProfile;
   const base = storeBasePath(store.slug);

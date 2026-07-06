@@ -18,7 +18,7 @@ export default function StorePolicyPageClient({ pageId }: StorePolicyPageClientP
     return null;
   }
 
-  const page = getStoreStaticPage(store.brandName, pageId);
+  const page = getStoreStaticPage(store.brandName, pageId, store.theme);
   const base = storeBasePath(store.slug);
 
   return (
