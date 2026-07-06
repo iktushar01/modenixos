@@ -58,6 +58,48 @@ export async function loginStorefrontCustomerAction(
   return json.data.customer as StorefrontCustomer;
 }
 
+export async function sendStorefrontOtpAction(
+  slug: string,
+  data: { email: string; purpose: "login" | "register"; name?: string },
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/customers/otp/send`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    },
+  );
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message ?? "Failed to send verification code");
+  return true;
+}
+
+export async function verifyStorefrontOtpAction(
+  slug: string,
+  data: { email: string; otp: string },
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/customers/otp/verify`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    },
+  );
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message ?? "Verification failed");
+  if (json.data?.token) {
+    await setCookie(storefrontCustomerCookieName(slug), json.data.token, THIRTY_DAYS);
+  }
+  revalidatePath(`/store/${slug}`);
+  revalidatePath(`/store/${slug}/account/login`);
+  revalidatePath(`/store/${slug}/account/register`);
+  revalidatePath(`/store/${slug}/account/wishlist`);
+  revalidatePath(`/store/${slug}/account/orders`);
+  return json.data.customer as StorefrontCustomer;
+}
+
 export async function logoutStorefrontCustomerAction(slug: string) {
   await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/customers/logout`,
