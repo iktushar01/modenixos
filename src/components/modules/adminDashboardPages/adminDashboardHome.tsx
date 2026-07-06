@@ -7,6 +7,7 @@ import {
   CreditCard,
   LayoutDashboard,
   Loader2,
+  Percent,
   Settings,
   ShieldCheck,
   UserCog,
@@ -24,6 +25,13 @@ const quickLinks = [
     description: "MRR, plans, failed payments, and overrides.",
     href: "/admin/subscriptions",
     icon: CreditCard,
+    roles: ["ADMIN", "SUPER_ADMIN"] as const,
+  },
+  {
+    title: "Commission",
+    description: "Platform commission rules and earnings ledger.",
+    href: "/admin/commission",
+    icon: Percent,
     roles: ["ADMIN", "SUPER_ADMIN"] as const,
   },
   {

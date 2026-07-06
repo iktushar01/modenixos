@@ -20,6 +20,7 @@ export const adminSidebar: SidebarData = {
       items: [
         { label: "Platform", icon: "ShieldCheck", href: "/admin/admin-management" },
         { label: "Subscriptions", icon: "CreditCard", href: "/admin/subscriptions" },
+        { label: "Commission", icon: "Percent", href: "/admin/commission" },
       ],
     },
     {

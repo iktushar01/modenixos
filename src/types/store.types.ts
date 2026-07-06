@@ -176,7 +176,22 @@ export interface Order {
   trackingNumber?: string | null;
   trackingCarrier?: string | null;
   payment?: Payment | null;
+  platformEarning?: PlatformEarning | null;
   createdAt: string;
+}
+
+export interface PlatformEarning {
+  id: string;
+  orderId: string;
+  orderNumber: string;
+  orderAmount: number;
+  commissionRate: number;
+  commissionAmount: number;
+  commissionType: "PERCENT" | "FIXED";
+  commissionBase: "SUBTOTAL" | "TOTAL";
+  currency: string;
+  status: "EARNED" | "REVERSED";
+  earnedAt: string;
 }
 
 export interface Customer {

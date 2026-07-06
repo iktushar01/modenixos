@@ -301,6 +301,9 @@ export async function getAdminAnalyticsAction() {
     arr?: number;
     pastDue?: number;
     activeSubscriptions?: number;
+    totalCommission?: number;
+    commissionThisMonth?: number;
+    earnedOrderCount?: number;
   }>("/admin/analytics");
   return res.data;
 }
