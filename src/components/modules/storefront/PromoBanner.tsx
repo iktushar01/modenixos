@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { StorefrontThemeConfig } from "@/lib/storefront";
+import { storeShopPath } from "@/lib/storePaths";
 import { StorefrontCTA } from "./ui";
 
 interface PromoBannerProps {
@@ -30,7 +31,7 @@ export function PromoBanner({ slug, theme, fallbackText }: PromoBannerProps) {
             <p className="sf-display-lg sf-text-gradient mt-3">{text}</p>
             <p className="sf-muted-fg mt-3 text-sm">Ends soon — while supplies last</p>
           </div>
-          <StorefrontCTA href={`/store/${slug}#shop`}>Shop the sale</StorefrontCTA>
+          <StorefrontCTA href={storeShopPath(slug, { sale: "true" })}>Shop the sale</StorefrontCTA>
         </div>
       </motion.div>
     </section>

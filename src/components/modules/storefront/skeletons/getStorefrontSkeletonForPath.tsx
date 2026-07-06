@@ -11,6 +11,8 @@ export function getStorefrontSkeletonForPath(pathname: string) {
   const variant = getStorefrontSkeletonVariant(pathname);
 
   switch (variant) {
+    case "shop":
+      return <StorefrontHomeSkeleton />;
     case "product":
       return <StorefrontProductSkeleton />;
     case "cart":

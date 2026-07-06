@@ -10,6 +10,7 @@ import { useCartStore } from "@/stores/cart.store";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice } from "@/lib/storefrontTheme";
+import { storeShopPath } from "@/lib/storePaths";
 import { StorefrontPageShell } from "./StorefrontPageShell";
 
 export default function CartClient({ store, categories = [] }: { store: Store; categories?: Category[] }) {
@@ -79,7 +80,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
               Discover the latest from {store.brandName}.
             </p>
             <Button asChild className="sf-btn-primary mt-10 h-12 rounded-full px-10">
-              <StorefrontNavLink href={`${base}#shop`}>Browse collection</StorefrontNavLink>
+              <StorefrontNavLink href={storeShopPath(store.slug)}>Browse collection</StorefrontNavLink>
             </Button>
           </motion.div>
         ) : (

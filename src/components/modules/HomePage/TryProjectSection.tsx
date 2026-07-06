@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AnimatedContent from "@/components/AnimatedContent";
 import SpotlightCard from "@/components/SpotlightCard";
-import { APP_NAME } from "@/lib/app-config";
+import { APP_NAME, DEMO_STORE_PATH } from "@/lib/app-config";
 import { MarketingSectionHeader } from "./MarketingSectionHeader";
 
 const brandSpotlight = "rgba(112, 71, 235, 0.08)" as const;

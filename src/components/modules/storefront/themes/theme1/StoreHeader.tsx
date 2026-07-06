@@ -14,7 +14,6 @@ import {
 } from "@/lib/catalog/categoryTree";
 import { useStorefrontCssVars } from "../../useStorefrontCssVars";
 import { buildShopHref } from "@/lib/shopFilters";
-import { storeShopPath } from "@/lib/storePaths";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartCount } from "@/hooks/useStoreCart";
 import { Button } from "@/components/ui/button";

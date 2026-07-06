@@ -115,6 +115,7 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
     const base = `/store/${slug}`;
     const routes = [
       base,
+      `${base}/shop`,
       `${base}/cart`,
       `${base}/checkout`,
       `${base}/account/login`,

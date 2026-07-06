@@ -13,6 +13,7 @@ import {
   getPublicCategoriesAction,
 } from "@/actions/catalog.actions";
 import { getStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
+import { StorefrontPreviewBanner } from "@/components/modules/storefront/StorefrontPreviewBanner";
 import { Category, Store, StorefrontCustomer } from "@/types/store.types";
 import type { StorefrontColorMode } from "@/lib/storefront/types";
 
@@ -22,10 +23,10 @@ interface StorefrontContextValue {
   categories: Category[];
   storeReady: boolean;
   storeNotFound: boolean;
+  isPreview: boolean;
   customer: StorefrontCustomer | null;
   setCustomer: (customer: StorefrontCustomer | null) => void;
   customerReady: boolean;
-  /** Server-read color mode cookie for skeleton SSR/hydration */
   initialColorMode: StorefrontColorMode | null;
 }
 
@@ -34,47 +35,63 @@ const StorefrontContext = createContext<StorefrontContextValue | null>(null);
 export function StorefrontContextProvider({
   slug,
   initialColorMode = null,
+  initialStore = null,
+  initialCategories = null,
   children,
 }: {
   slug: string;
   initialColorMode?: StorefrontColorMode | null;
+  initialStore?: Store | null;
+  initialCategories?: Category[] | null;
   children: ReactNode;
 }) {
-  const [store, setStore] = useState<Store | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [storeReady, setStoreReady] = useState(false);
+  const [store, setStore] = useState<Store | null>(initialStore);
+  const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const [storeReady, setStoreReady] = useState(Boolean(initialStore));
   const [storeNotFound, setStoreNotFound] = useState(false);
   const [customer, setCustomer] = useState<StorefrontCustomer | null>(null);
   const [customerReady, setCustomerReady] = useState(false);
 
+  const isPreview = Boolean(store?.isPreview);
+
   useEffect(() => {
     let cancelled = false;
-    setStoreReady(false);
-    setStoreNotFound(false);
-    setStore(null);
-    setCategories([]);
     setCustomer(null);
     setCustomerReady(false);
 
-    Promise.all([
-      getPublicStoreAction(slug),
-      getPublicCategoriesAction(slug, { limit: "50", sortBy: "sortOrder", sortOrder: "asc" }),
-    ])
-      .then(([storeData, categoriesRes]) => {
-        if (cancelled) return;
-        if (!storeData) {
-          setStoreNotFound(true);
-          return;
-        }
+    if (!initialStore) {
+      setStoreReady(false);
+      setStoreNotFound(false);
+      setStore(null);
+      setCategories([]);
+    }
+
+    const loadStore = async () => {
+      const [storeData, categoriesRes] = await Promise.all([
+        getPublicStoreAction(slug),
+        getPublicCategoriesAction(slug, { limit: "50", sortBy: "sortOrder", sortOrder: "asc" }),
+      ]);
+
+      if (cancelled) return;
+
+      if (!storeData) {
+        setStoreNotFound(true);
+        setStore(null);
+        setCategories([]);
+      } else {
         setStore(storeData);
         setCategories((categoriesRes.data ?? []) as Category[]);
-      })
-      .catch(() => {
-        if (!cancelled) setStoreNotFound(true);
-      })
-      .finally(() => {
-        if (!cancelled) setStoreReady(true);
-      });
+        setStoreNotFound(false);
+      }
+      setStoreReady(true);
+    };
+
+    loadStore().catch(() => {
+      if (!cancelled) {
+        setStoreNotFound(true);
+        setStoreReady(true);
+      }
+    });
 
     getStorefrontCustomerAction(slug)
       .then((data) => {
@@ -99,12 +116,13 @@ export function StorefrontContextProvider({
       categories,
       storeReady,
       storeNotFound,
+      isPreview,
       customer,
       setCustomer,
       customerReady,
       initialColorMode,
     }),
-    [slug, store, categories, storeReady, storeNotFound, customer, customerReady, initialColorMode],
+    [slug, store, categories, storeReady, storeNotFound, isPreview, customer, customerReady, initialColorMode],
   );
 
   if (storeReady && storeNotFound) {
@@ -119,7 +137,10 @@ export function StorefrontContextProvider({
   }
 
   return (
-    <StorefrontContext.Provider value={value}>{children}</StorefrontContext.Provider>
+    <StorefrontContext.Provider value={value}>
+      {isPreview && <StorefrontPreviewBanner />}
+      {children}
+    </StorefrontContext.Provider>
   );
 }
 

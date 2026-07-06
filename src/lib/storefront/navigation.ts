@@ -46,6 +46,7 @@ export function applyStorefrontScrollAfterNav(hash?: string) {
 
 export type StorefrontSkeletonVariant =
   | "home"
+  | "shop"
   | "product"
   | "cart"
   | "checkout"
@@ -56,6 +57,9 @@ export type StorefrontSkeletonVariant =
 
 export function getStorefrontSkeletonVariant(pathname: string): StorefrontSkeletonVariant {
   if (/\/products\/[^/]+$/.test(pathname)) return "product";
+  if (pathname.endsWith("/shop") || pathname.includes("/categories/") || pathname.includes("/collections/")) {
+    return "shop";
+  }
   if (pathname.endsWith("/cart")) return "cart";
   if (pathname.endsWith("/checkout")) return "checkout";
   if (pathname.includes("/account/register")) return "auth-register";

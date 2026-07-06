@@ -1,7 +1,8 @@
 "use client";
 
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
-import { Category, Product, Store } from "@/types/store.types";
+import { Product, Store } from "@/types/store.types";
+import { storeCategoryPath } from "@/lib/storePaths";
 
 interface ProductBreadcrumbsProps {
   store: Store;
@@ -20,7 +21,7 @@ export function ProductBreadcrumbs({ store, product }: ProductBreadcrumbsProps) 
         <>
           <span className="opacity-40">/</span>
           <StorefrontNavLink
-            href={`${base}?category=${product.category.slug}#shop`}
+            href={storeCategoryPath(store.slug, product.category.slug)}
             className="sf-eyebrow sf-link transition-opacity hover:opacity-70"
           >
             {product.category.name}

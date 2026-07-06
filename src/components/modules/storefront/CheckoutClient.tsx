@@ -37,7 +37,10 @@ export default function CheckoutClient({
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"COD" | "SSLCOMMERZ">("SSLCOMMERZ");
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "SSLCOMMERZ">(() => {
+    const sslEnabled = process.env.NEXT_PUBLIC_SSLCOMMERZ_ENABLED === "true";
+    return sslEnabled ? "SSLCOMMERZ" : "COD";
+  });
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     customerName: "",

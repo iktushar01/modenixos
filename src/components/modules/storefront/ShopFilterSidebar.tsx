@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { storeShopPath } from "@/lib/storePaths";
 import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { Category, Collection } from "@/types/store.types";
@@ -280,7 +281,7 @@ export function ShopFilterSidebar({
       </FilterGroup>
 
       <Link
-        href={`${base}#shop`}
+        href={storeShopPath(slug)}
         className="sf-link inline-flex text-xs"
         onClick={onClear}
       >

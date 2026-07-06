@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Product, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
+import { storeShopPath } from "@/lib/storePaths";
 import { ProductCard } from "./ProductCard";
 import { StorefrontSection } from "./ui";
 import {
@@ -38,7 +39,7 @@ export function TrendingScroll({
           title="Popular right now"
           action={
             <StorefrontCarouselHeaderAction
-              viewAllHref={`/store/${store.slug}#shop`}
+              viewAllHref={storeShopPath(store.slug)}
               itemCount={products.length}
             />
           }
