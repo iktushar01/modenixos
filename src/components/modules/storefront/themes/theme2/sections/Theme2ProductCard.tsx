@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Product, Store } from "@/types/store.types";
 import { formatPrice, productDisplayPrice } from "@/lib/storefrontTheme";
 import { useCartStore } from "@/stores/cart.store";
-import { StorefrontNavLink } from "../../StorefrontNavLink";
+import { StorefrontNavLink } from "../../../StorefrontNavLink";
 import { cn } from "@/lib/utils";
 
 interface Theme2ProductCardProps {
