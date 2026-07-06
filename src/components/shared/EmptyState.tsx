@@ -20,9 +20,11 @@ export function EmptyState({
   icon: Icon = PackageOpen,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-      <Icon className="mb-4 h-12 w-12 text-muted-foreground" />
-      <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="dashboard-panel flex flex-col items-center justify-center p-10 text-center sm:p-14">
+      <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform duration-300 hover:scale-105">
+        <Icon className="h-7 w-7" />
+      </span>
+      <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{title}</h3>
       <p className="mt-2 max-w-sm text-sm text-muted-foreground">{description}</p>
       {actionLabel && actionHref && (
         <Button className="mt-4" asChild>
