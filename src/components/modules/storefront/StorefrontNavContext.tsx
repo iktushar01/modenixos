@@ -20,13 +20,11 @@ import {
   buildStorefrontPath,
   parseStorefrontHref,
   scrollStorefrontToHash,
-  scrollStorefrontToTop,
 } from "@/lib/storefront/navigation";
 
 interface StorefrontNavContextValue {
   activePath: string;
   navigate: (href: string) => void;
-  isNavigating: boolean;
 }
 
 const StorefrontNavContext = createContext<StorefrontNavContextValue | null>(null);
@@ -38,7 +36,6 @@ function StorefrontNavProviderFallback({ children }: { children: ReactNode }) {
     () => ({
       activePath: pathname,
       navigate: () => {},
-      isNavigating: false,
     }),
     [pathname],
   );
@@ -71,7 +68,7 @@ function StorefrontNavProviderActive({ children }: { children: ReactNode }) {
   }, [currentLocation, optimisticLocation]);
 
   // Scroll after route updates (covers navigate(), Link, and browser back/forward).
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!hasMountedRef.current) {
       hasMountedRef.current = true;
       previousPathnameRef.current = pathname;
@@ -83,13 +80,11 @@ function StorefrontNavProviderActive({ children }: { children: ReactNode }) {
     const pathChanged = previousPathnameRef.current !== pathname;
     previousPathnameRef.current = pathname;
 
-    requestAnimationFrame(() => {
-      if (pathChanged) {
-        applyStorefrontScrollAfterNav(hash || undefined);
-      } else if (hash) {
-        scrollStorefrontToHash(hash);
-      }
-    });
+    if (pathChanged) {
+      applyStorefrontScrollAfterNav(hash || undefined);
+    } else if (hash) {
+      scrollStorefrontToHash(hash);
+    }
   }, [locationKey, pathname]);
 
   const navigate = useCallback(
@@ -112,13 +107,12 @@ function StorefrontNavProviderActive({ children }: { children: ReactNode }) {
 
       if (!targetPath || targetBase === optimisticLocation) return;
 
-      const isPathnameChange = targetPath !== pathname;
-
       pendingHashRef.current = hash || null;
-      setOptimisticLocation(targetBase);
-      if (isPathnameChange) {
-        scrollStorefrontToTop();
+
+      if (targetPath !== pathname) {
+        setOptimisticLocation(targetBase);
       }
+
       startTransition(() => {
         router.push(targetLocation, { scroll: false });
       });
@@ -157,9 +151,8 @@ function StorefrontNavProviderActive({ children }: { children: ReactNode }) {
     () => ({
       activePath,
       navigate,
-      isNavigating: optimisticLocation !== null,
     }),
-    [activePath, navigate, optimisticLocation],
+    [activePath, navigate],
   );
 
   return (
