@@ -6,7 +6,9 @@ import { ArrowRight, LayoutDashboard, Package, ShoppingCart, Store, TrendingUp }
 import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import AnimatedContent from "@/components/AnimatedContent";
+import { cn } from "@/lib/utils";
 import { DEMO_STORE_PATH } from "@/lib/app-config";
+import { cn } from "@/lib/utils";
 import { MarketingSectionHeader } from "../MarketingSectionHeader";
 import { StartFreeLink } from "../StartFreeLink";
 import { industries, type IndustryPreview } from "../landing-data";

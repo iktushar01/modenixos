@@ -6,9 +6,18 @@ import { getPublicStoreAction } from "@/actions/catalog.actions";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const store = await getPublicStoreAction(slug);
+  const title = store?.brandName ?? "Store";
+  const description = store?.description ?? undefined;
+  const images = store?.logo ? [{ url: store.logo }] : undefined;
   return {
-    title: store?.brandName ?? "Store",
-    description: store?.description ?? undefined,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images,
+      type: "website",
+    },
   };
 }
 

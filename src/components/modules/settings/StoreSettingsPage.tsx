@@ -3,80 +3,85 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { ExternalLink, Palette, Store } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import ThemeSettingsPage from "@/components/modules/settings/ThemeSettingsPage";
+import { storeBasePath } from "@/lib/storePaths";
 
 export default function StoreSettingsPage() {
   const { data: store, refetch } = useMyStore();
-  const [form, setForm] = useState({
-    brandName: "",
-    description: "",
-    isPublished: false,
-    primaryColor: "#1a1a2e",
-    secondaryColor: "#e94560",
-  });
+  const [isPublished, setIsPublished] = useState(false);
 
   useEffect(() => {
-    if (store) {
-      const theme = (store.theme ?? {}) as Record<string, string>;
-      setForm({
-        brandName: store.brandName,
-        description: store.description ?? "",
-        isPublished: store.isPublished,
-        primaryColor: theme.primaryColor ?? "#1a1a2e",
-        secondaryColor: theme.secondaryColor ?? "#e94560",
-      });
-    }
+    if (store) setIsPublished(store.isPublished);
   }, [store]);
 
-  const handleSave = async () => {
+  const handlePublishToggle = async (published: boolean) => {
     if (!store) return;
+    setIsPublished(published);
     try {
-      await updateStoreAction(store.id, {
-        brandName: form.brandName,
-        description: form.description,
-        isPublished: form.isPublished,
-        theme: { primaryColor: form.primaryColor, secondaryColor: form.secondaryColor },
-      });
-      toast.success("Settings saved");
+      await updateStoreAction(store.id, { isPublished: published });
+      toast.success(published ? "Store published" : "Store unpublished");
       refetch();
     } catch {
-      toast.error("Failed to save settings");
+      setIsPublished(!published);
+      toast.error("Failed to update publish status");
     }
   };
 
+  const storefrontPath = store ? storeBasePath(store.slug) : "#";
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Settings" description="Manage your store configuration." />
+      <PageHeader title="Settings" description="Account preferences and quick store controls." />
+
       <Card>
-        <CardHeader><CardTitle>Store Information</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div><Label>Brand Name</Label><Input value={form.brandName} onChange={(e) => setForm({ ...form, brandName: e.target.value })} /></div>
-          <div><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-          <div className="flex items-center gap-2">
-            <Switch checked={form.isPublished} onCheckedChange={(v) => setForm({ ...form, isPublished: v })} />
-            <Label>Publish store (visible on storefront)</Label>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Store className="h-5 w-5" />
+            Storefront
+          </CardTitle>
+          <CardDescription>
+            Brand profile, branding, appearance, and header are managed in Shop settings.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <Switch checked={isPublished} onCheckedChange={handlePublishToggle} id="published-quick" />
+              <Label htmlFor="published-quick">Publish storefront</Label>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Unpublished stores are visible only to you when previewing.
+            </p>
           </div>
-          <Button onClick={handleSave}>Save Changes</Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline" className="gap-2">
+              <Link href="/dashboard/store">
+                <Palette className="h-4 w-4" />
+                Customize storefront
+              </Link>
+            </Button>
+            {store && (
+              <Button asChild variant="outline" className="gap-2">
+                <Link href={storefrontPath} target="_blank">
+                  <ExternalLink className="h-4 w-4" />
+                  View storefront
+                </Link>
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader><CardTitle>Store Appearance</CardTitle><CardDescription>Customize colors applied to your storefront.</CardDescription></CardHeader>
-        <CardContent className="space-y-4">
-          <div><Label>Primary Color</Label><Input type="color" value={form.primaryColor} onChange={(e) => setForm({ ...form, primaryColor: e.target.value })} /></div>
-          <div><Label>Secondary Color</Label><Input type="color" value={form.secondaryColor} onChange={(e) => setForm({ ...form, secondaryColor: e.target.value })} /></div>
-          <Button onClick={handleSave}>Save Appearance</Button>
-        </CardContent>
-      </Card>
+
       <ThemeSettingsPage scope="client" />
+
       <Card>
         <CardHeader><CardTitle>Billing</CardTitle><CardDescription>Subscription and payment methods.</CardDescription></CardHeader>
         <CardContent className="space-y-2">
