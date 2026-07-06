@@ -39,6 +39,7 @@ export const clientSidebarData: SidebarData = {
         { label: "Shop profile", icon: "Store", href: "/dashboard/store" },
         { label: "Branding", icon: "Image", href: "/dashboard/store/branding" },
         { label: "Header", icon: "Layers", href: "/dashboard/store/header" },
+        { label: "Shipping", icon: "Truck", href: "/dashboard/store/shipping" },
         { label: "Appearance", icon: "Palette", href: "/dashboard/store/appearance" },
       ],
     },
