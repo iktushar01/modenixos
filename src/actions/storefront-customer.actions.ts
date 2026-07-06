@@ -5,6 +5,7 @@ import { deleteCookie, setCookie } from "@/lib/cookieUtils";
 import {
   publicFetchWithStoreCookie,
   storefrontCustomerCookieName,
+  hasStorefrontCustomerCookie,
 } from "@/lib/storefrontCustomerApi";
 import { StorefrontCustomer, WishlistItem } from "@/types/store.types";
 
@@ -114,13 +115,17 @@ export async function logoutStorefrontCustomerAction(slug: string) {
 
 export async function getStorefrontCustomerAction(slug: string) {
   try {
+    if (!(await hasStorefrontCustomerCookie(slug))) {
+      return null;
+    }
+
     const res = await publicFetchWithStoreCookie(
       slug,
       `/public/stores/${slug}/customers/me`,
     );
     if (!res.ok) return null;
     const json = await res.json();
-    return json.data as StorefrontCustomer;
+    return (json.data ?? null) as StorefrontCustomer | null;
   } catch {
     return null;
   }

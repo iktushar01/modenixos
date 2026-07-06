@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { StorefrontContextProvider } from "@/components/modules/storefront/StorefrontContext";
+import { StorefrontInnerLayout } from "@/components/modules/storefront/StorefrontInnerLayout";
 import { StorefrontLayoutClient } from "@/components/modules/storefront/StorefrontLayoutClient";
 import { readColorModeFromCookie } from "@/lib/storefront/colorModeStorage";
 import { getPublicStoreAction, getPublicCategoriesAction } from "@/actions/catalog.actions";
@@ -29,7 +30,9 @@ export default async function StoreSlugLayout({
       initialStore={(initialStore as Store) ?? null}
       initialCategories={(categoriesRes.data ?? []) as Category[]}
     >
-      <StorefrontLayoutClient>{children}</StorefrontLayoutClient>
+      <StorefrontLayoutClient>
+        <StorefrontInnerLayout>{children}</StorefrontInnerLayout>
+      </StorefrontLayoutClient>
     </StorefrontContextProvider>
   );
 }

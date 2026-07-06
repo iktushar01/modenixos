@@ -2,7 +2,6 @@
 
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
-import { StorefrontOrdersSkeleton } from "@/components/modules/storefront/skeletons";
 import { getStoreStaticPage, StoreStaticPageId } from "@/lib/storefront/storeStaticPages";
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import { storeBasePath } from "@/lib/storePaths";
@@ -16,7 +15,7 @@ export default function StorePolicyPageClient({ pageId }: StorePolicyPageClientP
   const { store, categories, storeReady } = useStorefront();
 
   if (!storeReady || !store) {
-    return <StorefrontOrdersSkeleton />;
+    return null;
   }
 
   const page = getStoreStaticPage(store.brandName, pageId);

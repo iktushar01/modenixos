@@ -21,6 +21,13 @@ export function isStorefrontClientNavHref(href: string): boolean {
   return href.startsWith("/store/");
 }
 
+/** Storefront home — long-scroll landing, not an inner chrome page. */
+export function isStoreHomePath(pathname: string, slug: string): boolean {
+  if (!slug) return false;
+  const base = `/store/${slug}`;
+  return pathname === base || pathname === `${base}/`;
+}
+
 export function scrollStorefrontToTop() {
   if (typeof window === "undefined") return;
   window.scrollTo(0, 0);
@@ -53,7 +60,8 @@ export type StorefrontSkeletonVariant =
   | "auth-login"
   | "auth-register"
   | "wishlist"
-  | "orders";
+  | "orders"
+  | "static";
 
 export function getStorefrontSkeletonVariant(pathname: string): StorefrontSkeletonVariant {
   if (/\/products\/[^/]+$/.test(pathname)) return "product";
@@ -66,5 +74,15 @@ export function getStorefrontSkeletonVariant(pathname: string): StorefrontSkelet
   if (pathname.includes("/account/login")) return "auth-login";
   if (pathname.includes("/account/wishlist")) return "wishlist";
   if (pathname.includes("/account/orders") || pathname.endsWith("/track")) return "orders";
+  if (
+    pathname.endsWith("/about") ||
+    pathname.endsWith("/contact-us") ||
+    pathname.endsWith("/privacy-policy") ||
+    pathname.endsWith("/shipping-policy") ||
+    pathname.endsWith("/return-exchange-policy") ||
+    pathname.endsWith("/payment-refund-policy")
+  ) {
+    return "static";
+  }
   return "home";
 }

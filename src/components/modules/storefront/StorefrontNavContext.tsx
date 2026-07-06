@@ -123,6 +123,12 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
       `${base}/account/orders`,
       `${base}/account/wishlist`,
       `${base}/track`,
+      `${base}/about`,
+      `${base}/contact-us`,
+      `${base}/privacy-policy`,
+      `${base}/shipping-policy`,
+      `${base}/return-exchange-policy`,
+      `${base}/payment-refund-policy`,
     ];
     routes.forEach((route) => router.prefetch(route));
   }, [slug, router]);

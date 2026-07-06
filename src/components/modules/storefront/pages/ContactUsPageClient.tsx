@@ -4,7 +4,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
-import { StorefrontOrdersSkeleton } from "@/components/modules/storefront/skeletons";
 import { getStoreStaticPage } from "@/lib/storefront/storeStaticPages";
 import { parseStorefrontTheme } from "@/lib/storefront";
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
@@ -22,7 +21,7 @@ export default function ContactUsPageClient() {
   const [form, setForm] = useState({ name: "", email: "", orderNumber: "", subject: "", message: "" });
 
   if (!storeReady || !store) {
-    return <StorefrontOrdersSkeleton />;
+    return null;
   }
 
   const page = getStoreStaticPage(store.brandName, "contact-us");

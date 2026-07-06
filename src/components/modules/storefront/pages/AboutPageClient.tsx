@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
-import { StorefrontOrdersSkeleton } from "@/components/modules/storefront/skeletons";
 import { getStoreStaticPage } from "@/lib/storefront/storeStaticPages";
 import { parseStorefrontTheme, resolveStoreLogo } from "@/lib/storefront";
 import { useStorefrontTheme } from "@/components/modules/storefront/StorefrontThemeContext";
@@ -17,7 +16,7 @@ export default function AboutPageClient() {
   const { store, categories, storeReady } = useStorefront();
 
   if (!storeReady || !store) {
-    return <StorefrontOrdersSkeleton />;
+    return null;
   }
 
   return (

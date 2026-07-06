@@ -7,6 +7,7 @@ import { StorefrontThemeShell, useStorefrontTheme } from "./StorefrontThemeShell
 import { AnnouncementBar } from "./themes/theme1/AnnouncementBar";
 import { StoreHeader } from "./themes/theme1/StoreHeader";
 import { StoreFooter } from "./StoreFooter";
+import { useStorefrontShellProvided } from "./StorefrontShellContext";
 
 interface StorefrontPageShellProps {
   store: Store;
@@ -35,6 +36,12 @@ function StorefrontPageContent({
 }
 
 export function StorefrontPageShell({ store, categories = [], children }: StorefrontPageShellProps) {
+  const shellProvided = useStorefrontShellProvided();
+
+  if (shellProvided) {
+    return <>{children}</>;
+  }
+
   const theme = parseStorefrontTheme(store);
 
   return (
