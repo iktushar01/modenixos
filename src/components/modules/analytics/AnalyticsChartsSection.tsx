@@ -1,14 +1,14 @@
 "use client";
 
+import { useId } from "react";
 import {
   Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
   Line,
-  LineChart,
   Pie,
   PieChart,
   XAxis,
@@ -44,6 +44,77 @@ const dailyChartConfig = {
   revenue: { label: "Revenue", color: "var(--chart-3)" },
 };
 
+function TrendChart({
+  data,
+  dataKey,
+  xKey,
+  color,
+  currency,
+  config,
+  heightClass = "h-[300px]",
+  xInterval,
+}: {
+  data: Array<Record<string, string | number>>;
+  dataKey: string;
+  xKey: string;
+  color: string;
+  currency: string;
+  config: Record<string, { label: string; color: string }>;
+  heightClass?: string;
+  xInterval?: number | "preserveStartEnd";
+}) {
+  const gradientId = useId().replace(/:/g, "");
+
+  return (
+    <ChartContainer config={config} className={`w-full ${heightClass}`}>
+      <ComposedChart data={data} margin={{ left: 4, right: 12, top: 8, bottom: 0 }}>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+            <stop offset="95%" stopColor={color} stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis
+          dataKey={xKey}
+          tickLine={false}
+          axisLine={false}
+          interval={xInterval ?? "preserveStartEnd"}
+          minTickGap={20}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(v) => formatPrice(v, currency)}
+          width={76}
+          domain={[0, "auto"]}
+        />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent formatter={(value) => formatPrice(Number(value), currency)} />
+          }
+        />
+        <Area
+          type="monotone"
+          dataKey={dataKey}
+          fill={`url(#${gradientId})`}
+          stroke="none"
+          isAnimationActive
+        />
+        <Line
+          type="monotone"
+          dataKey={dataKey}
+          stroke={color}
+          strokeWidth={2.5}
+          dot={{ r: 3.5, fill: color, strokeWidth: 0 }}
+          activeDot={{ r: 5.5, fill: color, stroke: "var(--background)", strokeWidth: 2 }}
+          isAnimationActive
+        />
+      </ComposedChart>
+    </ChartContainer>
+  );
+}
+
 export function AnalyticsChartsSection({ charts, overview, currency }: AnalyticsChartsSectionProps) {
   const statusData = overview.orderStatusBreakdown
     .filter((item) => item.count > 0)
@@ -75,36 +146,17 @@ export function AnalyticsChartsSection({ charts, overview, currency }: Analytics
           <Card className="dashboard-panel dashboard-panel-hover border-0 bg-transparent shadow-none">
             <CardHeader className="pb-2">
               <CardTitle>Monthly revenue</CardTitle>
-              <CardDescription>Last 12 months of paid order revenue</CardDescription>
+              <CardDescription>Revenue trend over the last 12 months</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={revenueChartConfig} className="h-[280px] w-full">
-                <AreaChart data={charts.monthlyRevenue} margin={{ left: 4, right: 4 }}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v) => formatPrice(v, currency)}
-                    width={72}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        formatter={(value) => formatPrice(Number(value), currency)}
-                      />
-                    }
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="var(--color-revenue)"
-                    fill="var(--color-revenue)"
-                    fillOpacity={0.2}
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ChartContainer>
+              <TrendChart
+                data={charts.monthlyRevenue}
+                dataKey="revenue"
+                xKey="label"
+                color="var(--chart-1)"
+                currency={currency}
+                config={revenueChartConfig}
+              />
             </CardContent>
           </Card>
         )}
@@ -116,7 +168,7 @@ export function AnalyticsChartsSection({ charts, overview, currency }: Analytics
               <CardDescription>Order volume by month</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={ordersChartConfig} className="h-[280px] w-full">
+              <ChartContainer config={ordersChartConfig} className="h-[300px] w-full">
                 <BarChart data={charts.monthlyOrders} margin={{ left: 4, right: 4 }}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -135,41 +187,19 @@ export function AnalyticsChartsSection({ charts, overview, currency }: Analytics
           <Card className="dashboard-panel dashboard-panel-hover border-0 bg-transparent shadow-none xl:col-span-2">
             <CardHeader className="pb-2">
               <CardTitle>Daily revenue</CardTitle>
-              <CardDescription>Last 30 days</CardDescription>
+              <CardDescription>Daily revenue wave for the last 30 days</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={dailyChartConfig} className="h-[240px] w-full">
-                <LineChart data={charts.dailyRevenue} margin={{ left: 4, right: 4 }}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="label"
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
-                    minTickGap={24}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v) => formatPrice(v, currency)}
-                    width={72}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        formatter={(value) => formatPrice(Number(value), currency)}
-                      />
-                    }
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="var(--color-revenue)"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ChartContainer>
+              <TrendChart
+                data={charts.dailyRevenue}
+                dataKey="revenue"
+                xKey="label"
+                color="var(--chart-3)"
+                currency={currency}
+                config={dailyChartConfig}
+                heightClass="h-[280px]"
+                xInterval={4}
+              />
             </CardContent>
           </Card>
         )}
@@ -181,7 +211,7 @@ export function AnalyticsChartsSection({ charts, overview, currency }: Analytics
               <CardDescription>All-time fulfillment mix</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={statusChartConfig} className="mx-auto h-[240px] w-full max-w-[280px]">
+              <ChartContainer config={statusChartConfig} className="mx-auto h-[280px] w-full max-w-[280px]">
                 <PieChart>
                   <ChartTooltip content={<ChartTooltipContent nameKey="label" />} />
                   <Pie
