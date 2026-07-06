@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { httpClient } from "@/lib/httpClient";
+import { httpClient } from "@/lib/axios/httpClient";
 
 export type CommissionSettings = {
   id: string;

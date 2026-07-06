@@ -39,6 +39,7 @@ export default function AdminManagementDashboard() {
           { label: "Users", value: analytics?.users ?? 0 },
           { label: "Orders", value: analytics?.orders ?? 0 },
           { label: "MRR", value: `$${(analytics?.mrr ?? 0).toFixed(0)}` },
+          { label: "Commission", value: `$${(analytics?.totalCommission ?? 0).toFixed(2)}` },
         ].map((s) => (
           <Card key={s.label}>
             <CardHeader className="pb-2"><CardTitle className="text-sm">{s.label}</CardTitle></CardHeader>

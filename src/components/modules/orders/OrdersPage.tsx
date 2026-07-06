@@ -445,6 +445,14 @@ export default function OrdersPage() {
                           )}
                         </div>
                       )}
+                      {order.platformEarning?.status === "EARNED" && (
+                        <div className="mt-2 text-xs text-muted-foreground">
+                          Platform fee:{" "}
+                          <span className="font-medium text-foreground">
+                            {formatPrice(order.platformEarning.commissionAmount, currency)}
+                          </span>
+                        </div>
+                      )}
                     </TableCell>
                   )}
                   {visibleColumns.date && (
