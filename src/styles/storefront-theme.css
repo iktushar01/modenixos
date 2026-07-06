@@ -1539,3 +1539,30 @@
   font-size: 0.75rem;
 }
 
+/* Quick view modal (portal — self-contained theme2 shell) */
+.storefront-theme.sf-t2-quickview[data-storefront-theme="theme2"] {
+  background: var(--sf-bg);
+  color: var(--sf-fg);
+}
+
+.storefront-theme.sf-t2-quickview .sf-t2-quickview-title {
+  font-family: var(--sf-font-display), serif;
+  font-size: clamp(1.375rem, 3vw, 1.875rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.storefront-theme.sf-t2-quickview .sf-t2-quickview-close {
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.storefront-theme.sf-t2-quickview .sf-t2-quickview-close:hover {
+  background: color-mix(in srgb, var(--sf-muted) 65%, transparent);
+}
+
+.storefront-theme.sf-t2-quickview .sf-t2-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
