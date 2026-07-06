@@ -18,6 +18,7 @@ import {
   StorefrontNavSource,
 } from "@/lib/storefront";
 import { EditableLinkList } from "./EditableLinkList";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function StoreHeaderPage() {
   const { data: store, refetch, isLoading } = useMyStore();
@@ -42,6 +43,8 @@ export default function StoreHeaderPage() {
       });
     }
   }, [store]);
+
+  useDashboardReady(!isLoading);
 
   const handleSave = async () => {
     if (!store) return;
@@ -75,11 +78,7 @@ export default function StoreHeaderPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return null;
   }
 
   return (

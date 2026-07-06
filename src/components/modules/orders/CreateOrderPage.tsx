@@ -19,6 +19,7 @@ import {
   User,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,6 +67,8 @@ export default function CreateOrderPage() {
   const queryClient = useQueryClient();
   const { data: store } = useMyStore();
   const currency = store?.currency ?? "USD";
+
+  useDashboardReady(true);
 
   const [orderType, setOrderType] = useState<"in_shop" | "online">("in_shop");
   const [status, setStatus] = useState("DELIVERED");

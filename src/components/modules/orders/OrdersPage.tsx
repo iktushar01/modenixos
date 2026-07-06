@@ -58,6 +58,7 @@ import {
   searchOrders,
 } from "@/lib/orders";
 import { cn } from "@/lib/utils";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const STATUSES = ["PENDING", "CONFIRMED", "PACKED", "SHIPPED", "DELIVERED", "CANCELLED"] as const;
 
@@ -154,6 +155,8 @@ export default function OrdersPage() {
     queryKey: ["order-stats"],
     queryFn: getOrderStatsAction,
   });
+
+  useDashboardReady(!isLoading && !statsLoading);
 
   const updateMutation = useMutation({
     mutationFn: ({

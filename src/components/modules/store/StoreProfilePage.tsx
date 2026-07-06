@@ -34,6 +34,7 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import { StorefrontShopProfile } from "@/types/store.types";
 import { cn } from "@/lib/utils";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 function ProfileSkeleton() {
   return (
@@ -168,8 +169,10 @@ export default function StoreProfilePage() {
     }
   };
 
+  useDashboardReady(!isLoading);
+
   if (isLoading) {
-    return <ProfileSkeleton />;
+    return null;
   }
 
   const storefrontPath = `/store/${form.slug}`;

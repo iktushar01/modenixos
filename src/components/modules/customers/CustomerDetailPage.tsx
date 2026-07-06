@@ -7,7 +7,6 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -21,6 +20,7 @@ import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { useState } from "react";
 import { CustomerFormDialog } from "./CustomerFormDialog";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 function formatDate(value?: string) {
   if (!value) return "—";
@@ -43,14 +43,10 @@ export default function CustomerDetailPage({ customerId }: { customerId: string 
 
   const customer = data?.data;
 
+  useDashboardReady(!isLoading);
+
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
-      </div>
-    );
+    return null;
   }
 
   if (isError || !customer) {

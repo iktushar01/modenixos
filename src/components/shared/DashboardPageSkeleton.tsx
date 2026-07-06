@@ -23,3 +23,75 @@ export function DashboardPageSkeleton() {
     </div>
   );
 }
+
+export function DashboardOverviewSkeleton() {
+  return (
+    <div className="space-y-6 animate-in fade-in duration-200">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-56" />
+        <Skeleton className="h-4 w-80 max-w-full" />
+      </div>
+      <Skeleton className="h-36 w-full rounded-xl" />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
+      <Skeleton className="h-12 w-full rounded-lg" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 w-full rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-48 w-full rounded-xl" />
+    </div>
+  );
+}
+
+export function DashboardAnalyticsSkeleton() {
+  return (
+    <div className="space-y-6 animate-in fade-in duration-200">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-4 w-72 max-w-full" />
+      </div>
+      <div className="grid gap-4 md:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-[300px] w-full rounded-xl" />
+    </div>
+  );
+}
+
+export function DashboardFormSkeleton({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {!compact && (
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-96 max-w-full" />
+        </div>
+      )}
+      <Skeleton className="h-64 w-full rounded-xl" />
+      <Skeleton className="h-48 w-full rounded-xl" />
+      {!compact && <Skeleton className="h-40 w-full rounded-xl" />}
+    </div>
+  );
+}
+
+export function getDashboardSkeletonForPath(pathname: string) {
+  if (pathname === "/dashboard") {
+    return <DashboardOverviewSkeleton />;
+  }
+  if (pathname.startsWith("/dashboard/analytics")) {
+    return <DashboardAnalyticsSkeleton />;
+  }
+  if (pathname.startsWith("/dashboard/store")) {
+    return <DashboardFormSkeleton compact />;
+  }
+  if (pathname.startsWith("/dashboard/settings")) {
+    return <DashboardFormSkeleton />;
+  }
+  return <DashboardPageSkeleton />;
+}

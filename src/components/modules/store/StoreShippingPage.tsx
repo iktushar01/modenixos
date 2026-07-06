@@ -13,6 +13,7 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import { StoreShippingConfig } from "@/types/store.types";
 import { getCurrencyName } from "@/lib/currency";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const defaultShipping: StoreShippingConfig = {
   deliveryPolicy: "",
@@ -60,12 +61,10 @@ export default function StoreShippingPage() {
     }
   };
 
+  useDashboardReady(!isLoading);
+
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -31,6 +31,7 @@ import {
   getCategoriesAction,
 } from "@/actions/catalog.actions";
 import { useMyStore } from "@/hooks/useMyStore";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StoreShippingConfig } from "@/types/store.types";
@@ -59,7 +60,7 @@ function StepBadge({
 }
 
 export default function DashboardOverview() {
-  const { data: store } = useMyStore();
+  const { data: store, isLoading: storeLoading } = useMyStore();
   const [user] = useState<UserFromCookie | null>(() => {
     const cookie = getCookie("user");
     if (!cookie) return null;
@@ -79,6 +80,8 @@ export default function DashboardOverview() {
     queryKey: ["dashboard-categories-count"],
     queryFn: () => getCategoriesAction({ limit: 200 }),
   });
+
+  useDashboardReady(!isLoading && !storeLoading);
 
   const categoryCount = categoriesRes?.meta?.total ?? categoriesRes?.data?.length ?? 0;
   const productCount = overview?.products ?? 0;

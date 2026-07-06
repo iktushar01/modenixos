@@ -45,6 +45,7 @@ import {
 import { Product } from "@/types/store.types";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { cn } from "@/lib/utils";
 
 function statusBadgeClass(status: Product["status"]) {
@@ -94,6 +95,8 @@ export default function ProductsPage() {
 
   const products = data?.data ?? [];
   const categories = categoriesRes?.data ?? [];
+
+  useDashboardReady(!isLoading);
 
   return (
     <div className="space-y-6">

@@ -6,14 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAnalyticsOverviewAction, getAnalyticsChartsAction } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 export default function AnalyticsPage() {
   const { data: store } = useMyStore();
   const currency = store?.currency ?? "USD";
-  const { data: overview } = useQuery({ queryKey: ["analytics-overview"], queryFn: getAnalyticsOverviewAction });
-  const { data: charts } = useQuery({ queryKey: ["analytics-charts"], queryFn: getAnalyticsChartsAction });
+  const { data: overview, isLoading: overviewLoading } = useQuery({ queryKey: ["analytics-overview"], queryFn: getAnalyticsOverviewAction });
+  const { data: charts, isLoading: chartsLoading } = useQuery({ queryKey: ["analytics-charts"], queryFn: getAnalyticsChartsAction });
+
+  useDashboardReady(!overviewLoading && !chartsLoading);
 
   return (
     <div className="space-y-6">

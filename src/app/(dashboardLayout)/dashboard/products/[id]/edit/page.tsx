@@ -3,8 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import ProductForm from "@/components/modules/products/ProductForm";
-import { ProductFormSkeleton } from "@/components/modules/products/ProductFormSkeleton";
 import { getProductAction } from "@/actions/catalog.actions";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function EditProductPage() {
   const params = useParams();
@@ -16,8 +16,10 @@ export default function EditProductPage() {
     enabled: Boolean(id),
   });
 
+  useDashboardReady(!isLoading);
+
   if (isLoading) {
-    return <ProductFormSkeleton />;
+    return null;
   }
 
   if (isError || !product) {

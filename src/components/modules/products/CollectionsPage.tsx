@@ -22,6 +22,7 @@ import {
 import { getCollectionsAction, deleteCollectionAction } from "@/actions/catalog.actions";
 import { CollectionFormDialog, CollectionThumbnail } from "./CollectionFormDialog";
 import { Collection } from "@/types/store.types";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function CollectionsPage() {
   const queryClient = useQueryClient();
@@ -45,6 +46,8 @@ export default function CollectionsPage() {
   });
 
   const collections = data?.data ?? [];
+
+  useDashboardReady(!isLoading);
 
   const openCreate = () => {
     setEditing(null);

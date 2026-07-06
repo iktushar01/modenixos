@@ -14,6 +14,7 @@ import { parseStorefrontTheme } from "@/lib/storefrontTheme";
 import { uploadStoreBranding } from "@/lib/uploadStoreBranding";
 import { ImageCropUpload } from "./ImageCropUpload";
 import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const LOGO_RATIOS = [
   { label: "1:1", value: 1 },
@@ -48,6 +49,8 @@ export default function StoreBrandingPage() {
   }, [store]);
 
   const hasPendingChanges = Boolean(logoFile || clearLogo || slidesDirty);
+
+  useDashboardReady(!isLoading);
 
   useEffect(() => {
     if (!store || slidesDirty) return;
@@ -121,11 +124,7 @@ export default function StoreBrandingPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -29,6 +29,7 @@ import {
 } from "@/lib/storefront";
 import { StoreColorPaletteEditor } from "./StoreColorPaletteEditor";
 import { StoreTypographyEditor } from "./StoreTypographyEditor";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const SECTION_LABELS: Record<keyof StorefrontSections, string> = {
   categories: "Categories",
@@ -152,12 +153,10 @@ export default function StoreAppearancePage() {
     }));
   };
 
+  useDashboardReady(!isLoading);
+
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return null;
   }
 
   return (

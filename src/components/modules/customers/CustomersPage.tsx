@@ -34,6 +34,7 @@ import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Customer } from "@/types/store.types";
 import { CustomerFormDialog } from "./CustomerFormDialog";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 import { cn } from "@/lib/utils";
 
 type AccountFilter = "all" | "registered" | "guest";
@@ -92,6 +93,8 @@ export default function CustomersPage() {
 
   const customers = data?.data ?? [];
   const registeredCount = customers.filter((c) => c.hasAccount).length;
+
+  useDashboardReady(!isLoading);
 
   const openCreate = () => {
     setEditing(null);

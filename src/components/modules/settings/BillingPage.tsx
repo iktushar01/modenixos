@@ -29,6 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const planLabels: Record<string, string> = {
   FREE: "Starter",
@@ -56,6 +57,8 @@ export default function BillingPage() {
     queryKey: ["billing-plans"],
     queryFn: getBillingPlansAction,
   });
+
+  useDashboardReady(!isLoading);
 
   useEffect(() => {
     const checkout = searchParams.get("checkout");
@@ -102,11 +105,7 @@ export default function BillingPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return null;
   }
 
   const currentPlan = overview?.store.plan ?? "FREE";

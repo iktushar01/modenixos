@@ -30,6 +30,7 @@ import { getCategoriesAction, deleteCategoryAction } from "@/actions/catalog.act
 import { CategoryFormDialog, CategoryThumbnail } from "./CategoryFormDialog";
 import { Category } from "@/types/store.types";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function CategoriesPage() {
   const queryClient = useQueryClient();
@@ -56,6 +57,8 @@ export default function CategoriesPage() {
 
   const categories = data?.data ?? [];
   const tree = useMemo(() => buildCategoryTree(categories), [categories]);
+
+  useDashboardReady(!isLoading);
 
   const openCreate = () => {
     setEditing(null);

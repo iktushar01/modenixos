@@ -1,3 +1,9 @@
-export default function DashboardRouteTemplate({ children }: { children: React.ReactNode }) {
-  return <div className="animate-in fade-in duration-200">{children}</div>;
+import { DashboardRouteTemplate } from "@/components/shared/DashboardRouteTemplate";
+
+export default function DashboardRouteTemplatePage({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <DashboardRouteTemplate>{children}</DashboardRouteTemplate>;
 }

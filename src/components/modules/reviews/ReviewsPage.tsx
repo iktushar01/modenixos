@@ -24,6 +24,7 @@ import {
   deleteReviewAction,
 } from "@/actions/catalog.actions";
 import { Review } from "@/types/store.types";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function ReviewsPage() {
   const queryClient = useQueryClient();
@@ -50,6 +51,8 @@ export default function ReviewsPage() {
   });
 
   const reviews = (data?.data ?? []) as Review[];
+
+  useDashboardReady(!isLoading);
 
   return (
     <div className="space-y-6">

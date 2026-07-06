@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { getCouponsAction, createCouponAction, deleteCouponAction } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function CouponsPage() {
   const [open, setOpen] = useState(false);
@@ -38,6 +39,8 @@ export default function CouponsPage() {
   });
 
   const coupons = data?.data ?? [];
+
+  useDashboardReady(!isLoading);
 
   return (
     <div className="space-y-6">
