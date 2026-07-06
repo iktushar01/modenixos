@@ -1,5 +1,6 @@
 import { Category, Product } from "@/types/store.types";
 import { resolveCategoryFilterSlugs } from "@/lib/catalog/categoryTree";
+import { storeCategoryPath, storeShopPath } from "@/lib/storePaths";
 
 export type ShopSort = "newest" | "price-asc" | "price-desc" | "name";
 
@@ -43,11 +44,15 @@ export function parseShopFilters(params: URLSearchParams): ShopFilters {
   };
 }
 
-/** Shop URLs must put query params before the hash so Next.js can read them. */
+/** Build a shop URL. Pass slug for `/store/:slug/shop`, or a full pathname to override. */
 export function buildShopHref(
-  pathname: string,
+  slugOrPathname: string,
   params?: Record<string, string | undefined> | URLSearchParams,
 ): string {
+  const pathname = slugOrPathname.startsWith("/store/")
+    ? slugOrPathname
+    : storeShopPath(slugOrPathname);
+
   const search =
     params instanceof URLSearchParams
       ? params
@@ -61,11 +66,11 @@ export function buildShopHref(
           return p;
         })();
   const qs = search.toString();
-  return qs ? `${pathname}?${qs}#shop` : `${pathname}#shop`;
+  return qs ? `${pathname}?${qs}` : pathname;
 }
 
-export function buildShopCategoryHref(pathname: string, categorySlug: string): string {
-  return buildShopHref(pathname, { category: categorySlug });
+export function buildShopCategoryHref(slug: string, categorySlug: string): string {
+  return storeCategoryPath(slug, categorySlug);
 }
 
 export function shopFiltersToSearchParams(filters: ShopFilters): URLSearchParams {

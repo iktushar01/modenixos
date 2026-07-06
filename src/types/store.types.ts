@@ -11,6 +11,7 @@ export interface Store {
   description?: string | null;
   isPublished: boolean;
   isSuspended: boolean;
+  isPreview?: boolean;
   plan: "FREE" | "PRO" | "ENTERPRISE";
   theme?: Record<string, unknown> | null;
   shipping?: Record<string, unknown> | null;

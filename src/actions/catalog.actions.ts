@@ -314,14 +314,30 @@ export async function suspendStoreAction(id: string, isSuspended: boolean) {
 }
 
 // Public
+async function fetchPublicStore(slug: string, cookieHeader?: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
+    headers: cookieHeader ? { Cookie: cookieHeader } : undefined,
+    next: { revalidate: 60, tags: [`store-public-${slug}`] },
+  });
+  if (!res.ok) return null;
+  const json = await res.json();
+  return json.data;
+}
+
 export const getPublicStoreAction = cache(async (slug: string) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
-      next: { revalidate: 60, tags: [`store-public-${slug}`] },
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data;
+    const store = await fetchPublicStore(slug);
+    if (store) return store;
+
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+    if (!cookieHeader) return null;
+
+    return fetchPublicStore(slug, cookieHeader);
   } catch {
     return null;
   }
