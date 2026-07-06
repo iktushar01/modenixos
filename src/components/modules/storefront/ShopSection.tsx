@@ -108,7 +108,7 @@ export function ShopSection({
     if (storefrontNav) {
       storefrontNav.navigate(target);
     } else {
-      startTransition(() => router.push(target, { scroll: false });
+      startTransition(() => router.push(target, { scroll: false }));
     }
   }, [pathname, router, storefrontNav, isShopPage]);
 
