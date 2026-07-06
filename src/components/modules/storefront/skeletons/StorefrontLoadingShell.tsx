@@ -1,18 +1,17 @@
+"use client";
+
 import { ReactNode } from "react";
-import { cssVarsToStyle } from "@/lib/storefront/cssVars";
-import { CLASSIC_RETAIL_LIGHT } from "@/lib/storefront/presets";
-import { storefrontFontFallbackStyle } from "@/components/modules/storefront/fonts";
+import { useStorefrontSkeletonVars } from "@/hooks/useStorefrontSkeletonVars";
 
 interface StorefrontLoadingShellProps {
   children: ReactNode;
 }
 
 export function StorefrontLoadingShell({ children }: StorefrontLoadingShellProps) {
+  const style = useStorefrontSkeletonVars();
+
   return (
-    <div
-      className="storefront-theme sf-bg min-h-screen animate-pulse"
-      style={{ ...cssVarsToStyle(CLASSIC_RETAIL_LIGHT), ...storefrontFontFallbackStyle }}
-    >
+    <div className="storefront-theme sf-bg min-h-screen animate-pulse" style={style}>
       <div className="sf-announcement h-8" />
       <div className="sf-border sf-navbar border-b">
         <div className="sf-section flex h-20 items-center justify-between gap-4">

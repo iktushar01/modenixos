@@ -2,9 +2,11 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { StorefrontColorMode, StorefrontThemeConfig } from "@/lib/storefront";
+import {
+  readStoredColorMode,
+  storefrontColorModeStorageKey,
+} from "@/lib/storefront/colorModeStorage";
 import { resolveColorsForMode } from "@/lib/storefront/parseTheme";
-
-const STORAGE_PREFIX = "modenixos-storefront-mode:";
 
 interface StorefrontThemeContextValue {
   colorMode: StorefrontColorMode;
@@ -32,8 +34,8 @@ export function StorefrontThemeProvider({ theme, storeSlug, children }: Storefro
   const [colorMode, setColorMode] = useState<StorefrontColorMode>(theme.colorMode);
 
   useEffect(() => {
-    const stored = localStorage.getItem(`${STORAGE_PREFIX}${storeSlug}`);
-    if (stored === "light" || stored === "dark") {
+    const stored = readStoredColorMode(storeSlug);
+    if (stored) {
       setColorMode(stored);
     }
   }, [storeSlug]);
@@ -41,7 +43,7 @@ export function StorefrontThemeProvider({ theme, storeSlug, children }: Storefro
   const toggleColorMode = useCallback(() => {
     setColorMode((prev) => {
       const next: StorefrontColorMode = prev === "dark" ? "light" : "dark";
-      localStorage.setItem(`${STORAGE_PREFIX}${storeSlug}`, next);
+      localStorage.setItem(storefrontColorModeStorageKey(storeSlug), next);
       return next;
     });
   }, [storeSlug]);

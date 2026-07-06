@@ -345,7 +345,7 @@
 }
 
 .storefront-theme .sf-skeleton {
-  background-color: color-mix(in srgb, var(--sf-muted-fg) 15%, transparent);
+  background-color: color-mix(in srgb, var(--sf-muted-fg) 18%, var(--sf-muted) 82%);
 }
 
 .storefront-theme .sf-input {
