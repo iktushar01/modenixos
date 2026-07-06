@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
@@ -32,18 +32,14 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
 
   if (slides.length === 0) {
     return (
-      <section
-        className="sf-muted w-full"
-        style={{ height: heroHeight, minHeight: "280px" }}
-        aria-hidden
-      />
+      <section className="sf-muted sf-hero-height w-full" aria-hidden />
     );
   }
 
   return (
     <section
-      className="relative w-full overflow-hidden"
-      style={{ height: heroHeight, minHeight: "320px" }}
+      className="sf-hero-height relative w-full overflow-hidden"
+      style={{ "--sf-hero-h": heroHeight } as CSSProperties}
     >
       {slides.map((src, i) => (
         <div
@@ -66,18 +62,23 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
       ))}
 
       {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 md:bottom-6">
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1 sm:gap-2 md:bottom-6">
           {slides.map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setIndex(i)}
-              className={cn(
-                "h-1 rounded-full bg-white/90 shadow-sm transition-all duration-300",
-                i === index ? "w-8 opacity-100" : "w-4 opacity-45 hover:opacity-70",
-              )}
+              className="sf-touch-target flex items-center justify-center p-2"
               aria-label={`Go to slide ${i + 1}`}
-            />
+              aria-current={i === index ? "true" : undefined}
+            >
+              <span
+                className={cn(
+                  "block h-1 rounded-full bg-white/90 shadow-sm transition-all duration-300",
+                  i === index ? "w-8 opacity-100" : "w-4 opacity-45",
+                )}
+              />
+            </button>
           ))}
         </div>
       )}

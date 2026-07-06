@@ -23,7 +23,7 @@ function StorefrontThemeShellInner({ children, className }: { children: ReactNod
     <>
       <StorefrontGoogleFonts bodyFont={fonts.bodyFont} displayFont={fonts.displayFont} />
       <div
-        className={cn("storefront-theme min-h-screen", className)}
+        className={cn("storefront-theme min-h-screen min-h-[100dvh] w-full max-w-[100vw]", className)}
         style={themeToCssVars(activeTheme.colors, activeTheme.typography)}
         data-storefront-theme={activeTheme.templateId}
         data-color-mode={colorMode}

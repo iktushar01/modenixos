@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
@@ -66,6 +66,15 @@ function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
     };
   }, [open, updatePosition]);
 
+  const toggle = useCallback(
+    (e: MouseEvent) => {
+      e.preventDefault();
+      updatePosition();
+      setOpen((prev) => !prev);
+    },
+    [updatePosition],
+  );
+
   return (
     <div
       ref={triggerRef}
@@ -77,10 +86,16 @@ function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
         if (!e.currentTarget.contains(e.relatedTarget as Node)) hide();
       }}
     >
-      <Link href={item.href} className="sf-nav-menu-item inline-flex items-center gap-1">
+      <button
+        type="button"
+        className="sf-nav-menu-item inline-flex items-center gap-1"
+        onClick={toggle}
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
         {item.label}
-        <ChevronDown className="h-3 w-3 opacity-60" />
-      </Link>
+        <ChevronDown className={cn("h-3 w-3 opacity-60 transition-transform", open && "rotate-180")} />
+      </button>
       {open &&
         typeof document !== "undefined" &&
         createPortal(
@@ -98,6 +113,9 @@ function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
             onMouseLeave={hide}
           >
             <div className="sf-nav-dropdown-panel">
+              <Link href={item.href} className="sf-nav-dropdown-item font-medium">
+                View all {item.label}
+              </Link>
               {item.children.map((child) => (
                 <Link key={child.href} href={child.href} className="sf-nav-dropdown-item">
                   {child.label}
@@ -175,18 +193,18 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
     <>
       <header
         className={cn(
-          "sf-navbar sticky top-0 z-50 w-full transition-all duration-300",
+          "sf-navbar sf-safe-top sticky top-0 z-50 w-full transition-all duration-300",
           scrolled ? "sf-glass-nav" : "sf-border border-b",
         )}
       >
         <div className="sf-section border-b sf-border">
-          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 md:grid-cols-3 md:gap-6 md:py-4">
-            <div className="flex items-center gap-2 md:justify-self-start">
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2 py-3 sm:gap-3 md:grid-cols-3 md:gap-6 md:py-4">
+            <div className="flex min-w-0 items-center gap-1 sm:gap-2 md:justify-self-start">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="sf-navbar-fg shrink-0 md:hidden"
+                className="sf-navbar-fg sf-touch-target h-11 w-11 shrink-0 lg:hidden"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open menu"
               >
@@ -194,7 +212,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               </Button>
 
               {theme.header.showSearch && (
-                <form onSubmit={handleSearch} className="hidden min-w-0 md:block">
+                <form onSubmit={handleSearch} className="hidden min-w-0 lg:block">
                   <div className="sf-header-search">
                     <Input
                       value={searchQuery}
@@ -218,7 +236,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
             <Link
               href={base}
-              className="flex flex-col items-center justify-self-center text-center"
+              className="flex min-w-0 max-w-[52vw] flex-col items-center justify-self-center text-center sm:max-w-none"
             >
               {store.logo ? (
                 <Image
@@ -226,11 +244,11 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   alt={store.brandName}
                   width={180}
                   height={56}
-                  className="h-8 w-auto object-contain md:h-10"
+                  className="h-7 w-auto max-w-full object-contain sm:h-8 md:h-10"
                   unoptimized
                 />
               ) : (
-                <span className="sf-display-lg text-lg md:text-xl">{store.brandName}</span>
+                <span className="sf-display-lg truncate text-base sm:text-lg md:text-xl">{store.brandName}</span>
               )}
               {theme.header.tagline && (
                 <span className="mt-1 hidden text-[10px] tracking-[0.22em] text-muted-foreground uppercase sm:block">
@@ -239,18 +257,22 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               )}
             </Link>
 
-            <div className="flex items-center justify-end gap-1 md:gap-3 md:justify-self-end">
+            <div className="flex items-center justify-end gap-0.5 sm:gap-1 md:gap-3 md:justify-self-end">
               {theme.header.showPhone && theme.contact.phone && (
                 <a
                   href={`tel:${theme.contact.phone}`}
-                  className="hidden p-2 sf-link lg:inline-flex"
+                  className="sf-link sf-touch-target hidden p-2 lg:inline-flex"
                   aria-label="Call store"
                 >
                   <Phone className="h-5 w-5" strokeWidth={1.5} />
                 </a>
               )}
 
-              <Link href={`${base}/cart`} className="relative p-2" aria-label="Cart">
+              <Link
+                href={`${base}/cart`}
+                className="sf-touch-target relative inline-flex items-center justify-center p-2.5"
+                aria-label="Cart"
+              >
                 <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
                 {hydrated && (
                   <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full text-[9px] font-semibold sf-primary">
@@ -270,7 +292,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
           </div>
 
           {theme.header.showSearch && (
-            <form onSubmit={handleSearch} className="pb-3 md:hidden">
+            <form onSubmit={handleSearch} className="pb-3 lg:hidden">
               <div className="sf-header-search">
                 <Input
                   value={searchQuery}
@@ -294,7 +316,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
         {menuItems.length > 0 && (
           <nav
-            className="sf-section hidden overflow-visible border-b sf-border md:block"
+            className="sf-section hidden overflow-visible border-b sf-border lg:block"
             aria-label="Store categories"
           >
             <div className="sf-nav-menu-scroll">
@@ -319,7 +341,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
       </header>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <StorefrontSheetContent side="left" showCloseButton={false} className="w-full max-w-md border-r p-0">
+        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-safe-bottom w-full max-w-md border-r p-0">
           <div className="flex h-full flex-col px-6 py-8">
             <div className="mb-10 flex items-center justify-between">
               <span className="sf-display-lg text-2xl">{store.brandName}</span>

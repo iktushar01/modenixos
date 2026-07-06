@@ -13,10 +13,10 @@ import {
 import { cn } from "@/lib/utils";
 
 export const STOREFRONT_CAROUSEL_ITEM_CLASS =
-  "basis-[78%] pl-6 sm:basis-[52%] md:basis-[38%] lg:basis-[28%] xl:basis-[24%]";
+  "basis-[85%] pl-4 sm:basis-[52%] sm:pl-6 md:basis-[38%] lg:basis-[28%] xl:basis-[24%]";
 
 export const STOREFRONT_CAROUSEL_TILE_CLASS =
-  "basis-[72%] pl-6 sm:basis-[48%] md:basis-[36%] lg:basis-[26%] xl:basis-[22%]";
+  "basis-[80%] pl-4 sm:basis-[48%] sm:pl-6 md:basis-[36%] lg:basis-[26%] xl:basis-[22%]";
 
 export function StorefrontCarouselNavButtons() {
   const { scrollPrev, scrollNext, canScrollPrev, canScrollNext } = useCarousel();
@@ -27,7 +27,7 @@ export function StorefrontCarouselNavButtons() {
         type="button"
         variant="ghost"
         size="icon"
-        className="h-10 w-10 sf-fg disabled:opacity-25"
+        className="sf-touch-target h-11 w-11 sf-fg disabled:opacity-25"
         disabled={!canScrollPrev}
         onClick={scrollPrev}
         aria-label="Previous slide"
@@ -38,7 +38,7 @@ export function StorefrontCarouselNavButtons() {
         type="button"
         variant="ghost"
         size="icon"
-        className="h-10 w-10 sf-fg disabled:opacity-25"
+        className="sf-touch-target h-11 w-11 sf-fg disabled:opacity-25"
         disabled={!canScrollNext}
         onClick={scrollNext}
         aria-label="Next slide"
@@ -61,11 +61,11 @@ export function StorefrontCarouselHeaderAction({
   itemCount,
 }: StorefrontCarouselHeaderActionProps) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
       {viewAllHref ? (
         <Link
           href={viewAllHref}
-          className="sf-eyebrow sf-link hidden transition-colors sf-hover-fg sm:inline"
+          className="sf-eyebrow sf-link sf-touch-target inline-flex items-center px-1 transition-colors sf-hover-fg"
         >
           {viewAllLabel}
         </Link>
@@ -105,7 +105,7 @@ export function StorefrontCarouselTrack({
   return (
     <div
       className={cn(
-        "sf-section sf-carousel-fade-left sf-carousel-fade-right mt-8 w-full",
+        "sf-section sf-carousel-fade-left sf-carousel-fade-right mt-6 w-full max-w-full overflow-hidden sm:mt-8",
         className,
       )}
     >

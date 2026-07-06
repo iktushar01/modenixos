@@ -189,7 +189,7 @@ export function ShopSection({
       subtitle={`${displayProducts.length} ${displayProducts.length === 1 ? "piece" : "pieces"}${isPending ? " · Updating…" : ""}`}
       action={filterAction}
     >
-      <div className={showFilters ? "flex gap-10 lg:gap-14" : ""}>
+      <div className={showFilters ? "flex flex-col gap-8 lg:flex-row lg:gap-14" : ""}>
         {showFilters && (
           <div className="hidden w-64 shrink-0 lg:block">
             <div className="sf-editorial-card sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto p-6">
@@ -220,7 +220,7 @@ export function ShopSection({
               </Button>
             </div>
           ) : (
-            <div className={`grid gap-8 sm:grid-cols-2 xl:grid-cols-3 ${isPending ? "opacity-60" : ""}`}>
+            <div className={`grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8 ${isPending ? "opacity-60" : ""}`}>
               {displayProducts.map((p) => (
                 <ProductCard
                   key={p.id}

@@ -39,14 +39,14 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
               unoptimized
             />
           ) : (
-            <p className="sf-display-xl text-4xl md:text-5xl">{store.brandName}</p>
+            <p className="sf-display-lg text-3xl sm:text-4xl md:text-5xl">{store.brandName}</p>
           )}
           {theme.header.tagline && (
             <p className="sf-body-lg sf-muted-fg mx-auto mt-3 max-w-md">{theme.header.tagline}</p>
           )}
         </div>
 
-        <div className="grid gap-12 md:grid-cols-3 lg:gap-16">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:gap-16">
           <div>
             <p className="sf-eyebrow mb-4">Shop</p>
             <ul className="space-y-2.5">
@@ -93,7 +93,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
             </ul>
             <div className="mt-6 flex gap-3">
               {theme.social.instagram && (
-                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="sf-link sf-hover-fg" aria-label="Instagram">
+                <a href={theme.social.instagram} target="_blank" rel="noopener noreferrer" className="sf-link sf-touch-target inline-flex items-center justify-center p-2 sf-hover-fg" aria-label="Instagram">
                   <Instagram className="h-5 w-5" strokeWidth={1.5} />
                 </a>
               )}
@@ -113,16 +113,16 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
           <div>
             <p className="sf-eyebrow mb-4">Newsletter</p>
             <p className="sf-muted-fg mb-4 text-sm">Exclusive offers and new arrivals.</p>
-            <form onSubmit={handleNewsletter} className="flex gap-2">
+            <form onSubmit={handleNewsletter} className="flex flex-col gap-2 sm:flex-row">
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="sf-input flex-1"
+                className="sf-input min-w-0 flex-1"
                 required
               />
-              <Button type="submit" className="sf-btn-primary shrink-0 rounded-full px-5">
+              <Button type="submit" className="sf-btn-primary w-full shrink-0 rounded-full px-5 sm:w-auto">
                 Join
               </Button>
             </form>

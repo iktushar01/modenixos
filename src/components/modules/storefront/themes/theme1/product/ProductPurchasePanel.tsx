@@ -225,11 +225,11 @@ export function ProductPurchasePanel({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="sf-border sf-surface flex items-center rounded border">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="sf-border sf-surface flex w-fit items-center rounded border self-start">
           <button
             type="button"
-            className="sf-fg px-3 py-2 hover:opacity-70"
+            className="sf-fg sf-touch-target px-3 py-2 hover:opacity-70"
             onClick={() => setQty((q) => Math.max(1, q - 1))}
             aria-label="Decrease quantity"
           >
@@ -238,7 +238,7 @@ export function ProductPurchasePanel({
           <span className="sf-fg min-w-[2rem] text-center font-medium">{qty}</span>
           <button
             type="button"
-            className="sf-fg px-3 py-2 hover:opacity-70"
+            className="sf-fg sf-touch-target px-3 py-2 hover:opacity-70"
             onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))}
             aria-label="Increase quantity"
           >
@@ -246,11 +246,11 @@ export function ProductPurchasePanel({
           </button>
         </div>
 
-        <div className="flex flex-1 flex-wrap gap-2">
+        <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 sm:flex sm:flex-1 sm:flex-wrap">
           <Button
             type="button"
             variant="outline"
-            className="sf-btn-outline h-11 min-w-[140px] flex-1 rounded-md"
+            className="sf-btn-outline h-11 w-full min-w-0 rounded-md sm:min-w-[140px] sm:flex-1"
             onClick={handleAddToCart}
             disabled={product.stock <= 0}
           >
@@ -258,7 +258,7 @@ export function ProductPurchasePanel({
           </Button>
           <button
             type="button"
-            className="sf-btn-primary inline-flex h-11 min-w-[140px] flex-1 items-center justify-center rounded-md text-sm font-medium transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+            className="sf-btn-primary inline-flex h-11 w-full min-w-0 items-center justify-center rounded-md text-sm font-medium transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50 sm:min-w-[140px] sm:flex-1"
             style={{
               backgroundColor: "var(--sf-primary)",
               color: "var(--sf-primary-fg)",
@@ -293,7 +293,7 @@ export function ProductPurchasePanel({
         </a>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-4 border-t pt-4 sf-border">
+      <div className="flex flex-col gap-4 border-t pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sf-border">
         <button
           type="button"
           onClick={toggleWishlist}
@@ -313,7 +313,7 @@ export function ProductPurchasePanel({
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="sf-btn-outline flex h-9 w-9 items-center justify-center rounded-full border transition-opacity hover:opacity-80"
+            className="sf-btn-outline sf-touch-target flex h-11 w-11 items-center justify-center rounded-full border transition-opacity hover:opacity-80"
             aria-label="Share on Facebook"
           >
             <Facebook className="h-4 w-4" strokeWidth={1.25} />

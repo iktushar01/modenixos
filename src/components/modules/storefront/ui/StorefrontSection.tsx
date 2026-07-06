@@ -31,17 +31,17 @@ export function StorefrontSection({
       {(eyebrow || title || subtitle || action) && (
         <header
           className={cn(
-            "mb-10 flex flex-col gap-4 md:mb-12",
+            "mb-8 flex flex-col gap-4 sm:mb-10 md:mb-12",
             centered && "items-center text-center",
-            action && !centered && "md:flex-row md:items-end md:justify-between",
+            action && !centered && "sm:flex-row sm:items-end sm:justify-between",
           )}
         >
-          <div className={cn("max-w-2xl", centered && "mx-auto")}>
+          <div className={cn("min-w-0 max-w-2xl", centered && "mx-auto")}>
             {eyebrow && <p className="sf-eyebrow">{eyebrow}</p>}
-            {title && <h2 className="sf-display-lg mt-2">{title}</h2>}
-            {subtitle && <p className="sf-body-lg sf-muted-fg mt-3">{subtitle}</p>}
+            {title && <h2 className="sf-display-lg mt-2 text-balance">{title}</h2>}
+            {subtitle && <p className="sf-body-lg sf-muted-fg mt-2 sm:mt-3">{subtitle}</p>}
           </div>
-          {action && <div className="shrink-0">{action}</div>}
+          {action && <div className="w-full shrink-0 sm:w-auto">{action}</div>}
         </header>
       )}
       {children}

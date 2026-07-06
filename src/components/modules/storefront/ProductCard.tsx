@@ -55,7 +55,10 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className={cn("group", layout === "scroll" && "w-[260px] shrink-0 snap-start sm:w-[280px]")}
+      className={cn(
+        "group",
+        layout === "scroll" && "w-[min(78vw,260px)] shrink-0 snap-start sm:w-[280px]",
+      )}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -97,11 +100,11 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
               </span>
             )}
 
-            <div className="absolute inset-x-0 bottom-0 translate-y-full bg-[color-mix(in_srgb,var(--sf-card)_92%,transparent)] p-3 backdrop-blur-sm transition-transform duration-300 group-hover:translate-y-0">
+            <div className="absolute inset-x-0 bottom-0 translate-y-0 bg-[color-mix(in_srgb,var(--sf-card)_92%,transparent)] p-2.5 backdrop-blur-sm transition-transform duration-300 md:translate-y-full md:p-3 md:group-hover:translate-y-0">
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  className="sf-btn-primary flex-1 rounded-full text-xs uppercase tracking-wider"
+                  className="sf-btn-primary sf-touch-target h-10 flex-1 rounded-full text-xs uppercase tracking-wider"
                   onClick={handleAddToCart}
                 >
                   <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
@@ -110,14 +113,15 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
                 <Button
                   size="sm"
                   variant="outline"
-                  className="sf-btn-outline rounded-full"
+                  className="sf-btn-outline sf-touch-target h-10 w-10 shrink-0 rounded-full px-0"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onQuickView(product);
                   }}
+                  aria-label="Quick view"
                 >
-                  <Eye className="h-3.5 w-3.5" />
+                  <Eye className="h-4 w-4" />
                 </Button>
               </div>
             </div>

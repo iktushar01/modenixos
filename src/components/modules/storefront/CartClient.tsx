@@ -27,7 +27,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
       <StorefrontPageShell store={store} categories={categories}>
         <main className="sf-section w-full animate-pulse py-14">
           <div className="sf-skeleton mb-10 h-12 w-56 rounded" />
-          <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
+          <div className="grid gap-8 lg:grid-cols-[1fr_min(100%,380px)] lg:gap-12">
             <div className="space-y-4">
               {Array.from({ length: 2 }).map((_, i) => (
                 <div key={i} className="sf-skeleton h-36 rounded-none" />
@@ -52,7 +52,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
             Continue shopping
           </Link>
 
-          <div className="mb-12 flex items-end justify-between gap-4">
+          <div className="mb-8 flex flex-col gap-2 sm:mb-12 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
               <p className="sf-eyebrow">Your bag</p>
               <h1 className="sf-display-lg mt-2">Shopping cart</h1>
@@ -83,7 +83,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
             </Button>
           </motion.div>
         ) : (
-          <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
+          <div className="grid gap-8 lg:grid-cols-[1fr_min(100%,380px)] lg:gap-12">
             <div className="space-y-5">
               {items.map((item, index) => (
                 <motion.div

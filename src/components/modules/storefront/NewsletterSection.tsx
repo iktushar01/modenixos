@@ -34,7 +34,7 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="sf-muted sf-border border px-8 py-14 md:px-16 md:py-20"
+        className="sf-muted sf-border border px-5 py-10 sm:px-8 sm:py-14 md:px-16 md:py-20"
       >
         <div className="mx-auto max-w-2xl text-center">
           <p className="sf-eyebrow">Stay connected</p>

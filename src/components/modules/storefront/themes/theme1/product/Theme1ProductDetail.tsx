@@ -33,10 +33,10 @@ export function Theme1ProductDetail({
   const colorImages = product.details?.colorImages ?? {};
 
   return (
-    <main className="sf-section w-full py-8 md:py-12">
+    <main className="sf-section w-full py-6 sm:py-8 md:py-12">
       <ProductBreadcrumbs store={store} product={product} />
 
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         <ProductGallery
           product={product}
           selectedColor={color}

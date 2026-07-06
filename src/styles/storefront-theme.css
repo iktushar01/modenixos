@@ -3,6 +3,41 @@
   background-color: var(--sf-bg);
   color: var(--sf-fg);
   font-family: var(--sf-font-body, "DM Sans"), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-overflow-scrolling: touch;
+}
+
+.storefront-theme .sf-touch-target {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+.storefront-theme .sf-safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.storefront-theme .sf-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.storefront-theme .sf-hero-height {
+  height: min(68vh, 480px);
+  min-height: 260px;
+}
+
+@media (min-width: 640px) {
+  .storefront-theme .sf-hero-height {
+    height: min(72vh, 560px);
+    min-height: 300px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .storefront-theme .sf-hero-height {
+    height: var(--sf-hero-h, 72vh);
+    min-height: 320px;
+    max-height: 820px;
+  }
 }
 
 .storefront-theme .sf-font-display {
@@ -387,21 +422,22 @@
 
 .storefront-theme .sf-section {
   width: 100%;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  max-width: 100%;
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
 }
 
 @media (min-width: 768px) {
   .storefront-theme .sf-section {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: max(2rem, env(safe-area-inset-left, 0px));
+    padding-right: max(2rem, env(safe-area-inset-right, 0px));
   }
 }
 
 @media (min-width: 1024px) {
   .storefront-theme .sf-section {
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: max(3rem, env(safe-area-inset-left, 0px));
+    padding-right: max(3rem, env(safe-area-inset-right, 0px));
   }
 }
 
