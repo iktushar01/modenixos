@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -85,7 +86,7 @@ export function CollectionFormDialog({ open, onOpenChange, collection }: Collect
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent size="md">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit collection" : "New collection"}</DialogTitle>
           <DialogDescription>
@@ -95,7 +96,7 @@ export function CollectionFormDialog({ open, onOpenChange, collection }: Collect
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <DialogBody className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="col-name">Name *</Label>
             <Input
@@ -137,7 +138,7 @@ export function CollectionFormDialog({ open, onOpenChange, collection }: Collect
               setRemoveImage(false);
             }}
           />
-        </div>
+        </DialogBody>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

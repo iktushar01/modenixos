@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -83,7 +84,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent size="md">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit customer" : "Create login account"}</DialogTitle>
           <DialogDescription>
@@ -93,7 +94,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <DialogBody className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="customer-name">Full name</Label>
             <Input
@@ -156,7 +157,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
               />
             </div>
           )}
-        </div>
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
