@@ -1,10 +1,20 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { StorefrontColorMode, StorefrontThemeConfig } from "@/lib/storefront";
 import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
+import { StorefrontColorMode, StorefrontThemeConfig } from "@/lib/storefront";
+import { useOptionalStorefront } from "@/components/modules/storefront/StorefrontContext";
+import {
+  persistStorefrontColorMode,
   readStoredColorMode,
-  storefrontColorModeStorageKey,
+  resolveStorefrontColorMode,
+  subscribeStorefrontColorMode,
 } from "@/lib/storefront/colorModeStorage";
 import { resolveColorsForMode } from "@/lib/storefront/parseTheme";
 
@@ -31,22 +41,32 @@ interface StorefrontThemeProviderProps {
 }
 
 export function StorefrontThemeProvider({ theme, storeSlug, children }: StorefrontThemeProviderProps) {
-  const [colorMode, setColorMode] = useState<StorefrontColorMode>(theme.colorMode);
+  const storefront = useOptionalStorefront();
+  const cookieMode = storefront?.initialColorMode ?? null;
+
+  const getSnapshot = () =>
+    resolveStorefrontColorMode(storeSlug, {
+      cookieMode,
+      themeDefault: theme.colorMode,
+    });
+
+  const colorMode = useSyncExternalStore(
+    (onStoreChange) => subscribeStorefrontColorMode(storeSlug, onStoreChange),
+    getSnapshot,
+    () => resolveStorefrontColorMode(storeSlug, { cookieMode, themeDefault: theme.colorMode }),
+  );
 
   useEffect(() => {
     const stored = readStoredColorMode(storeSlug);
     if (stored) {
-      setColorMode(stored);
+      persistStorefrontColorMode(storeSlug, stored);
     }
   }, [storeSlug]);
 
   const toggleColorMode = useCallback(() => {
-    setColorMode((prev) => {
-      const next: StorefrontColorMode = prev === "dark" ? "light" : "dark";
-      localStorage.setItem(storefrontColorModeStorageKey(storeSlug), next);
-      return next;
-    });
-  }, [storeSlug]);
+    const next: StorefrontColorMode = colorMode === "dark" ? "light" : "dark";
+    persistStorefrontColorMode(storeSlug, next);
+  }, [colorMode, storeSlug]);
 
   const activeTheme = useMemo((): StorefrontThemeConfig => {
     const colors = resolveColorsForMode(theme, colorMode);

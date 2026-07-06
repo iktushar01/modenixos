@@ -11,7 +11,11 @@ export function StorefrontLoadingShell({ children }: StorefrontLoadingShellProps
   const style = useStorefrontSkeletonVars();
 
   return (
-    <div className="storefront-theme sf-bg min-h-screen animate-pulse" style={style}>
+    <div
+      className="storefront-theme sf-bg min-h-screen animate-pulse"
+      style={style}
+      suppressHydrationWarning
+    >
       <div className="sf-announcement h-8" />
       <div className="sf-border sf-navbar border-b">
         <div className="sf-section flex h-20 items-center justify-between gap-4">

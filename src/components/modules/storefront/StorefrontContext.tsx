@@ -14,6 +14,7 @@ import {
 } from "@/actions/catalog.actions";
 import { getStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
 import { Category, Store, StorefrontCustomer } from "@/types/store.types";
+import type { StorefrontColorMode } from "@/lib/storefront/types";
 
 interface StorefrontContextValue {
   slug: string;
@@ -24,15 +25,19 @@ interface StorefrontContextValue {
   customer: StorefrontCustomer | null;
   setCustomer: (customer: StorefrontCustomer | null) => void;
   customerReady: boolean;
+  /** Server-read color mode cookie for skeleton SSR/hydration */
+  initialColorMode: StorefrontColorMode | null;
 }
 
 const StorefrontContext = createContext<StorefrontContextValue | null>(null);
 
 export function StorefrontContextProvider({
   slug,
+  initialColorMode = null,
   children,
 }: {
   slug: string;
+  initialColorMode?: StorefrontColorMode | null;
   children: ReactNode;
 }) {
   const [store, setStore] = useState<Store | null>(null);
@@ -97,8 +102,9 @@ export function StorefrontContextProvider({
       customer,
       setCustomer,
       customerReady,
+      initialColorMode,
     }),
-    [slug, store, categories, storeReady, storeNotFound, customer, customerReady],
+    [slug, store, categories, storeReady, storeNotFound, customer, customerReady, initialColorMode],
   );
 
   if (storeReady && storeNotFound) {
