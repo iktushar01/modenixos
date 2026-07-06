@@ -22,7 +22,7 @@ const PANELS: { id: PanelId; label: string }[] = [
 ];
 
 export function ProductInfoTabs({ product, store, theme }: ProductInfoTabsProps) {
-  const [openPanel, setOpenPanel] = useState<PanelId>("description");
+  const [openPanel, setOpenPanel] = useState<PanelId | null>("description");
 
   return (
     <div className="sf-t2-accordion mt-12 border-t sf-border">
@@ -33,7 +33,7 @@ export function ProductInfoTabs({ product, store, theme }: ProductInfoTabsProps)
             <button
               type="button"
               className="sf-t2-accordion-trigger flex w-full items-center justify-between py-5 text-left"
-              onClick={() => setOpenPanel(isOpen ? "description" : panel.id)}
+              onClick={() => setOpenPanel(isOpen ? null : panel.id)}
               aria-expanded={isOpen}
             >
               <span className="sf-t2-label">{panel.label}</span>

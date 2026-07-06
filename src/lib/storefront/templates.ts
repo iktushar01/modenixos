@@ -17,7 +17,7 @@ export const STOREFRONT_TEMPLATES: StorefrontTemplateOption[] = [
   {
     id: "theme2",
     label: "Editorial",
-    description: "Magazine-style split hero with left-aligned navigation.",
+    description: "Magazine-style layout with editorial sections, bento grids, and list catalog.",
     available: true,
   },
 ];

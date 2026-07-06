@@ -5,7 +5,6 @@ import { Category, Store } from "@/types/store.types";
 import { parseStorefrontTheme } from "@/lib/storefront";
 import { StorefrontThemeShell, useStorefrontTheme } from "./StorefrontThemeShell";
 import { resolveThemeShell } from "./themes/registry";
-import { StoreFooter } from "./StoreFooter";
 import { useStorefrontShellProvided } from "./StorefrontShellContext";
 
 interface StorefrontPageShellProps {
@@ -24,7 +23,7 @@ function StorefrontPageContent({
   children: ReactNode;
 }) {
   const { activeTheme } = useStorefrontTheme();
-  const { AnnouncementBar, StoreHeader } = resolveThemeShell(activeTheme.templateId);
+  const { AnnouncementBar, StoreHeader, StoreFooter } = resolveThemeShell(activeTheme.templateId);
 
   return (
     <>

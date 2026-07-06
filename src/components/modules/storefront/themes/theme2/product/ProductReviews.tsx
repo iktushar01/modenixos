@@ -60,7 +60,8 @@ export function ProductReviews({ storeSlug, product, reviews }: ProductReviewsPr
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         storeSlug={storeSlug}
-        product={product}
+        productId={product.id}
+        productName={product.name}
       />
     </section>
   );
