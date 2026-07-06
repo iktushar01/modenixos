@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
-import { ProductBreadcrumbs } from "../../theme1/product/ProductBreadcrumbs";
-import { ProductGallery } from "../../theme1/product/ProductGallery";
-import { ProductPurchasePanel } from "../../theme1/product/ProductPurchasePanel";
-import { ProductInfoTabs } from "../../theme1/product/ProductInfoTabs";
-import { ProductReviews } from "../../theme1/product/ProductReviews";
-import { RelatedProducts } from "../../theme1/product/RelatedProducts";
+import { ProductBreadcrumbs } from "./ProductBreadcrumbs";
+import { ProductGallery } from "./ProductGallery";
+import { ProductPurchasePanel } from "./ProductPurchasePanel";
+import { ProductInfoTabs } from "./ProductInfoTabs";
+import { ProductReviews } from "./ProductReviews";
+import { RelatedProducts } from "./RelatedProducts";
 
 export interface Theme2ProductDetailProps {
   store: Store;
@@ -35,33 +35,25 @@ export function Theme2ProductDetail({
   return (
     <main className="sf-section w-full py-6 sm:py-8 md:py-12">
       <ProductBreadcrumbs store={store} product={product} />
+      <ProductGallery product={product} selectedColor={color} colorImages={colorImages} />
 
-      <div className="mx-auto max-w-5xl">
-        <ProductGallery
-          product={product}
-          selectedColor={color}
-          colorImages={colorImages}
-        />
-
-        <div className="mt-8 border-t sf-border pt-8 md:mt-12 md:pt-12">
-          <div className="mx-auto max-w-xl">
-            <ProductPurchasePanel
-              store={store}
-              product={product}
-              theme={theme}
-              reviews={reviews}
-              isLoggedIn={isLoggedIn}
-              initialInWishlist={inWishlist}
-              color={color}
-              onColorChange={setColor}
-            />
-          </div>
+      <div className="mt-10 grid gap-10 border-t sf-border pt-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-16 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="order-2 lg:order-1">
+          <ProductInfoTabs product={product} store={store} theme={theme} />
+          <ProductReviews storeSlug={store.slug} product={product} reviews={reviews} />
         </div>
-      </div>
-
-      <div className="mx-auto mt-10 max-w-3xl md:mt-14">
-        <ProductInfoTabs product={product} store={store} theme={theme} />
-        <ProductReviews storeSlug={store.slug} product={product} reviews={reviews} />
+        <div className="order-1 lg:sticky lg:top-28 lg:order-2 lg:self-start">
+          <ProductPurchasePanel
+            store={store}
+            product={product}
+            theme={theme}
+            reviews={reviews}
+            isLoggedIn={isLoggedIn}
+            initialInWishlist={inWishlist}
+            color={color}
+            onColorChange={setColor}
+          />
+        </div>
       </div>
 
       <RelatedProducts

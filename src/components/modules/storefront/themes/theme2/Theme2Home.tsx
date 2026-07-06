@@ -9,16 +9,18 @@ import { StorefrontThemeShell, useStorefrontTheme } from "../../StorefrontThemeS
 import { AnnouncementBar } from "./AnnouncementBar";
 import { StoreHeader } from "./StoreHeader";
 import { Theme2Hero } from "./Theme2Hero";
-import { CategoriesGrid } from "../../CategoriesGrid";
-import { CollectionsGrid } from "../../CollectionsGrid";
-import { ShopSection } from "../../ShopSection";
-import { TrendingScroll } from "../../TrendingScroll";
-import { PromoBanner } from "../../PromoBanner";
-import { BrandStory } from "../../BrandStory";
-import { ReviewsCarousel } from "../../ReviewsCarousel";
-import { NewsletterSection } from "../../NewsletterSection";
-import { StoreFooter } from "../../StoreFooter";
-import { QuickViewModal } from "../../QuickViewModal";
+import {
+  BrandStorySection,
+  CategoriesSection,
+  CollectionsSection,
+  Footer,
+  NewsletterSection,
+  PromoSection,
+  QuickViewModal,
+  ReviewsSection,
+  ShopSection,
+  TrendingSection,
+} from "./sections";
 
 export interface Theme2HomeProps {
   store: Store;
@@ -93,24 +95,23 @@ function Theme2HomeContent({
           ratings={ratings}
           onQuickView={setQuickViewProduct}
           showFilters={isShopFiltered}
-          layout={isShopFiltered ? "grid" : "grid"}
         />
       )}
 
       {activeTheme.sections.promo && !isShopFiltered && (
-        <PromoBanner slug={store.slug} theme={activeTheme} fallbackText={promoFallback} />
+        <PromoSection slug={store.slug} theme={activeTheme} fallbackText={promoFallback} />
       )}
 
       {activeTheme.sections.collections && !isShopFiltered && (
-        <CollectionsGrid slug={store.slug} collections={collections} />
+        <CollectionsSection slug={store.slug} collections={collections} />
       )}
 
       {activeTheme.sections.categories && !isShopFiltered && (
-        <CategoriesGrid slug={store.slug} categories={categories} />
+        <CategoriesSection slug={store.slug} categories={categories} />
       )}
 
       {activeTheme.sections.trending && !isShopFiltered && trendingProducts.length > 0 && (
-        <TrendingScroll
+        <TrendingSection
           store={store}
           products={trendingProducts}
           theme={activeTheme}
@@ -120,16 +121,16 @@ function Theme2HomeContent({
       )}
 
       {activeTheme.sections.brandStory && !isShopFiltered && (
-        <BrandStory theme={activeTheme} slug={store.slug} brandName={store.brandName} />
+        <BrandStorySection theme={activeTheme} slug={store.slug} brandName={store.brandName} />
       )}
 
-      {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
+      {activeTheme.sections.reviews && !isShopFiltered && <ReviewsSection reviews={reviews} />}
 
       {activeTheme.sections.newsletter && !isShopFiltered && (
         <NewsletterSection brandName={store.brandName} theme={activeTheme} />
       )}
 
-      <StoreFooter store={store} theme={activeTheme} categories={categories} />
+      <Footer store={store} theme={activeTheme} categories={categories} />
 
       <QuickViewModal
         key={quickViewProduct?.id ?? "closed"}

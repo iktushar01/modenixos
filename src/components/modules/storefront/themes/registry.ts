@@ -1,5 +1,6 @@
 import { ComponentType } from "react";
-import { Category, Collection, Product, Review, Store } from "@/types/store.types";
+import { Theme2ProductDetail } from "./theme2/product/Theme2ProductDetail";
+import { Category, Store } from "@/types/store.types";
 import { StorefrontTemplateId, StorefrontThemeConfig } from "@/lib/storefront";
 import { AnnouncementBar as Theme1AnnouncementBar } from "./theme1/AnnouncementBar";
 import { StoreHeader as Theme1StoreHeader } from "./theme1/StoreHeader";
@@ -8,7 +9,8 @@ import { Theme1ProductDetail } from "./theme1/product/Theme1ProductDetail";
 import { AnnouncementBar as Theme2AnnouncementBar } from "./theme2/AnnouncementBar";
 import { StoreHeader as Theme2StoreHeader } from "./theme2/StoreHeader";
 import { Theme2Home } from "./theme2";
-import { Theme2ProductDetail } from "./theme2/product/Theme2ProductDetail";
+import { StoreFooter as Theme1StoreFooter } from "../../StoreFooter";
+import { Footer as Theme2Footer } from "./theme2/sections/Footer";
 
 export interface ThemeHomeProps {
   store: Store;
