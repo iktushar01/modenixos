@@ -479,7 +479,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
           <ProductCategoryPicker
-            categoryId={values.categoryId}
+            categoryId={values.categoryId ?? ""}
             categoryTree={categoryTree}
             selectedCategory={selectedCategory}
             productType={productType}
