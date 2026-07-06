@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Sheet, StorefrontSheetContent } from "../../StorefrontSheet";
 import { StorefrontThemeToggle } from "./StorefrontThemeToggle";
 import { StorefrontAccountMenu } from "../../StorefrontAccountMenu";
+import { StorefrontNavLink } from "../../StorefrontNavLink";
+import { useOptionalStorefrontNav } from "../../StorefrontNavContext";
 import { useOptionalStorefrontCustomer } from "../../StorefrontCustomerContext";
 import { cn } from "@/lib/utils";
 
@@ -117,9 +119,9 @@ function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
                 View all {item.label}
               </Link>
               {item.children.map((child) => (
-                <Link key={child.href} href={child.href} className="sf-nav-dropdown-item">
+                <StorefrontNavLink key={child.href} href={child.href} className="sf-nav-dropdown-item">
                   {child.label}
-                </Link>
+                </StorefrontNavLink>
               ))}
             </div>
           </div>,
@@ -131,6 +133,7 @@ function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
 
 export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
   const router = useRouter();
+  const storefrontNav = useOptionalStorefrontNav();
   const hydrated = useCartHydrated();
   const cartCount = useStoreCartCount(store.id);
   const customerCtx = useOptionalStorefrontCustomer();
@@ -183,9 +186,15 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(
-      buildShopHref(base, searchQuery.trim() ? { search: searchQuery.trim() } : undefined),
+    const href = buildShopHref(
+      base,
+      searchQuery.trim() ? { search: searchQuery.trim() } : undefined,
     );
+    if (storefrontNav) {
+      storefrontNav.navigate(href);
+    } else {
+      router.push(href);
+    }
     setMobileOpen(false);
   };
 
@@ -234,7 +243,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               )}
             </div>
 
-            <Link
+            <StorefrontNavLink
               href={base}
               className="flex min-w-0 max-w-[52vw] flex-col items-center justify-self-center text-center sm:max-w-none"
             >
@@ -255,7 +264,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   {theme.header.tagline}
                 </span>
               )}
-            </Link>
+            </StorefrontNavLink>
 
             <div className="flex items-center justify-end gap-0.5 sm:gap-1 md:gap-3 md:justify-self-end">
               {theme.header.showPhone && theme.contact.phone && (
@@ -268,7 +277,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 </a>
               )}
 
-              <Link
+              <StorefrontNavLink
                 href={`${base}/cart`}
                 className="sf-touch-target relative inline-flex items-center justify-center p-2.5"
                 aria-label="Cart"
@@ -279,7 +288,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                     {cartCount}
                   </span>
                 )}
-              </Link>
+              </StorefrontNavLink>
 
               <div className="hidden sm:block">
                 <StorefrontAccountMenu base={base} />
@@ -325,13 +334,13 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   item.type === "group" ? (
                     <NavCategoryDropdown key={item.label} item={item} />
                   ) : (
-                    <Link
+                    <StorefrontNavLink
                       key={`${item.label}-${item.href}`}
                       href={item.href}
                       className="sf-nav-menu-item shrink-0"
                     >
                       {item.label}
-                    </Link>
+                    </StorefrontNavLink>
                   ),
                 )}
               </div>
@@ -364,35 +373,35 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               {menuItems.map((item) =>
                 item.type === "group" ? (
                   <div key={item.label} className="border-b sf-border py-2">
-                    <Link
+                    <StorefrontNavLink
                       href={item.href}
                       className="sf-eyebrow block py-2 text-sm transition-opacity hover:opacity-70"
-                      onClick={() => setMobileOpen(false)}
+                      onNavigate={() => setMobileOpen(false)}
                     >
                       {item.label}
-                    </Link>
+                    </StorefrontNavLink>
                     <div className="ml-3 space-y-1 border-l pl-3 sf-border">
                       {item.children.map((child) => (
-                        <Link
+                        <StorefrontNavLink
                           key={child.href}
                           href={child.href}
                           className="block py-2 text-sm sf-muted-fg transition-opacity hover:opacity-70"
-                          onClick={() => setMobileOpen(false)}
+                          onNavigate={() => setMobileOpen(false)}
                         >
                           {child.label}
-                        </Link>
+                        </StorefrontNavLink>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <Link
+                  <StorefrontNavLink
                     key={`m-${item.label}-${item.href}`}
                     href={item.href}
                     className="sf-eyebrow border-b sf-border py-4 text-sm transition-opacity hover:opacity-70"
-                    onClick={() => setMobileOpen(false)}
+                    onNavigate={() => setMobileOpen(false)}
                   >
                     {item.label}
-                  </Link>
+                  </StorefrontNavLink>
                 ),
               )}
             </nav>
@@ -416,27 +425,27 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 <>
                   <p className="text-sm font-medium">{customerCtx.customer.name}</p>
                   <p className="text-xs sf-muted-fg">{customerCtx.customer.email}</p>
-                  <Link
+                  <StorefrontNavLink
                     href={`${base}/account/orders`}
                     className="block text-sm sf-link"
-                    onClick={() => setMobileOpen(false)}
+                    onNavigate={() => setMobileOpen(false)}
                   >
                     Orders
-                  </Link>
-                  <Link
+                  </StorefrontNavLink>
+                  <StorefrontNavLink
                     href={`${base}/account/wishlist`}
                     className="block text-sm sf-link"
-                    onClick={() => setMobileOpen(false)}
+                    onNavigate={() => setMobileOpen(false)}
                   >
                     Wishlist
-                  </Link>
-                  <Link
+                  </StorefrontNavLink>
+                  <StorefrontNavLink
                     href={`${base}/track`}
                     className="block text-sm sf-link"
-                    onClick={() => setMobileOpen(false)}
+                    onNavigate={() => setMobileOpen(false)}
                   >
                     Track order
-                  </Link>
+                  </StorefrontNavLink>
                   <button
                     type="button"
                     className="block text-left text-sm sf-link"
@@ -451,20 +460,20 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 </>
               ) : (
                 <>
-                  <Link
+                  <StorefrontNavLink
                     href={`${base}/account/login`}
                     className="block text-sm sf-link"
-                    onClick={() => setMobileOpen(false)}
+                    onNavigate={() => setMobileOpen(false)}
                   >
                     Log in
-                  </Link>
-                  <Link
+                  </StorefrontNavLink>
+                  <StorefrontNavLink
                     href={`${base}/account/register`}
                     className="block text-sm sf-link"
-                    onClick={() => setMobileOpen(false)}
+                    onNavigate={() => setMobileOpen(false)}
                   >
                     Create account
-                  </Link>
+                  </StorefrontNavLink>
                 </>
               )}
               <div className="flex items-center gap-3">

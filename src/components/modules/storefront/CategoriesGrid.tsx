@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
@@ -47,7 +47,7 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <Link
+                <StorefrontNavLink
                   href={`/store/${slug}?category=${cat.slug}#shop`}
                   className="sf-editorial-card sf-image-zoom group relative block w-full overflow-hidden"
                   style={{ aspectRatio: `${STOREFRONT_CATEGORY_ASPECT}` }}
@@ -69,7 +69,7 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
                     <p className="sf-display-lg sf-image-overlay-fg text-base md:text-lg">{cat.name}</p>
                     <p className="sf-eyebrow sf-image-overlay-muted mt-1.5">Shop now</p>
                   </div>
-                </Link>
+                </StorefrontNavLink>
               </motion.div>
             </StorefrontCarouselSlide>
           ))}

@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
+import { useStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
 import { Heart, Package, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,19 +17,20 @@ const links: Array<{
 ];
 
 export function AccountNav({ base }: { base: string }) {
-  const pathname = usePathname();
+  const { activePath } = useStorefrontNav();
 
   return (
     <nav className="flex flex-wrap gap-2">
       {links.map((link) => {
         const href = link.external ? `${base}/${link.href}` : `${base}/account/${link.href}`;
+        const { pathname: hrefPath } = parseStorefrontHref(href);
         const active = link.external
-          ? pathname === `${base}/track`
-          : pathname.startsWith(`${base}/account/${link.href}`);
+          ? activePath === `${base}/track` || activePath.startsWith(`${base}/track/`)
+          : activePath.startsWith(`${base}/account/${link.href}`);
         const Icon = link.icon;
 
         return (
-          <Link
+          <StorefrontNavLink
             key={link.href}
             href={href}
             className={cn(
@@ -41,7 +42,7 @@ export function AccountNav({ base }: { base: string }) {
           >
             <Icon className="h-3.5 w-3.5" />
             {link.label}
-          </Link>
+          </StorefrontNavLink>
         );
       })}
     </nav>

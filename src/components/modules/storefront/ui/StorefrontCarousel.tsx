@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -63,12 +63,12 @@ export function StorefrontCarouselHeaderAction({
   return (
     <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
       {viewAllHref ? (
-        <Link
+        <StorefrontNavLink
           href={viewAllHref}
           className="sf-eyebrow sf-link sf-touch-target inline-flex items-center px-1 transition-colors sf-hover-fg"
         >
           {viewAllLabel}
-        </Link>
+        </StorefrontNavLink>
       ) : null}
       {itemCount > 1 ? <StorefrontCarouselNavButtons /> : null}
     </div>

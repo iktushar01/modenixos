@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
@@ -44,13 +44,13 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
     <StorefrontPageShell store={store} categories={categories}>
       <main className="sf-section w-full py-12 md:py-16">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Link
+          <StorefrontNavLink
             href={base}
             className="sf-eyebrow sf-link mb-10 inline-flex items-center gap-2 transition-opacity hover:opacity-70"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Continue shopping
-          </Link>
+          </StorefrontNavLink>
 
           <div className="mb-8 flex flex-col gap-2 sm:mb-12 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
@@ -79,7 +79,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
               Discover the latest from {store.brandName}.
             </p>
             <Button asChild className="sf-btn-primary mt-10 h-12 rounded-full px-10">
-              <Link href={`${base}#shop`}>Browse collection</Link>
+              <StorefrontNavLink href={`${base}#shop`}>Browse collection</StorefrontNavLink>
             </Button>
           </motion.div>
         ) : (
@@ -93,7 +93,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
                   transition={{ delay: index * 0.05 }}
                   className="sf-editorial-card flex gap-5 p-5 md:gap-6 md:p-6"
                 >
-                  <Link
+                  <StorefrontNavLink
                     href={`${base}/products/${item.productId}`}
                     className="sf-muted relative h-28 w-24 shrink-0 overflow-hidden md:h-32 md:w-28"
                   >
@@ -104,13 +104,13 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
                         <ShoppingBag className="h-6 w-6 sf-muted-fg" />
                       </div>
                     )}
-                  </Link>
+                  </StorefrontNavLink>
 
                   <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div className="min-w-0">
-                      <Link href={`${base}/products/${item.productId}`} className="sf-font-display text-lg hover:opacity-70">
+                      <StorefrontNavLink href={`${base}/products/${item.productId}`} className="sf-font-display text-lg hover:opacity-70">
                         {item.name}
-                      </Link>
+                      </StorefrontNavLink>
                       {(item.size || item.color) && (
                         <p className="sf-eyebrow mt-2">
                           {[item.size, item.color].filter(Boolean).join(" · ")}
@@ -187,7 +187,7 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
                 <span className="sf-tabular-nums sf-display-lg text-xl">{formatPrice(total, store.currency)}</span>
               </div>
               <Button asChild className="sf-btn-primary mt-8 h-12 w-full rounded-full">
-                <Link href={`${base}/checkout`}>Proceed to checkout</Link>
+                <StorefrontNavLink href={`${base}/checkout`}>Proceed to checkout</StorefrontNavLink>
               </Button>
             </motion.aside>
           </div>

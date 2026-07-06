@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { StorefrontContextProvider } from "@/components/modules/storefront/StorefrontContext";
+import { StorefrontLayoutClient } from "@/components/modules/storefront/StorefrontLayoutClient";
 import { readColorModeFromCookie } from "@/lib/storefront/colorModeStorage";
 
 export default async function StoreSlugLayout({
@@ -15,7 +16,7 @@ export default async function StoreSlugLayout({
 
   return (
     <StorefrontContextProvider slug={slug} initialColorMode={initialColorMode}>
-      {children}
+      <StorefrontLayoutClient>{children}</StorefrontLayoutClient>
     </StorefrontContextProvider>
   );
 }

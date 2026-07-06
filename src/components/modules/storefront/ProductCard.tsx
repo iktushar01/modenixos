@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Eye, ShoppingBag, Star } from "lucide-react";
@@ -63,7 +63,7 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
       onMouseLeave={() => setHovered(false)}
     >
       <div className="sf-editorial-card sf-image-zoom relative overflow-hidden">
-        <Link href={`/store/${store.slug}/products/${product.id}`} className="block">
+        <StorefrontNavLink href={`/store/${store.slug}/products/${product.id}`} className="block">
           <div className="relative aspect-[3/4] overflow-hidden sf-muted">
             {product.images[0] ? (
               <>
@@ -126,16 +126,16 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
               </div>
             </div>
           </div>
-        </Link>
+        </StorefrontNavLink>
       </div>
 
       <div className="mt-4 space-y-1.5 px-0.5">
         <p className="sf-eyebrow">{store.brandName}</p>
-        <Link href={`/store/${store.slug}/products/${product.id}`}>
+        <StorefrontNavLink href={`/store/${store.slug}/products/${product.id}`}>
           <h3 className="sf-font-display truncate text-base sf-fg transition-opacity hover:opacity-70">
             {product.name}
           </h3>
-        </Link>
+        </StorefrontNavLink>
         <div className="flex items-center justify-between gap-2">
           <div className="sf-tabular-nums flex items-center gap-2 text-sm">
             <span className="font-medium sf-fg">{formatPrice(price, store.currency)}</span>

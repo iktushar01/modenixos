@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import { Category, Product, Store } from "@/types/store.types";
 
 interface ProductBreadcrumbsProps {
@@ -13,18 +13,18 @@ export function ProductBreadcrumbs({ store, product }: ProductBreadcrumbsProps) 
 
   return (
     <nav className="sf-muted-fg mb-8 flex flex-wrap items-center gap-2 text-xs">
-      <Link href={base} className="sf-eyebrow sf-link transition-opacity hover:opacity-70">
+      <StorefrontNavLink href={base} className="sf-eyebrow sf-link transition-opacity hover:opacity-70">
         Home
-      </Link>
+      </StorefrontNavLink>
       {product.category && (
         <>
           <span className="opacity-40">/</span>
-          <Link
+          <StorefrontNavLink
             href={`${base}?category=${product.category.slug}#shop`}
             className="sf-eyebrow sf-link transition-opacity hover:opacity-70"
           >
             {product.category.name}
-          </Link>
+          </StorefrontNavLink>
         </>
       )}
       <span className="opacity-40">/</span>

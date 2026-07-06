@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { useState } from "react";
 import { Instagram, Twitter, Facebook } from "lucide-react";
@@ -52,15 +52,15 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
             <ul className="space-y-2.5">
               {navLinks.map((link) => (
                 <li key={`${link.label}-${link.href}`}>
-                  <Link href={link.href} className="sf-link text-sm transition-colors sf-hover-fg">
+                  <StorefrontNavLink href={link.href} className="sf-link text-sm transition-colors sf-hover-fg">
                     {link.label}
-                  </Link>
+                  </StorefrontNavLink>
                 </li>
               ))}
               <li>
-                <Link href={`${base}/cart`} className="sf-link text-sm transition-colors sf-hover-fg">
+                <StorefrontNavLink href={`${base}/cart`} className="sf-link text-sm transition-colors sf-hover-fg">
                   Cart
-                </Link>
+                </StorefrontNavLink>
               </li>
             </ul>
           </div>
@@ -69,19 +69,19 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
             <p className="sf-eyebrow mb-4">Support</p>
             <ul className="space-y-2.5">
               <li>
-                <Link href={`${base}#about`} className="sf-link text-sm sf-hover-fg">
+                <StorefrontNavLink href={`${base}#about`} className="sf-link text-sm sf-hover-fg">
                   About
-                </Link>
+                </StorefrontNavLink>
               </li>
               <li>
-                <Link href={`${base}/track`} className="sf-link text-sm sf-hover-fg">
+                <StorefrontNavLink href={`${base}/track`} className="sf-link text-sm sf-hover-fg">
                   Track order
-                </Link>
+                </StorefrontNavLink>
               </li>
               <li>
-                <Link href={`${base}#contact`} className="sf-link text-sm sf-hover-fg">
+                <StorefrontNavLink href={`${base}#contact`} className="sf-link text-sm sf-hover-fg">
                   Contact
-                </Link>
+                </StorefrontNavLink>
               </li>
               {theme.contact.phone && (
                 <li>

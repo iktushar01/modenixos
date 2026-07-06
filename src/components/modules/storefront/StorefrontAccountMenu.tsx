@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "./StorefrontNavLink";
+import { useOptionalStorefrontNav } from "./StorefrontNavContext";
 import { useRouter } from "next/navigation";
 import { Package, Heart, LogOut, User } from "lucide-react";
 import {
@@ -21,13 +22,14 @@ interface StorefrontAccountMenuProps {
 
 export function StorefrontAccountMenu({ base, className }: StorefrontAccountMenuProps) {
   const router = useRouter();
+  const nav = useOptionalStorefrontNav();
   const ctx = useOptionalStorefrontCustomer();
 
   if (!ctx) {
     return (
-      <Link href={`${base}/account/login`} className={className} aria-label="Account">
+      <StorefrontNavLink href={`${base}/account/login`} className={className} aria-label="Account">
         <User className="h-5 w-5" strokeWidth={1.5} />
-      </Link>
+      </StorefrontNavLink>
     );
   }
 
@@ -43,10 +45,10 @@ export function StorefrontAccountMenu({ base, className }: StorefrontAccountMenu
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem asChild>
-            <Link href={`${base}/account/login`}>Log in</Link>
+            <StorefrontNavLink href={`${base}/account/login`}>Log in</StorefrontNavLink>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={`${base}/account/register`}>Create account</Link>
+            <StorefrontNavLink href={`${base}/account/register`}>Create account</StorefrontNavLink>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -67,28 +69,29 @@ export function StorefrontAccountMenu({ base, className }: StorefrontAccountMenu
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={`/store/${slug}/account/orders`} className="gap-2">
+          <StorefrontNavLink href={`/store/${slug}/account/orders`} className="gap-2">
             <Package className="h-4 w-4" />
             Orders
-          </Link>
+          </StorefrontNavLink>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={`/store/${slug}/account/wishlist`} className="gap-2">
+          <StorefrontNavLink href={`/store/${slug}/account/wishlist`} className="gap-2">
             <Heart className="h-4 w-4" />
             Wishlist
-          </Link>
+          </StorefrontNavLink>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={`/store/${slug}/track`} className="gap-2">
+          <StorefrontNavLink href={`/store/${slug}/track`} className="gap-2">
             Track order
-          </Link>
+          </StorefrontNavLink>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="gap-2 text-destructive focus:text-destructive"
           onClick={async () => {
             await logout();
-            router.push(base);
+            if (nav) nav.navigate(base);
+            else router.push(base);
           }}
         >
           <LogOut className="h-4 w-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Collection } from "@/types/store.types";
@@ -45,7 +45,7 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <Link
+                <StorefrontNavLink
                   href={`/store/${slug}?collection=${col.slug}#shop`}
                   className="sf-editorial-card sf-image-zoom group relative block overflow-hidden"
                   style={{ aspectRatio: `${STOREFRONT_COLLECTION_ASPECT}` }}
@@ -67,7 +67,7 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
                       <p className="sf-eyebrow sf-image-overlay-muted mt-2">Featured</p>
                     )}
                   </div>
-                </Link>
+                </StorefrontNavLink>
               </motion.div>
             </StorefrontCarouselSlide>
           ))}
