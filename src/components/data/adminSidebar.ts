@@ -19,6 +19,7 @@ export const adminSidebar: SidebarData = {
       title: "Management",
       items: [
         { label: "Platform", icon: "ShieldCheck", href: "/admin/admin-management" },
+        { label: "Subscriptions", icon: "CreditCard", href: "/admin/subscriptions" },
       ],
     },
     {

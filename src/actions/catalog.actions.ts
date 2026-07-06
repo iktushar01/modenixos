@@ -269,7 +269,16 @@ export async function getAdminUsersAction(params?: Record<string, unknown>) {
 }
 
 export async function getAdminAnalyticsAction() {
-  const res = await httpClient.get<{ stores: number; users: number; orders: number; revenue: number }>("/admin/analytics");
+  const res = await httpClient.get<{
+    stores: number;
+    users: number;
+    orders: number;
+    revenue: number;
+    mrr?: number;
+    arr?: number;
+    pastDue?: number;
+    activeSubscriptions?: number;
+  }>("/admin/analytics");
   return res.data;
 }
 

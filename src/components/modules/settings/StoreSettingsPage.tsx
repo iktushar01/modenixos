@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,8 +78,13 @@ export default function StoreSettingsPage() {
       </Card>
       <ThemeSettingsPage scope="client" />
       <Card>
-        <CardHeader><CardTitle>Billing</CardTitle><CardDescription>Subscription billing coming soon.</CardDescription></CardHeader>
-        <CardContent><p className="text-muted-foreground">Current plan: {store?.plan ?? "FREE"}</p></CardContent>
+        <CardHeader><CardTitle>Billing</CardTitle><CardDescription>Subscription and payment methods.</CardDescription></CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-muted-foreground">Current plan: {store?.plan ?? "FREE"}</p>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/settings/billing">Manage billing</Link>
+          </Button>
+        </CardContent>
       </Card>
     </div>
   );

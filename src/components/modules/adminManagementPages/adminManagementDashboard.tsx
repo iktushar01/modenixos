@@ -24,7 +24,8 @@ export default function AdminManagementDashboard() {
   });
 
   const stores = (storesRes?.data ?? []) as Array<{
-    id: string; brandName: string; slug: string; isSuspended: boolean; isPublished: boolean;
+    id: string; brandName: string; slug: string; plan: string; isSuspended: boolean; isPublished: boolean;
+    mrr?: number; subscriptionStatus?: string;
     owner: { name: string; email: string }; _count: { products: number; orders: number };
   }>;
   const users = (usersRes?.data ?? []) as Array<{ id: string; name: string; email: string; role: string; store?: { brandName: string } | null }>;
@@ -37,7 +38,7 @@ export default function AdminManagementDashboard() {
           { label: "Stores", value: analytics?.stores ?? 0 },
           { label: "Users", value: analytics?.users ?? 0 },
           { label: "Orders", value: analytics?.orders ?? 0 },
-          { label: "Revenue", value: `$${(analytics?.revenue ?? 0).toFixed(2)}` },
+          { label: "MRR", value: `$${(analytics?.mrr ?? 0).toFixed(0)}` },
         ].map((s) => (
           <Card key={s.label}>
             <CardHeader className="pb-2"><CardTitle className="text-sm">{s.label}</CardTitle></CardHeader>
@@ -53,6 +54,7 @@ export default function AdminManagementDashboard() {
               <TableRow>
                 <TableHead>Brand</TableHead>
                 <TableHead>Owner</TableHead>
+                <TableHead>Plan</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
@@ -63,6 +65,7 @@ export default function AdminManagementDashboard() {
                 <TableRow key={store.id}>
                   <TableCell>{store.brandName}</TableCell>
                   <TableCell>{store.owner.email}</TableCell>
+                  <TableCell><Badge variant="outline">{store.plan}</Badge></TableCell>
                   <TableCell>{store._count.products}</TableCell>
                   <TableCell>
                     {store.isSuspended ? <Badge variant="destructive">Suspended</Badge> : <Badge variant="outline">Active</Badge>}

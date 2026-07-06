@@ -47,6 +47,7 @@ export const getClientSidebarData = async (): Promise<SidebarData> => {
         title: "System",
         items: [
           { label: "Settings", icon: "Settings", href: "/dashboard/settings" },
+          { label: "Billing", icon: "CreditCard", href: "/dashboard/settings/billing" },
           { label: "Users & Permissions", icon: "ShieldCheck", href: "/dashboard/settings/users" },
         ],
       },

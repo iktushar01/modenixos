@@ -38,7 +38,7 @@ export default function AccountSettingsPage() {
             <Link href="/dashboard/store/header">Header</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href="/dashboard/store/appearance">Appearance</Link>
+            <Link href="/dashboard/settings/billing">Billing & plan</Link>
           </Button>
         </CardContent>
       </Card>
@@ -48,10 +48,13 @@ export default function AccountSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Billing</CardTitle>
-          <CardDescription>Subscription billing coming soon.</CardDescription>
+          <CardDescription>Manage your subscription, payment methods, and invoices.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-2">
           <p className="text-muted-foreground">Current plan: {store?.plan ?? "FREE"}</p>
+          <Button asChild size="sm">
+            <Link href="/dashboard/settings/billing">Open billing</Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

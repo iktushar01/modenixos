@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpRight,
+  CreditCard,
   LayoutDashboard,
   Loader2,
   Settings,
@@ -18,6 +19,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const quickLinks = [
+  {
+    title: "Subscriptions",
+    description: "MRR, plans, failed payments, and overrides.",
+    href: "/admin/subscriptions",
+    icon: CreditCard,
+    roles: ["ADMIN", "SUPER_ADMIN"] as const,
+  },
   {
     title: "Admin Management",
     description: "Create and manage admin accounts.",
