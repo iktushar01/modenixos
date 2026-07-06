@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Logo from "@/components/shared/logo/logo";
 import { APP_NAME } from "@/lib/app-config";
+import { StartFreeLink } from "./StartFreeLink";
 import { Github, Linkedin, Twitter } from "lucide-react";
 
 const footerColumns = {
@@ -49,13 +50,19 @@ function FooterColumn({
       <ul className="mt-4 space-y-2.5">
         {links.map((link) => (
           <li key={link.label}>
-            <Link
-              href={link.href}
-              className="mkt-nav-link text-sm transition-colors"
-              {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
-            >
-              {link.label}
-            </Link>
+            {link.href === "/register" ? (
+              <StartFreeLink className="mkt-nav-link text-sm transition-colors">
+                {link.label}
+              </StartFreeLink>
+            ) : (
+              <Link
+                href={link.href}
+                className="mkt-nav-link text-sm transition-colors"
+                {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+              >
+                {link.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>

@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import AnimatedContent from "@/components/AnimatedContent";
 import { cn } from "@/lib/utils";
+import { MarketingSectionHeader } from "../MarketingSectionHeader";
 import { StartFreeLink } from "../StartFreeLink";
 import { industries, type IndustryPreview } from "../landing-data";
 import { MiniChart, RevenueCard } from "./HeroDashboard";
@@ -153,10 +154,17 @@ export default function ProductPreview() {
                     : "Deliver a premium shopping experience with collections, product pages, cart, and secure checkout."}
                 </p>
                 <Button asChild className="mt-6 w-fit gap-2 rounded-xl">
-                  <Link href={view === "storefront" ? "/store/luxe-threads" : "/register"} target={view === "storefront" ? "_blank" : undefined}>
-                    {view === "storefront" ? "View live demo" : "Start free"}
-                    <ArrowRight className="h-4 w-4" aria-hidden />
-                  </Link>
+                  {view === "storefront" ? (
+                    <Link href="/store/luxe-threads" target="_blank">
+                      View live demo
+                      <ArrowRight className="h-4 w-4" aria-hidden />
+                    </Link>
+                  ) : (
+                    <StartFreeLink>
+                      Start free
+                      <ArrowRight className="h-4 w-4" aria-hidden />
+                    </StartFreeLink>
+                  )}
                 </Button>
               </div>
               <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 backdrop-blur-sm">

@@ -1,8 +1,10 @@
 "use client";
 
-import { syncAuthUserAction } from "@/actions/authActions/_syncAuthUserAction";
 import Link from "next/link";
 import { ModeToggle } from "@/components/shared/modeToggle";
+import Logo from "@/components/shared/logo/logo";
+import { StartFreeLink } from "./StartFreeLink";
+import { useMarketingAuthUser } from "@/hooks/useMarketingAuthUser";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -25,12 +27,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { logoutAction } from "./_logoutAction";
-import { getCookie, deleteCookie } from "cookies-next";
+import { deleteCookie } from "cookies-next";
 import { useEffect, useState } from "react";
-import Logo from "@/components/shared/logo/logo";
-import type { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -52,30 +52,8 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const [user, setUser] = useState<UserFromCookie | null>(() => {
-    const userCookie = getCookie("user");
-    if (!userCookie) return null;
-
-    try {
-      return JSON.parse(userCookie as string) as UserFromCookie;
-    } catch {
-      return null;
-    }
-  });
-
-  const { data: syncedUser } = useQuery({
-    queryKey: ["auth-user-sync"],
-    queryFn: syncAuthUserAction,
-    enabled: !user,
-    staleTime: 60_000,
-    retry: false,
-  });
-
-  const resolvedUser =
-    user ??
-    (syncedUser?.success && syncedUser.data
-      ? syncedUser.data
-      : null);
+  const user = useMarketingAuthUser();
+  const resolvedUser = user;
 
   const { mutate: handleLogout, isPending: isLoggingOut } = useMutation({
     mutationFn: logoutAction,
@@ -85,7 +63,6 @@ const Navbar = () => {
       deleteCookie("refreshToken");
       deleteCookie("better-auth.session_token");
       deleteCookie("better-auth.session_data");
-      setUser(null);
       setIsLogoutDialogOpen(false);
       window.location.assign("/");
     },
@@ -95,7 +72,6 @@ const Navbar = () => {
       deleteCookie("refreshToken");
       deleteCookie("better-auth.session_token");
       deleteCookie("better-auth.session_data");
-      setUser(null);
       setIsLogoutDialogOpen(false);
       window.location.assign("/");
     },
@@ -205,7 +181,7 @@ const Navbar = () => {
                       <Link href="/login">Log In</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer rounded-lg font-medium text-primary">
-                      <Link href="/register">Start free</Link>
+                      <StartFreeLink>Start free</StartFreeLink>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -221,7 +197,7 @@ const Navbar = () => {
                   <Link href="/login">Log in</Link>
                 </Button>
                 <Button size="sm" asChild className="h-9 rounded-lg px-4 font-semibold shadow-sm">
-                  <Link href="/register">Start free</Link>
+                  <StartFreeLink>Start free</StartFreeLink>
                 </Button>
               </div>
             </>

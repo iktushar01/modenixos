@@ -192,6 +192,40 @@ export async function proxy(request: NextRequest) {
             }
         }
 
+        // Fast path: logged-in users hitting auth pages (e.g. /register from old links)
+        if (
+            isAuth &&
+            isSoftNavigationRequest(request) &&
+            accessToken &&
+            cookieUser?.role &&
+            isAccessTokenFreshForSoftNav(accessToken)
+        ) {
+            const payload = decodeJwtPayload(accessToken);
+            const userRole = normalizeUserRole(
+                (payload?.role as string | undefined) ?? cookieUser.role,
+            );
+
+            if (
+                userRole &&
+                pathname !== "/verify-email" &&
+                pathname !== "/reset-password"
+            ) {
+                if (cookieUser.emailVerified === false) {
+                    const verifyEmailUrl = new URL("/verify-email", request.url);
+                    verifyEmailUrl.searchParams.set("email", cookieUser.email);
+                    return NextResponse.redirect(verifyEmailUrl);
+                }
+
+                if (cookieUser.needPasswordChange) {
+                    const resetPasswordUrl = new URL("/reset-password", request.url);
+                    resetPasswordUrl.searchParams.set("email", cookieUser.email);
+                    return NextResponse.redirect(resetPasswordUrl);
+                }
+
+                return redirectToRoleDashboard(request, userRole, pathWithQuery);
+            }
+        }
+
         const { isValidAccessToken, userRole, refreshResponse } =
             await resolveAuthState(
                 request,

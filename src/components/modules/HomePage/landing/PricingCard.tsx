@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PricingPlan } from "../landing-data";
+import { StartFreeLink } from "../StartFreeLink";
 import { cn } from "@/lib/utils";
 
 type PricingCardProps = {
@@ -62,7 +63,11 @@ export function PricingCard({ plan, yearly }: PricingCardProps) {
         className="mt-8 w-full rounded-xl"
         variant={plan.highlight ? "default" : "outline"}
       >
-        <Link href={plan.href}>{plan.cta}</Link>
+        {plan.href === "/register" ? (
+          <StartFreeLink>{plan.cta}</StartFreeLink>
+        ) : (
+          <Link href={plan.href}>{plan.cta}</Link>
+        )}
       </Button>
     </div>
   );
