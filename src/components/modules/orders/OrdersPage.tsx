@@ -17,9 +17,9 @@ import {
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { DashboardStatCard } from "@/components/shared/DashboardStatCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -199,11 +199,12 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <PageHeader
+        eyebrow="Commerce"
         title="Orders"
         action={
-          <Button asChild>
+          <Button asChild className="shadow-sm transition-shadow hover:shadow-md">
             <Link href="/dashboard/orders/new">
               <Plus className="mr-2 h-4 w-4" />
               Create Order
@@ -213,37 +214,29 @@ export default function OrdersPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          icon={Calendar}
-          label="Today's date"
-          value={formatTodayDate()}
-          iconClass="bg-primary/10 text-primary"
-        />
-        <StatCard
+        <DashboardStatCard icon={Calendar} label="Today's date" value={formatTodayDate()} variant="violet" />
+        <DashboardStatCard
           icon={Tag}
           label="Total Orders (Confirmed)"
           value={statsLoading ? "—" : String(stats?.totalConfirmed ?? 0)}
-          loading={statsLoading}
-          iconClass="bg-primary/10 text-primary"
+          variant="sky"
         />
-        <StatCard
+        <DashboardStatCard
           icon={Package}
           label="Total Amount"
           value={statsLoading ? "—" : formatPrice(stats?.totalAmount ?? 0, currency)}
-          loading={statsLoading}
-          iconClass="bg-primary/10 text-primary"
+          variant="warm"
         />
-        <StatCard
+        <DashboardStatCard
           icon={Users}
           label="Total Customer Served"
           value={statsLoading ? "—" : String(stats?.customersServed ?? 0)}
-          loading={statsLoading}
-          iconClass="bg-primary/10 text-primary"
+          variant="emerald"
         />
       </div>
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-        <div className="flex flex-1 overflow-hidden rounded-lg border bg-background">
+        <div className="dashboard-toolbar flex-1 overflow-hidden p-0">
           <Select value={searchField} onValueChange={(v) => setSearchField(v as OrderSearchField)}>
             <SelectTrigger className="w-[130px] shrink-0 rounded-none border-0 border-r shadow-none focus:ring-0">
               <SelectValue />
@@ -278,7 +271,7 @@ export default function OrdersPage() {
       </div>
 
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <div className="flex flex-wrap gap-1 rounded-lg bg-muted/50 p-1">
+        <div className="dashboard-panel flex flex-wrap gap-1 p-1.5">
           {ORDER_STATUS_TABS.map((tab) => (
             <button
               key={tab.value}
@@ -364,13 +357,13 @@ export default function OrdersPage() {
           actionHref="/dashboard/orders/new"
         />
       ) : filteredOrders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
+        <div className="dashboard-panel flex flex-col items-center justify-center p-12 text-center">
           <Package className="mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-lg font-semibold">No orders match your filters</h3>
           <p className="mt-2 text-sm text-muted-foreground">Try adjusting the status tab or search terms.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border">
+        <div className="dashboard-table-shell">
           <Table>
             <TableHeader>
               <TableRow>
@@ -467,37 +460,5 @@ export default function OrdersPage() {
         </div>
       )}
     </div>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  iconClass,
-  loading,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  iconClass: string;
-  loading?: boolean;
-}) {
-  return (
-    <Card>
-      <CardContent className="flex items-center gap-4 pt-4">
-        <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", iconClass)}>
-          <Icon className="h-5 w-5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm text-muted-foreground">{label}</p>
-          {loading ? (
-            <Skeleton className="mt-1 h-6 w-20" />
-          ) : (
-            <p className="text-lg font-semibold">{value}</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
   );
 }

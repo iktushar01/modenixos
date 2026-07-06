@@ -82,8 +82,9 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <PageHeader
+        eyebrow="Catalog"
         title="Categories"
         description="Create top-level categories and subcategories for your storefront navigation."
         action={
@@ -109,7 +110,7 @@ export default function CategoriesPage() {
           icon={Tags}
         />
       ) : (
-        <div className="rounded-lg border">
+        <div className="dashboard-table-shell">
           <Table>
             <TableHeader>
               <TableRow>

@@ -58,8 +58,9 @@ export default function CollectionsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <PageHeader
+        eyebrow="Catalog"
         title="Collections"
         description="Group products into curated collections. Images use a 3:4 crop matching your storefront."
         action={
@@ -85,7 +86,7 @@ export default function CollectionsPage() {
           icon={Layers}
         />
       ) : (
-        <div className="rounded-lg border">
+        <div className="dashboard-table-shell">
           <Table>
             <TableHeader>
               <TableRow>

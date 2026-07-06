@@ -1,6 +1,8 @@
 "use client";
 
+import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { DashboardStatCard } from "@/components/shared/DashboardStatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAnalyticsOverviewAction, getAnalyticsChartsAction } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
@@ -28,47 +30,72 @@ export default function AnalyticsPage() {
   const showPlaceholder =
     (overviewPending && overview === undefined) || (chartsPending && charts === undefined);
 
+  const stats = [
+    {
+      label: "Revenue",
+      value: formatPrice(overview?.revenue ?? 0, currency),
+      icon: DollarSign,
+      variant: "warm" as const,
+    },
+    {
+      label: "Orders",
+      value: overview?.orders ?? 0,
+      icon: ShoppingCart,
+      variant: "violet" as const,
+    },
+    {
+      label: "Products",
+      value: overview?.products ?? 0,
+      icon: Package,
+      variant: "sky" as const,
+    },
+    {
+      label: "Customers",
+      value: overview?.customers ?? 0,
+      icon: Users,
+      variant: "emerald" as const,
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      <PageHeader title="Analytics" description="Detailed insights into your store performance." />
+    <div className="dashboard-page">
+      <PageHeader
+        eyebrow="Insights"
+        title="Analytics"
+        description="Detailed insights into your store performance."
+      />
 
       <DashboardAsyncContent
         showPlaceholder={showPlaceholder}
         skeleton={<DashboardAnalyticsSkeleton />}
       >
-        <div className="grid gap-4 md:grid-cols-4">
-          {[
-            { label: "Revenue", value: formatPrice(overview?.revenue ?? 0, currency) },
-            { label: "Orders", value: overview?.orders ?? 0 },
-            { label: "Products", value: overview?.products ?? 0 },
-            { label: "Customers", value: overview?.customers ?? 0 },
-          ].map((s) => (
-            <Card key={s.label}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">{s.label}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{s.value}</div>
-              </CardContent>
-            </Card>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {stats.map((s) => (
+            <DashboardStatCard
+              key={s.label}
+              label={s.label}
+              value={s.value}
+              icon={s.icon}
+              variant={s.variant}
+            />
           ))}
         </div>
 
         {charts?.monthlyRevenue && charts.monthlyRevenue.length > 0 && (
-          <Card className="mt-6">
+          <Card className="dashboard-panel dashboard-panel-hover mt-2 border-0 bg-transparent shadow-none">
             <CardHeader>
               <CardTitle>Monthly Revenue</CardTitle>
             </CardHeader>
             <CardContent>
               <ChartContainer
                 config={{ revenue: { label: "Revenue", color: "hsl(var(--chart-1))" } }}
-                className="h-[300px] w-full"
+                className="h-[280px] w-full sm:h-[320px]"
               >
                 <BarChart data={charts.monthlyRevenue}>
                   <XAxis dataKey="month" />
                   <YAxis />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
+                  <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ChartContainer>
             </CardContent>

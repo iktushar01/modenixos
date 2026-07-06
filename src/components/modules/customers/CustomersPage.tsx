@@ -105,8 +105,9 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <PageHeader
+        eyebrow="Customers"
         title="Customers"
         description="Manage storefront login accounts and guest shoppers. Registered customers can log in, save a wishlist, and leave reviews."
         action={
@@ -117,7 +118,7 @@ export default function CustomersPage() {
         }
       />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="dashboard-toolbar flex-col sm:flex-row sm:justify-between">
         <div className="flex flex-wrap gap-2">
           {FILTER_OPTIONS.map((option) => (
             <Button
@@ -168,7 +169,7 @@ export default function CustomersPage() {
           icon={Users}
         />
       ) : (
-        <div className="rounded-lg border">
+        <div className="dashboard-table-shell">
           <Table>
             <TableHeader>
               <TableRow>

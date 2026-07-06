@@ -58,11 +58,12 @@ export default function ReviewsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="Reviews" description="Moderate product reviews from customers." />
+    <div className="dashboard-page">
+      <PageHeader eyebrow="Moderation" title="Reviews" description="Moderate product reviews from customers." />
       {reviews.length === 0 ? (
         <EmptyState title="No reviews yet" description="Customer reviews will appear here for moderation." />
       ) : (
+        <div className="dashboard-table-shell">
         <Table>
           <TableHeader>
             <TableRow>
@@ -167,6 +168,7 @@ export default function ReviewsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   );

@@ -99,12 +99,13 @@ export default function ProductsPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <PageHeader
+        eyebrow="Catalog"
         title="Products"
         description="Manage your fashion catalog with images, variants, and pricing."
         action={
-          <Button asChild>
+          <Button asChild className="shadow-sm transition-shadow hover:shadow-md">
             <Link href="/dashboard/products/new">
               <Plus className="mr-2 h-4 w-4" />
               Add product
@@ -113,7 +114,7 @@ export default function ProductsPage() {
         }
       />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="dashboard-toolbar">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -166,7 +167,7 @@ export default function ProductsPage() {
           icon={Package}
         />
       ) : (
-        <div className="rounded-lg border">
+        <div className="dashboard-table-shell">
           <Table>
             <TableHeader>
               <TableRow>

@@ -143,7 +143,7 @@ export const AppSidebar = memo(function AppSidebar({ data, user }: AppSidebarPro
                         <DashboardNavLink
                           href={item.href}
                           onNavigate={closeMobile}
-                          className="transition-colors duration-150"
+                          className="transition-all duration-200 hover:translate-x-0.5"
                         >
                           {Icon && <Icon className="h-4 w-4" />}
                           <span>{item.label}</span>

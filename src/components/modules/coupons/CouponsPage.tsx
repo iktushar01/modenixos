@@ -46,8 +46,9 @@ export default function CouponsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page">
       <PageHeader
+        eyebrow="Promotions"
         title="Coupons"
         description="Create discount codes for your store."
         action={
@@ -76,6 +77,7 @@ export default function CouponsPage() {
       {coupons.length === 0 ? (
         <EmptyState title="No coupons yet" description="Create discount codes to boost sales." actionLabel="Create Coupon" onAction={() => setOpen(true)} />
       ) : (
+        <div className="dashboard-table-shell">
         <Table>
           <TableHeader>
             <TableRow>
@@ -98,6 +100,7 @@ export default function CouponsPage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </div>
   );
