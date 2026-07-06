@@ -12,7 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -169,48 +172,49 @@ export default function UsersPermissionsPage() {
       )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent size="lg">
           <DialogHeader>
             <DialogTitle>Add shop users</DialogTitle>
+            <DialogDescription>
+              Enter an email address. If the user already has an account, they are added immediately.
+              Otherwise, an invitation email is sent.
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Input
-              placeholder="Email or Phone"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Select value={role} onValueChange={(v) => setRole(v as StoreMemberRole)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Role" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLE_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {STORE_MEMBER_ROLE_LABELS[opt]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <DialogBody className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Input
+                placeholder="Email or Phone"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Select value={role} onValueChange={(v) => setRole(v as StoreMemberRole)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {STORE_MEMBER_ROLE_LABELS[opt]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </DialogBody>
 
-          <p className="text-xs text-muted-foreground">
-            Enter an email address. If the user already has an account, they are added immediately.
-            Otherwise, an invitation email is sent.
-          </p>
-
-          <div className="flex justify-end gap-2">
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={handleAddUser}
               disabled={!canSubmit || inviteMutation.isPending}
             >
-              {inviteMutation.isPending ? "Adding..." : "Add User"}
+              {inviteMutation.isPending ? "Adding..." : "Add user"}
             </Button>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Close
-            </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

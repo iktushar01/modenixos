@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import {
@@ -19,6 +17,8 @@ import {
 } from "@/lib/storefront";
 import { EditableLinkList } from "./EditableLinkList";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
+import { StoreSection } from "./StoreSection";
+import { StoreSaveBar } from "./StoreSaveBar";
 
 export default function StoreHeaderPage() {
   const { data: store, refetch, isLoading } = useMyStore();
@@ -43,7 +43,6 @@ export default function StoreHeaderPage() {
       });
     }
   }, [store]);
-
 
   const handleSave = async () => {
     if (!store) return;
@@ -81,19 +80,20 @@ export default function StoreHeaderPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
+        eyebrow="Shop"
         title="Header & navigation"
         description="Announcement bar, main menu, search, and phone for your storefront."
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Announcement bar</CardTitle>
-          <CardDescription>Full-width strip at the very top of your shop.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
+      <StoreSection
+        eyebrow="Top bar"
+        title="Announcement bar"
+        description="Full-width strip at the very top of your shop."
+      >
+        <div className="space-y-4">
+          <div className="dashboard-toggle-row">
             <Label htmlFor="announcementEnabled">Show announcement bar</Label>
             <Switch
               id="announcementEnabled"
@@ -107,6 +107,7 @@ export default function StoreHeaderPage() {
             <Label htmlFor="announcementText">Announcement text</Label>
             <Input
               id="announcementText"
+              className="h-10"
               value={form.announcement.text}
               onChange={(e) =>
                 setForm({ ...form, announcement: { ...form.announcement, text: e.target.value } })
@@ -114,28 +115,29 @@ export default function StoreHeaderPage() {
               placeholder="Step Into The Festive Season With Your Brand"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Main navigation</CardTitle>
-          <CardDescription>Centered category menu below the logo row.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <StoreSection
+        eyebrow="Navigation"
+        title="Main navigation"
+        description="Centered category menu below the logo row."
+      >
+        <div className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="tagline">Brand tagline</Label>
             <Input
               id="tagline"
+              className="h-10"
               value={form.tagline}
               onChange={(e) => setForm({ ...form, tagline: e.target.value })}
               placeholder="Life is good"
             />
-            <p className="text-[11px] text-muted-foreground">Shown under your logo on the storefront.</p>
+            <p className="text-xs text-muted-foreground">Shown under your logo on the storefront.</p>
           </div>
           <div className="space-y-2">
             <Label>Navigation source</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="dashboard-segment-group w-fit">
               {(
                 [
                   { id: "categories", label: "From categories" },
@@ -147,7 +149,9 @@ export default function StoreHeaderPage() {
                   key={opt.id}
                   type="button"
                   size="sm"
-                  variant={form.navSource === opt.id ? "default" : "outline"}
+                  variant="ghost"
+                  data-active={form.navSource === opt.id ? "true" : undefined}
+                  className="dashboard-segment-btn h-9"
                   onClick={() => setForm({ ...form, navSource: opt.id as StorefrontNavSource })}
                 >
                   {opt.label}
@@ -164,15 +168,12 @@ export default function StoreHeaderPage() {
               hrefPlaceholder="#shop or OFFER"
             />
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Search & contact</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
+      <StoreSection eyebrow="Utility" title="Search & contact">
+        <div className="space-y-4">
+          <div className="dashboard-toggle-row">
             <Label htmlFor="showSearch">Show search bar</Label>
             <Switch
               id="showSearch"
@@ -180,7 +181,7 @@ export default function StoreHeaderPage() {
               onCheckedChange={(showSearch) => setForm({ ...form, showSearch })}
             />
           </div>
-          <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="dashboard-toggle-row">
             <Label htmlFor="showPhone">Show phone number</Label>
             <Switch
               id="showPhone"
@@ -192,18 +193,21 @@ export default function StoreHeaderPage() {
             <Label htmlFor="phone">Phone number</Label>
             <Input
               id="phone"
+              className="h-10"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="01777702000"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Button onClick={handleSave} disabled={saving}>
-        {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save header & navigation
-      </Button>
-    </div>
+      <StoreSaveBar
+        label="Save header & navigation"
+        onSave={handleSave}
+        saving={saving}
+        hint="Changes apply to your public storefront header."
+      />
+    </>
   );
 }

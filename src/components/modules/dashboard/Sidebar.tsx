@@ -225,34 +225,30 @@ export const AppSidebar = memo(function AppSidebar({ data, user }: AppSidebarPro
       </SidebarFooter>
 
       <AlertDialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
-        <AlertDialogContent className="max-w-[400px] rounded-lg border border-border bg-background p-6 shadow-lg">
-          <AlertDialogHeader className="space-y-1.5 text-center sm:text-left">
-            <AlertDialogTitle className="text-xl font-semibold tracking-tight">
-              Sign out now?
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm leading-normal text-muted-foreground">
+        <AlertDialogContent size="md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out now?</AlertDialogTitle>
+            <AlertDialogDescription>
               This will end your current session. Make sure you&apos;ve saved any in-progress work
               before continuing.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <AlertDialogFooter className="pt-2 sm:space-x-2">
-            <AlertDialogCancel disabled={isLoggingOut} className="h-9 rounded-md text-xs">
-              Cancel
-            </AlertDialogCancel>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoggingOut}>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              variant="destructive"
               onClick={(event) => {
                 event.preventDefault();
                 void handleLogout();
               }}
               disabled={isLoggingOut}
-              className="h-9 rounded-md bg-destructive text-xs text-destructive-foreground shadow-sm hover:bg-destructive/95"
             >
               {isLoggingOut ? (
-                <div className="flex items-center gap-1.5">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>Signing out...</span>
-                </div>
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Signing out...
+                </span>
               ) : (
                 "Sign out"
               )}

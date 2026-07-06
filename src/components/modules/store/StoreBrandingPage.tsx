@@ -2,12 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { revalidateStoreBrandingAction } from "@/actions/store.actions";
 import { parseStorefrontTheme } from "@/lib/storefrontTheme";
@@ -15,6 +12,8 @@ import { uploadStoreBranding } from "@/lib/uploadStoreBranding";
 import { ImageCropUpload } from "./ImageCropUpload";
 import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
+import { StoreSection } from "./StoreSection";
+import { StoreSaveBar } from "./StoreSaveBar";
 
 const LOGO_RATIOS = [
   { label: "1:1", value: 1 },
@@ -49,7 +48,6 @@ export default function StoreBrandingPage() {
   }, [store]);
 
   const hasPendingChanges = Boolean(logoFile || clearLogo || slidesDirty);
-
 
   useEffect(() => {
     if (!store || slidesDirty) return;
@@ -127,8 +125,9 @@ export default function StoreBrandingPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
+        eyebrow="Shop"
         title="Branding"
         description="Crop your logo or hero slides, then click Save branding to upload."
         action={
@@ -140,51 +139,46 @@ export default function StoreBrandingPage() {
         }
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Logo</CardTitle>
-          <CardDescription>
-            Crop your logo, then save. Appears in the storefront navbar and footer.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ImageCropUpload
-            label="Shop logo"
-            defaultAspect={1}
-            ratioOptions={LOGO_RATIOS}
-            allowShapeSelection
-            defaultShape="rectangle"
-            existingUrl={clearLogo ? null : store?.logo}
-            outputFileName="logo.jpg"
-            previewClassName="aspect-square max-w-[160px]"
-            onCroppedFile={(file) => {
-              setLogoFile(file);
-              if (file) setClearLogo(false);
-            }}
-            onClear={() => {
-              setClearLogo(true);
-              setLogoFile(null);
-            }}
-          />
-        </CardContent>
-      </Card>
+      <StoreSection
+        eyebrow="Identity"
+        title="Logo"
+        description="Crop your logo, then save. Appears in the storefront navbar and footer."
+      >
+        <ImageCropUpload
+          label="Shop logo"
+          defaultAspect={1}
+          ratioOptions={LOGO_RATIOS}
+          allowShapeSelection
+          defaultShape="rectangle"
+          existingUrl={clearLogo ? null : store?.logo}
+          outputFileName="logo.jpg"
+          previewClassName="aspect-square max-w-[160px]"
+          onCroppedFile={(file) => {
+            setLogoFile(file);
+            if (file) setClearLogo(false);
+          }}
+          onClear={() => {
+            setClearLogo(true);
+            setLogoFile(null);
+          }}
+        />
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Hero slider</CardTitle>
-          <CardDescription>
-            Add multiple banner images. They auto-rotate on the storefront (images only).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <HeroSlidesUpload slides={heroSlides} onChange={handleSlidesChange} />
-        </CardContent>
-      </Card>
+      <StoreSection
+        eyebrow="Homepage"
+        title="Hero slider"
+        description="Add multiple banner images. They auto-rotate on the storefront (images only)."
+      >
+        <HeroSlidesUpload slides={heroSlides} onChange={handleSlidesChange} />
+      </StoreSection>
 
-      <Button onClick={handleSave} disabled={saving || !hasPendingChanges}>
-        {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save branding
-      </Button>
-    </div>
+      <StoreSaveBar
+        label="Save branding"
+        onSave={handleSave}
+        saving={saving}
+        disabled={!hasPendingChanges}
+        hint={hasPendingChanges ? "You have unsaved branding changes." : "Crop images above, then save to upload."}
+      />
+    </>
   );
 }
