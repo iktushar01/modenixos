@@ -22,6 +22,7 @@ import { adminSidebar } from "@/components/data/adminSidebar";
 import { clientSidebarData } from "@/components/data/clientSidebar";
 import { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
+import { DashboardNavProvider } from "@/components/shared/DashboardNavContext";
 
 interface DashboardLayoutClientProps {
   className?: string;
@@ -51,32 +52,34 @@ export function DashboardLayoutClient({ className, children }: DashboardLayoutCl
   const sidebarData = useMemo(() => getSidebarDataForRole(user?.role), [user?.role]);
 
   return (
-    <SidebarProvider className={cn(className)}>
-      <AppSidebar data={sidebarData} user={user} />
+    <DashboardNavProvider>
+      <SidebarProvider className={cn(className)}>
+        <AppSidebar data={sidebarData} user={user} />
 
-      <SidebarInset>
-        <DashboardHeader>
-          <SidebarTrigger className="-ml-1" />
-          <Separator
-            orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
-          />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{sidebarData.logo.description}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </DashboardHeader>
+        <SidebarInset>
+          <DashboardHeader>
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{sidebarData.logo.description}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </DashboardHeader>
 
-        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+          <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </DashboardNavProvider>
   );
 }
 

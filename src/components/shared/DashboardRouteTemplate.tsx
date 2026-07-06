@@ -1,49 +1,28 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { getDashboardSkeletonForPath } from "@/components/shared/DashboardPageSkeleton";
-
-interface DashboardReadyContextValue {
-  markReady: () => void;
-}
-
-const DashboardReadyContext = createContext<DashboardReadyContextValue | null>(null);
-
-export function useDashboardReady(ready: boolean) {
-  const ctx = useContext(DashboardReadyContext);
-
-  useEffect(() => {
-    if (ready) ctx?.markReady();
-  }, [ready, ctx]);
-}
+import { useDashboardNav } from "@/components/shared/DashboardNavContext";
 
 export function DashboardRouteTemplate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [contentReady, setContentReady] = useState(false);
+  const { pendingHref } = useDashboardNav();
 
-  useEffect(() => {
-    setContentReady(false);
-  }, [pathname]);
-
-  const markReady = useCallback(() => setContentReady(true), []);
+  if (pendingHref) {
+    return (
+      <div key={pendingHref} className="animate-in fade-in duration-100">
+        {getDashboardSkeletonForPath(pendingHref)}
+      </div>
+    );
+  }
 
   return (
-    <DashboardReadyContext.Provider value={{ markReady }}>
-      {!contentReady && getDashboardSkeletonForPath(pathname)}
-      <div
-        className={contentReady ? "animate-in fade-in duration-200" : "hidden"}
-        aria-hidden={!contentReady}
-      >
-        {children}
-      </div>
-    </DashboardReadyContext.Provider>
+    <div key={pathname} className="animate-in fade-in duration-150">
+      {children}
+    </div>
   );
 }
+
+// Re-export for pages that still import from this file
+export { useDashboardReady } from "@/components/shared/DashboardNavContext";

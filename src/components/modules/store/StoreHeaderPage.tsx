@@ -19,6 +19,7 @@ import {
 } from "@/lib/storefront";
 import { EditableLinkList } from "./EditableLinkList";
 import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
+import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 export default function StoreHeaderPage() {
   const { data: store, refetch, isLoading } = useMyStore();
@@ -78,7 +79,7 @@ export default function StoreHeaderPage() {
   };
 
   if (isLoading) {
-    return null;
+    return <DashboardFormSkeleton compact />;
   }
 
   return (

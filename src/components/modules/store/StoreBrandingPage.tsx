@@ -15,6 +15,7 @@ import { uploadStoreBranding } from "@/lib/uploadStoreBranding";
 import { ImageCropUpload } from "./ImageCropUpload";
 import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
 import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
+import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 const LOGO_RATIOS = [
   { label: "1:1", value: 1 },
@@ -124,7 +125,7 @@ export default function StoreBrandingPage() {
   };
 
   if (isLoading) {
-    return null;
+    return <DashboardFormSkeleton compact />;
   }
 
   return (

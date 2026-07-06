@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import ProductForm from "@/components/modules/products/ProductForm";
 import { getProductAction } from "@/actions/catalog.actions";
 import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
+import { ProductFormSkeleton } from "@/components/modules/products/ProductFormSkeleton";
 
 export default function EditProductPage() {
   const params = useParams();
@@ -19,7 +20,7 @@ export default function EditProductPage() {
   useDashboardReady(!isLoading);
 
   if (isLoading) {
-    return null;
+    return <ProductFormSkeleton />;
   }
 
   if (isError || !product) {

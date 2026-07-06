@@ -24,6 +24,7 @@ import {
   deleteReviewAction,
 } from "@/actions/catalog.actions";
 import { Review } from "@/types/store.types";
+import { DashboardPageSkeleton } from "@/components/shared/DashboardPageSkeleton";
 import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function ReviewsPage() {
@@ -54,12 +55,14 @@ export default function ReviewsPage() {
 
   useDashboardReady(!isLoading);
 
+  if (isLoading) {
+    return <DashboardPageSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader title="Reviews" description="Moderate product reviews from customers." />
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : reviews.length === 0 ? (
+      {reviews.length === 0 ? (
         <EmptyState title="No reviews yet" description="Customer reviews will appear here for moderation." />
       ) : (
         <Table>

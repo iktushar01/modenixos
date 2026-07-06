@@ -172,7 +172,7 @@ export default function StoreProfilePage() {
   useDashboardReady(!isLoading);
 
   if (isLoading) {
-    return null;
+    return <ProfileSkeleton />;
   }
 
   const storefrontPath = `/store/${form.slug}`;

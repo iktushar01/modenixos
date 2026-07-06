@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { getCouponsAction, createCouponAction, deleteCouponAction } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
+import { DashboardPageSkeleton } from "@/components/shared/DashboardPageSkeleton";
 import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 export default function CouponsPage() {
@@ -41,6 +42,10 @@ export default function CouponsPage() {
   const coupons = data?.data ?? [];
 
   useDashboardReady(!isLoading);
+
+  if (isLoading) {
+    return <DashboardPageSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
@@ -70,7 +75,7 @@ export default function CouponsPage() {
           </Dialog>
         }
       />
-      {isLoading ? <p>Loading...</p> : coupons.length === 0 ? (
+      {coupons.length === 0 ? (
         <EmptyState title="No coupons yet" description="Create discount codes to boost sales." actionLabel="Create Coupon" onAction={() => setOpen(true)} />
       ) : (
         <Table>

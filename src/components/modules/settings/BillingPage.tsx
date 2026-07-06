@@ -29,7 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
+import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 
 const planLabels: Record<string, string> = {
   FREE: "Starter",
@@ -105,7 +105,7 @@ export default function BillingPage() {
   });
 
   if (isLoading) {
-    return null;
+    return <DashboardFormSkeleton />;
   }
 
   const currentPlan = overview?.store.plan ?? "FREE";

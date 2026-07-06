@@ -175,12 +175,11 @@ export async function proxy(request: NextRequest) {
 
                     if (userRole === "CLIENT" && pathname.startsWith("/dashboard")) {
                         const cachedHasStore = readHasStoreCookie(request.cookies);
-                        if (cachedHasStore === true) {
-                            return NextResponse.next();
-                        }
                         if (cachedHasStore === false) {
                             return NextResponse.redirect(new URL("/onboarding", request.url));
                         }
+                        // Soft nav: skip hasStore API — full page loads still validate below
+                        return NextResponse.next();
                     } else if (
                         userRole &&
                         (routeOwner === "COMMON" ||

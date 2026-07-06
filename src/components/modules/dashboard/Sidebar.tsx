@@ -43,7 +43,9 @@ import SidebarLogo from "./SidebarLogo";
 import { iconRegistry } from "@/components/shared/Iconregistry";
 import { UserFromCookie } from "@/types/auth.types";
 import { deleteCookie } from "cookies-next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useDashboardNav } from "@/components/shared/DashboardNavContext";
 
 type AppSidebarProps = {
   data: SidebarData;
@@ -52,6 +54,8 @@ type AppSidebarProps = {
 
 export const AppSidebar = ({ data, user }: AppSidebarProps) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { startNavigation } = useDashboardNav();
   const { setOpenMobile, isMobile } = useSidebar();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -101,6 +105,17 @@ export const AppSidebar = ({ data, user }: AppSidebarProps) => {
       ? "/admin/dashboard/settings"
       : "/dashboard/settings";
 
+  useEffect(() => {
+    const hrefs = data.navGroups.flatMap((group) => group.items.map((item) => item.href));
+    hrefs.forEach((href) => router.prefetch(href));
+    router.prefetch(settingsHref);
+  }, [data.navGroups, router, settingsHref]);
+
+  const handleNavClick = (href: string) => {
+    startNavigation(href);
+    if (isMobile) setOpenMobile(false);
+  };
+
   return (
     <Sidebar>
       {/* Header: Logo */}
@@ -134,7 +149,8 @@ export const AppSidebar = ({ data, user }: AppSidebarProps) => {
                       >
                         <Link
                           href={item.href}
-                          onClick={() => isMobile && setOpenMobile(false)}
+                          prefetch
+                          onClick={() => handleNavClick(item.href)}
                         >
                           {Icon && <Icon className="h-4 w-4" />}
                           <span>{item.label}</span>
@@ -201,8 +217,9 @@ export const AppSidebar = ({ data, user }: AppSidebarProps) => {
               <DropdownMenuItem asChild>
                 <Link
                   href={settingsHref}
+                  prefetch
                   className="cursor-pointer"
-                  onClick={() => isMobile && setOpenMobile(false)}
+                  onClick={() => handleNavClick(settingsHref)}
                 >
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
