@@ -2,45 +2,84 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Eye, Pencil, Plus, Power, Ticket, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { getCouponsAction, createCouponAction, deleteCouponAction } from "@/actions/catalog.actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  getCouponsAction,
+  updateCouponAction,
+  deleteCouponAction,
+} from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { DashboardPageSkeleton } from "@/components/shared/DashboardPageSkeleton";
+import { Coupon } from "@/types/store.types";
+import { CouponFormDialog } from "./CouponFormDialog";
+import { CouponViewDialog } from "./CouponViewDialog";
+import { cn } from "@/lib/utils";
+
+function activeBadgeClass(isActive: boolean) {
+  return isActive
+    ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
+    : "border-muted bg-muted text-muted-foreground";
+}
 
 export default function CouponsPage() {
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ code: "", type: "PERCENT", value: "", minOrder: "0" });
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<Coupon | null>(null);
+  const [viewing, setViewing] = useState<Coupon | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { data: store } = useMyStore();
   const currency = store?.currency ?? "USD";
   const { data, isLoading } = useQuery({ queryKey: ["coupons"], queryFn: () => getCouponsAction() });
 
-  const createMutation = useMutation({
-    mutationFn: () => createCouponAction({ ...form, value: Number(form.value), minOrder: Number(form.minOrder) }),
-    onSuccess: () => {
-      toast.success("Coupon created");
-      setOpen(false);
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      updateCouponAction(id, { isActive }),
+    onSuccess: (_, { isActive }) => {
+      toast.success(isActive ? "Coupon activated" : "Coupon deactivated");
       queryClient.invalidateQueries({ queryKey: ["coupons"] });
     },
+    onError: () => toast.error("Failed to update coupon status"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteCouponAction,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["coupons"] }),
+    onSuccess: () => {
+      toast.success("Coupon deleted");
+      setDeleteId(null);
+      queryClient.invalidateQueries({ queryKey: ["coupons"] });
+    },
+    onError: () => toast.error("Failed to delete coupon"),
   });
 
   const coupons = data?.data ?? [];
 
+  const openCreate = () => {
+    setEditing(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (coupon: Coupon) => {
+    setEditing(coupon);
+    setFormOpen(true);
+  };
 
   if (isLoading) {
     return <DashboardPageSkeleton />;
@@ -51,73 +90,148 @@ export default function CouponsPage() {
       <PageHeader
         eyebrow="Promotions"
         title="Coupons"
-        description="Create discount codes for your store."
+        description="Create discount codes, control availability, and track redemptions."
         action={
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button>Create Coupon</Button></DialogTrigger>
-            <DialogContent size="md">
-              <DialogHeader>
-                <DialogTitle>New coupon</DialogTitle>
-                <DialogDescription>Create a discount code for your storefront checkout.</DialogDescription>
-              </DialogHeader>
-              <DialogBody className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Code</Label>
-                  <Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} placeholder="SUMMER20" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Type</Label>
-                  <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PERCENT">Percentage</SelectItem>
-                      <SelectItem value="FIXED">Fixed Amount</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Value</Label>
-                  <Input type="number" value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} placeholder={form.type === "PERCENT" ? "20" : "10"} />
-                </div>
-              </DialogBody>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={() => createMutation.mutate()} disabled={!form.code || !form.value || createMutation.isPending}>
-                  Create coupon
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            Create promo code
+          </Button>
         }
       />
+
       {coupons.length === 0 ? (
-        <EmptyState title="No coupons yet" description="Create discount codes to boost sales." actionLabel="Create Coupon" onAction={() => setOpen(true)} />
+        <EmptyState
+          title="No coupons yet"
+          description="Create discount codes to boost sales and reward customers."
+          actionLabel="Create promo code"
+          onAction={openCreate}
+          icon={Ticket}
+        />
       ) : (
-        <DashboardTable label="Coupons" count={coupons.length}>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Used</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {coupons.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell className="font-mono">{c.code}</TableCell>
-                <TableCell>{c.type}</TableCell>
-                <TableCell>{c.type === "PERCENT" ? `${c.value}%` : formatPrice(c.value, currency)}</TableCell>
-                <TableCell>{c.usedCount}{c.usageLimit ? `/${c.usageLimit}` : ""}</TableCell>
-                <TableCell><Button variant="destructive" size="sm" onClick={() => deleteMutation.mutate(c.id)}>Delete</Button></TableCell>
+        <DashboardTable label="Promo codes" count={coupons.length}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Discount</TableHead>
+                <TableHead>Min order</TableHead>
+                <TableHead>Used</TableHead>
+                <TableHead>Expires</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {coupons.map((c) => {
+                const expired = c.expiresAt ? new Date(c.expiresAt) < new Date() : false;
+                return (
+                  <TableRow key={c.id}>
+                    <TableCell className="font-mono font-medium">{c.code}</TableCell>
+                    <TableCell>
+                      {c.type === "PERCENT" ? `${c.value}%` : formatPrice(c.value, currency)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {c.minOrder > 0 ? formatPrice(c.minOrder, currency) : "—"}
+                    </TableCell>
+                    <TableCell>
+                      {c.usedCount}
+                      {c.usageLimit ? ` / ${c.usageLimit}` : ""}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {c.expiresAt
+                        ? new Date(c.expiresAt).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "—"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge variant="outline" className={activeBadgeClass(c.isActive)}>
+                          {c.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                        {expired ? <Badge variant="destructive">Expired</Badge> : null}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setViewing(c)}
+                          aria-label={`View ${c.code}`}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openEdit(c)}
+                          aria-label={`Edit ${c.code}`}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(!c.isActive && "text-emerald-600 hover:text-emerald-600")}
+                          onClick={() =>
+                            toggleMutation.mutate({ id: c.id, isActive: !c.isActive })
+                          }
+                          disabled={toggleMutation.isPending}
+                          aria-label={c.isActive ? `Deactivate ${c.code}` : `Activate ${c.code}`}
+                        >
+                          <Power className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setDeleteId(c.id)}
+                          aria-label={`Delete ${c.code}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </DashboardTable>
       )}
+
+      <CouponFormDialog open={formOpen} onOpenChange={setFormOpen} coupon={editing} />
+
+      <CouponViewDialog
+        coupon={viewing}
+        open={Boolean(viewing)}
+        onOpenChange={(open) => !open && setViewing(null)}
+        currency={currency}
+        onEdit={openEdit}
+      />
+
+      <AlertDialog open={Boolean(deleteId)} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete coupon?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Customers will no longer be able to use this promo code. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

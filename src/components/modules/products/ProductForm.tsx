@@ -7,9 +7,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductImageMode } from "./ProductMediaSection";
 import {
   createProductAction,
