@@ -92,6 +92,13 @@ export const isTokenExpiringSoon = (
     return remainingSeconds > 0 && remainingSeconds <= thresholdInSeconds;
 };
 
+/** Decode-only check for in-app RSC navigations — full HMAC verify on hard loads. */
+export const isAccessTokenFreshForSoftNav = (token: string): boolean => {
+    const payload = decodeJwtPayload(token);
+    if (!payload?.exp) return false;
+    return payload.exp > Math.floor(Date.now() / 1000);
+};
+
 export const normalizeUserRole = (
     role: string | undefined | null,
 ): UserRole | null => {

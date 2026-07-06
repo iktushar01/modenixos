@@ -23,6 +23,7 @@ import { clientSidebarData } from "@/components/data/clientSidebar";
 import { UserFromCookie } from "@/types/auth.types";
 import { cn } from "@/lib/utils";
 import { DashboardNavProvider } from "@/components/shared/DashboardNavContext";
+import { DashboardNavContent } from "@/components/shared/DashboardNavContent";
 import { DashboardPageTransition } from "@/components/shared/DashboardPageTransition";
 
 interface DashboardLayoutClientProps {
@@ -78,7 +79,9 @@ export function DashboardLayoutClient({ className, children }: DashboardLayoutCl
           </DashboardHeader>
 
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <DashboardPageTransition>{children}</DashboardPageTransition>
+            <DashboardPageTransition>
+              <DashboardNavContent>{children}</DashboardNavContent>
+            </DashboardPageTransition>
           </div>
         </SidebarInset>
       </SidebarProvider>

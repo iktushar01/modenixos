@@ -8,6 +8,7 @@ import {
 import {
     decodeJwtPayload,
     getAccessTokenSecret,
+    isAccessTokenFreshForSoftNav,
     isTokenExpiringSoon,
     normalizeUserRole,
     verifyAccessToken,
@@ -165,29 +166,28 @@ export async function proxy(request: NextRequest) {
 
         // Fast path: valid JWT + user cookie on client-side navigations
         if (isSoftNavigationRequest(request) && accessToken && cookieUser?.role) {
-            const secret = getAccessTokenSecret();
-            if (secret) {
-                const tokenResult = await verifyAccessToken(accessToken, secret);
-                if (tokenResult.success) {
-                    const userRole = normalizeUserRole(
-                        (tokenResult.data?.role as string | undefined) ?? cookieUser.role,
-                    );
+            if (isAccessTokenFreshForSoftNav(accessToken)) {
+                const payload = decodeJwtPayload(accessToken);
+                const userRole = normalizeUserRole(
+                    (payload?.role as string | undefined) ?? cookieUser.role,
+                );
 
-                    if (userRole === "CLIENT" && pathname.startsWith("/dashboard")) {
-                        const cachedHasStore = readHasStoreCookie(request.cookies);
-                        if (cachedHasStore === false) {
-                            return NextResponse.redirect(new URL("/onboarding", request.url));
-                        }
-                        // Soft nav: skip hasStore API — full page loads still validate below
-                        return NextResponse.next();
-                    } else if (
-                        userRole &&
-                        (routeOwner === "COMMON" ||
-                            routeOwner === userRole ||
-                            (routeOwner === "ADMIN" && userRole === "ADMIN"))
-                    ) {
-                        return NextResponse.next();
+                if (userRole === "CLIENT" && pathname.startsWith("/dashboard")) {
+                    const cachedHasStore = readHasStoreCookie(request.cookies);
+                    if (cachedHasStore === false) {
+                        return NextResponse.redirect(new URL("/onboarding", request.url));
                     }
+                    // Soft nav: skip hasStore API — full page loads still validate below
+                    return NextResponse.next();
+                }
+
+                if (
+                    userRole &&
+                    (routeOwner === "COMMON" ||
+                        routeOwner === userRole ||
+                        (routeOwner === "ADMIN" && userRole === "ADMIN"))
+                ) {
+                    return NextResponse.next();
                 }
             }
         }

@@ -7,9 +7,10 @@ import {
   useLayoutEffect,
   useMemo,
   useState,
+  startTransition,
   type ReactNode,
 } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface DashboardNavContextValue {
   /** Resolved or optimistic path — use for sidebar active state. */
@@ -22,6 +23,7 @@ interface DashboardNavContextValue {
 const DashboardNavContext = createContext<DashboardNavContextValue | null>(null);
 
 export function DashboardNavProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const pathname = usePathname();
   const [optimisticPath, setOptimisticPath] = useState<string | null>(null);
 
@@ -33,11 +35,13 @@ export function DashboardNavProvider({ children }: { children: ReactNode }) {
 
   const navigate = useCallback(
     (href: string) => {
-      if (href !== pathname && href !== optimisticPath) {
-        setOptimisticPath(href);
-      }
+      if (!href || href === pathname || href === optimisticPath) return;
+      setOptimisticPath(href);
+      startTransition(() => {
+        router.push(href, { scroll: false });
+      });
     },
-    [pathname, optimisticPath],
+    [pathname, optimisticPath, router],
   );
 
   const value = useMemo<DashboardNavContextValue>(

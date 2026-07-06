@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { memo, type ComponentPropsWithoutRef, type ReactNode } from "react";
 import { useDashboardNav } from "@/components/shared/DashboardNavContext";
 
@@ -19,6 +19,7 @@ export const DashboardNavLink = memo(function DashboardNavLink({
   ...props
 }: DashboardNavLinkProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { navigate } = useDashboardNav();
   const hrefString = typeof href === "string" ? href : (href.pathname ?? "");
 
@@ -31,7 +32,10 @@ export const DashboardNavLink = memo(function DashboardNavLink({
         if (hrefString) router.prefetch(hrefString);
       }}
       onClick={(event) => {
-        navigate(hrefString);
+        if (hrefString && hrefString !== pathname) {
+          event.preventDefault();
+          navigate(hrefString);
+        }
         onNavigate?.();
         onClick?.(event);
       }}

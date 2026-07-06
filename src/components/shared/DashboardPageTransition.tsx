@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { useDashboardNav } from "@/components/shared/DashboardNavContext";
 
 const EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -12,8 +13,14 @@ const EASE = [0.25, 0.1, 0.25, 1] as const;
  */
 export function DashboardPageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { isNavigating, activePath } = useDashboardNav();
   const reducedMotion = useReducedMotion();
   const duration = reducedMotion ? 0 : 0.15;
+  const pendingNav = isNavigating && activePath !== pathname;
+
+  if (pendingNav) {
+    return <>{children}</>;
+  }
 
   return (
     <motion.div
