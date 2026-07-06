@@ -27,7 +27,7 @@ export function StorefrontCarouselNavButtons() {
         type="button"
         variant="ghost"
         size="icon"
-        className="sf-touch-target h-11 w-11 sf-fg disabled:opacity-25"
+        className="sf-carousel-btn sf-touch-target h-11 w-11 sf-fg disabled:opacity-25"
         disabled={!canScrollPrev}
         onClick={scrollPrev}
         aria-label="Previous slide"
@@ -38,7 +38,7 @@ export function StorefrontCarouselNavButtons() {
         type="button"
         variant="ghost"
         size="icon"
-        className="sf-touch-target h-11 w-11 sf-fg disabled:opacity-25"
+        className="sf-carousel-btn sf-touch-target h-11 w-11 sf-fg disabled:opacity-25"
         disabled={!canScrollNext}
         onClick={scrollNext}
         aria-label="Next slide"
@@ -65,7 +65,7 @@ export function StorefrontCarouselHeaderAction({
       {viewAllHref ? (
         <StorefrontNavLink
           href={viewAllHref}
-          className="sf-eyebrow sf-link sf-touch-target inline-flex items-center px-1 transition-colors sf-hover-fg"
+          className="sf-eyebrow sf-link sf-link-slide sf-touch-target inline-flex items-center px-1 sf-hover-fg"
         >
           {viewAllLabel}
         </StorefrontNavLink>

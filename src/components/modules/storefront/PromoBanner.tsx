@@ -18,13 +18,13 @@ export function PromoBanner({ slug, theme, fallbackText }: PromoBannerProps) {
   return (
     <section className="sf-section w-full py-8 md:py-10">
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="sf-border sf-promo-panel relative overflow-hidden rounded-none border px-8 py-10 md:px-14 md:py-14"
+        viewport={{ once: true, margin: "-48px" }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="sf-border sf-promo-panel sf-panel relative overflow-hidden border px-8 py-10 md:px-14 md:py-14"
       >
-        <div className="sf-promo-glow absolute -right-16 -top-16 h-48 w-48 rounded-full" />
+        <div className="sf-promo-glow absolute -right-16 -top-16 h-48 w-48 rounded-full transition-transform duration-700 group-hover:scale-110" />
         <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <p className="sf-eyebrow">Limited edition</p>

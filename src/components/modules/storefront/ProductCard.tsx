@@ -51,7 +51,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
 
   const card = (
     <>
-      <div className="sf-editorial-card sf-image-zoom relative overflow-hidden">
+      <div className="sf-product-card sf-card-interactive sf-image-zoom relative overflow-hidden">
         <StorefrontNavLink href={`/store/${store.slug}/products/${product.id}`} className="block">
           <div className="relative aspect-[3/4] overflow-hidden sf-muted">
             {product.images[0] ? (
@@ -62,7 +62,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className={cn(
-                    "object-cover transition-opacity duration-500",
+                    "object-cover transition-opacity duration-700 ease-out",
                     hovered && secondImage ? "opacity-0" : "opacity-100",
                   )}
                   unoptimized
@@ -74,7 +74,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     className={cn(
-                      "object-cover transition-opacity duration-500",
+                      "object-cover transition-opacity duration-700 ease-out",
                       hovered ? "opacity-100" : "opacity-0",
                     )}
                     loading="lazy"
@@ -87,16 +87,16 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
             )}
 
             {discountPercent && (
-              <span className="sf-eyebrow absolute left-4 top-4 sf-badge-secondary rounded-full px-3 py-1">
+              <span className="sf-eyebrow absolute left-3 top-3 sf-badge-secondary rounded-full px-3 py-1 shadow-sm backdrop-blur-sm">
                 −{discountPercent}%
               </span>
             )}
 
-            <div className="absolute inset-x-0 bottom-0 translate-y-0 bg-[color-mix(in_srgb,var(--sf-card)_92%,transparent)] p-2.5 backdrop-blur-sm transition-transform duration-300 md:translate-y-full md:p-3 md:group-hover:translate-y-0">
+            <div className="sf-product-actions absolute inset-x-0 bottom-0 bg-[color-mix(in_srgb,var(--sf-card)_88%,transparent)] p-2.5 backdrop-blur-md md:p-3">
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  className="sf-btn-primary sf-touch-target h-10 flex-1 rounded-full text-xs uppercase tracking-wider"
+                  className="sf-btn-primary sf-btn-interactive sf-touch-target h-10 flex-1 rounded-full text-xs uppercase tracking-wider"
                   onClick={handleAddToCart}
                 >
                   <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />
@@ -105,7 +105,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
                 <Button
                   size="sm"
                   variant="outline"
-                  className="sf-btn-outline sf-touch-target h-10 w-10 shrink-0 rounded-full px-0"
+                  className="sf-btn-outline sf-btn-interactive sf-touch-target h-10 w-10 shrink-0 rounded-full px-0"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -124,7 +124,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
       <div className="mt-4 space-y-1.5 px-0.5">
         <p className="sf-eyebrow">{store.brandName}</p>
         <StorefrontNavLink href={`/store/${store.slug}/products/${product.id}`}>
-          <h3 className="sf-font-display truncate text-base sf-fg transition-opacity hover:opacity-70">
+          <h3 className="sf-font-display truncate text-base sf-fg transition-colors duration-200 group-hover:sf-primary-text">
             {product.name}
           </h3>
         </StorefrontNavLink>
@@ -141,7 +141,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
               {rating.toFixed(1)}
             </div>
           ) : product.tags?.includes("new") ? (
-            <span className="sf-eyebrow">New</span>
+            <span className="sf-eyebrow sf-primary-text">New</span>
           ) : null}
         </div>
       </div>
@@ -151,9 +151,10 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
   if (layout === "scroll") {
     return (
       <motion.article
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="group w-[min(78vw,260px)] shrink-0 snap-start sm:w-[280px]"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -164,13 +165,17 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
   }
 
   return (
-    <article
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-32px" }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="group"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {card}
-    </article>
+    </motion.article>
   );
 }
 

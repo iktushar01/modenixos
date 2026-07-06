@@ -8,6 +8,7 @@ import { getStoreStaticPage } from "@/lib/storefront/storeStaticPages";
 import { parseStorefrontTheme } from "@/lib/storefront";
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import { storeBasePath } from "@/lib/storePaths";
+import { StorefrontReveal } from "@/components/modules/storefront/ui";
 import { StorefrontShopProfile } from "@/types/store.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,22 +46,25 @@ export default function ContactUsPageClient() {
     <>
       <StorePageTitle pageId="contact-us" brandName={store.brandName} />
       <main className="sf-section w-full py-12 md:py-16">
-        <nav className="sf-muted-fg mb-8 flex flex-wrap items-center gap-1.5 text-xs">
-          <StorefrontNavLink href={base} className="sf-link sf-hover-fg transition-colors">
+        <nav className="sf-breadcrumb mb-8">
+          <StorefrontNavLink href={base} className="sf-link sf-hover-fg">
             Home
           </StorefrontNavLink>
           <ChevronRight className="h-3 w-3 opacity-50" />
           <span>Contact Us</span>
         </nav>
 
-        <header className="mb-10 max-w-2xl md:mb-12">
-          <p className="sf-eyebrow">{page.eyebrow}</p>
-          <h1 className="sf-display-lg mt-2 text-3xl md:text-4xl">{page.title}</h1>
-          <p className="sf-muted-fg sf-body-lg mt-4 leading-relaxed">{page.description}</p>
-        </header>
+        <StorefrontReveal>
+          <header className="mb-10 max-w-2xl md:mb-12">
+            <p className="sf-eyebrow">{page.eyebrow}</p>
+            <h1 className="sf-display-lg mt-2 text-3xl md:text-4xl">{page.title}</h1>
+            <p className="sf-muted-fg sf-body-lg mt-4 leading-relaxed">{page.description}</p>
+          </header>
+        </StorefrontReveal>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-12">
-          <form onSubmit={handleSubmit} className="sf-editorial-card space-y-5 p-6 md:p-8">
+          <StorefrontReveal staggerIndex={0}>
+            <form onSubmit={handleSubmit} className="sf-editorial-card sf-card-interactive space-y-5 p-6 md:p-8">
             <div className="flex items-center gap-3 border-b sf-border pb-5">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--sf-muted)]">
                 <Send className="h-4 w-4" />
@@ -134,13 +138,15 @@ export default function ContactUsPageClient() {
               />
             </div>
 
-            <Button type="submit" disabled={loading} className="sf-btn-primary w-full rounded-full sm:w-auto">
+            <Button type="submit" disabled={loading} className="sf-btn-primary sf-btn-interactive w-full rounded-full sm:w-auto">
               {loading ? "Sending…" : "Send message"}
             </Button>
           </form>
+          </StorefrontReveal>
 
           <aside className="space-y-4">
-            <div className="sf-editorial-card p-6">
+            <StorefrontReveal staggerIndex={1}>
+            <div className="sf-editorial-card sf-card-interactive p-6">
               <p className="sf-eyebrow mb-4">Reach us</p>
               <ul className="space-y-4">
                 <li className="flex gap-3">
@@ -177,9 +183,11 @@ export default function ContactUsPageClient() {
                 </li>
               </ul>
             </div>
+            </StorefrontReveal>
 
-            {page.sections.map((section) => (
-              <div key={section.title} className="sf-editorial-card p-6">
+            {page.sections.map((section, index) => (
+              <StorefrontReveal key={section.title} staggerIndex={index + 2}>
+              <div className="sf-editorial-card sf-card-interactive p-6">
                 <p className="mb-3 text-sm font-medium">{section.title}</p>
                 {section.paragraphs?.map((paragraph) => (
                   <p key={paragraph.slice(0, 40)} className="sf-muted-fg text-sm leading-relaxed">
@@ -194,6 +202,7 @@ export default function ContactUsPageClient() {
                   </ul>
                 )}
               </div>
+              </StorefrontReveal>
             ))}
 
             <div className="flex gap-3 px-1">

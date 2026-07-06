@@ -51,11 +51,8 @@ export function StorefrontSection({
 
 export function StorefrontDivider({ className }: { className?: string }) {
   return (
-    <div
-      className={cn("sf-section w-full py-2", className)}
-      aria-hidden
-    >
-      <hr className="sf-border mx-auto max-w-6xl border-t opacity-40" />
+    <div className={cn("sf-section w-full py-4 md:py-6", className)} aria-hidden>
+      <div className="sf-section-divider mx-auto max-w-6xl" />
     </div>
   );
 }
@@ -77,8 +74,8 @@ export function StorefrontCTA({
     <a
       href={href}
       className={cn(
-        "inline-flex items-center justify-center rounded-full px-7 py-2.5 text-xs uppercase tracking-[0.18em] transition-all duration-300",
-        variant === "primary" && "sf-btn-primary hover:opacity-90",
+        "sf-btn-interactive inline-flex items-center justify-center rounded-full px-7 py-2.5 text-xs uppercase tracking-[0.18em] transition-all duration-300",
+        variant === "primary" && "sf-btn-primary",
         variant === "outline" && "sf-btn-outline hover:sf-muted",
         className,
       )}

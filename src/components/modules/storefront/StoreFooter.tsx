@@ -72,7 +72,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                   href={theme.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sf-link sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border transition-colors sf-hover-fg"
+                  className="sf-link sf-social-btn sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border sf-hover-fg"
                   aria-label="Instagram"
                 >
                   <Instagram className="h-4 w-4" strokeWidth={1.5} />
@@ -83,7 +83,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                   href={theme.social.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sf-link sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border transition-colors sf-hover-fg"
+                  className="sf-link sf-social-btn sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border sf-hover-fg"
                   aria-label="Twitter"
                 >
                   <Twitter className="h-4 w-4" strokeWidth={1.5} />
@@ -94,7 +94,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                   href={theme.social.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sf-link sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border transition-colors sf-hover-fg"
+                  className="sf-link sf-social-btn sf-touch-target inline-flex h-9 w-9 items-center justify-center rounded-full border sf-border sf-hover-fg"
                   aria-label="Facebook"
                 >
                   <Facebook className="h-4 w-4" strokeWidth={1.5} />
@@ -109,18 +109,18 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
             <ul className="space-y-2.5">
               {navLinks.map((link) => (
                 <li key={`${link.label}-${link.href}`}>
-                  <StorefrontNavLink href={link.href} className="sf-link text-sm transition-colors sf-hover-fg">
+                  <StorefrontNavLink href={link.href} className="sf-link sf-link-slide text-sm sf-hover-fg">
                     {link.label}
                   </StorefrontNavLink>
                 </li>
               ))}
               <li>
-                <StorefrontNavLink href={`${base}/cart`} className="sf-link text-sm transition-colors sf-hover-fg">
+                <StorefrontNavLink href={`${base}/cart`} className="sf-link sf-link-slide text-sm sf-hover-fg">
                   Cart
                 </StorefrontNavLink>
               </li>
               <li>
-                <StorefrontNavLink href={storeTrackPath(store.slug)} className="sf-link text-sm transition-colors sf-hover-fg">
+                <StorefrontNavLink href={storeTrackPath(store.slug)} className="sf-link sf-link-slide text-sm sf-hover-fg">
                   Track order
                 </StorefrontNavLink>
               </li>
@@ -132,18 +132,18 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
             <p className="sf-eyebrow mb-5">Company</p>
             <ul className="space-y-2.5">
               <li>
-                <StorefrontNavLink href={storeAboutPath(store.slug)} className="sf-link text-sm sf-hover-fg">
+                <StorefrontNavLink href={storeAboutPath(store.slug)} className="sf-link sf-link-slide text-sm sf-hover-fg">
                   About
                 </StorefrontNavLink>
               </li>
               <li>
-                <StorefrontNavLink href={storeContactUsPath(store.slug)} className="sf-link text-sm sf-hover-fg">
+                <StorefrontNavLink href={storeContactUsPath(store.slug)} className="sf-link sf-link-slide text-sm sf-hover-fg">
                   Contact Us
                 </StorefrontNavLink>
               </li>
               {theme.contact.phone && (
                 <li>
-                  <a href={`tel:${theme.contact.phone}`} className="sf-link text-sm sf-hover-fg">
+                  <a href={`tel:${theme.contact.phone}`} className="sf-link sf-link-slide text-sm sf-hover-fg">
                     {theme.contact.phone}
                   </a>
                 </li>
@@ -154,7 +154,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
             <ul className="space-y-2.5">
               {POLICY_LINKS.map((link) => (
                 <li key={link.label}>
-                  <StorefrontNavLink href={link.href(store.slug)} className="sf-link text-sm sf-hover-fg">
+                  <StorefrontNavLink href={link.href(store.slug)} className="sf-link sf-link-slide text-sm sf-hover-fg">
                     {link.label}
                   </StorefrontNavLink>
                 </li>
@@ -177,7 +177,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                 className="sf-input w-full"
                 required
               />
-              <Button type="submit" className="sf-btn-primary w-full rounded-full">
+              <Button type="submit" className="sf-btn-primary sf-btn-interactive w-full rounded-full">
                 Subscribe
               </Button>
             </form>

@@ -31,10 +31,11 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
   return (
     <section id="contact" className="sf-section w-full py-16 md:py-24">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="sf-muted sf-border border px-5 py-10 sm:px-8 sm:py-14 md:px-16 md:py-20"
+        viewport={{ once: true, margin: "-48px" }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="sf-muted sf-border sf-panel border px-5 py-10 sm:px-8 sm:py-14 md:px-16 md:py-20"
       >
         <div className="mx-auto max-w-2xl text-center">
           <p className="sf-eyebrow">Stay connected</p>
@@ -44,7 +45,7 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
           </p>
           <form
             onSubmit={handleSubmit}
-            className="mx-auto mt-10 flex max-w-lg flex-col gap-3 border sf-border p-2 sm:flex-row sm:rounded-full sm:bg-[color-mix(in_srgb,var(--sf-card)_80%,transparent)]"
+            className="mx-auto mt-10 flex max-w-lg flex-col gap-3 border sf-border p-2 shadow-sm transition-shadow duration-300 focus-within:shadow-md sm:flex-row sm:rounded-full sm:bg-[color-mix(in_srgb,var(--sf-card)_80%,transparent)]"
           >
             <Input
               type="email"
@@ -57,7 +58,7 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
             <Button
               type="submit"
               disabled={loading}
-              className="sf-btn-primary h-12 rounded-full px-10"
+              className="sf-btn-primary sf-btn-interactive h-12 rounded-full px-10"
             >
               {loading ? "Subscribing…" : "Subscribe"}
             </Button>

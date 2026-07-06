@@ -20,15 +20,15 @@ export function BrandStory({ theme, slug, brandName }: BrandStoryProps) {
   return (
     <section id="about" className="sf-section w-full py-16 md:py-24">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="sf-border sf-promo-panel overflow-hidden border"
+        viewport={{ once: true, margin: "-48px" }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className="sf-border sf-promo-panel sf-panel overflow-hidden border"
       >
         <div className="grid items-stretch lg:grid-cols-2">
           {hasImage ? (
-            <div className="relative min-h-[280px] lg:min-h-[420px]">
+            <div className="sf-image-zoom relative min-h-[280px] overflow-hidden lg:min-h-[420px]">
               <Image
                 src={theme.brandStoryImage!}
                 alt={theme.brandStoryTitle}
@@ -40,10 +40,7 @@ export function BrandStory({ theme, slug, brandName }: BrandStoryProps) {
             </div>
           ) : (
             <div className="sf-brand-placeholder relative flex min-h-[240px] items-center justify-center lg:min-h-[420px]">
-              <span
-                className="sf-display-lg select-none opacity-20"
-                aria-hidden
-              >
+              <span className="sf-display-lg select-none opacity-20" aria-hidden>
                 {initial}
               </span>
             </div>

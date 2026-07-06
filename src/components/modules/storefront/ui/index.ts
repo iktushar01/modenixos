@@ -1,4 +1,5 @@
 export { StorefrontSection, StorefrontDivider, StorefrontCTA } from "./StorefrontSection";
+export { StorefrontReveal } from "./StorefrontReveal";
 export {
   StorefrontCarousel,
   StorefrontCarouselTrack,

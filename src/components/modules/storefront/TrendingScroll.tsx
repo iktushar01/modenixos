@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
 import { Product, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { storeShopPath } from "@/lib/storePaths";
@@ -48,19 +46,14 @@ export function TrendingScroll({
         <StorefrontCarouselTrack>
           {products.map((product) => (
             <StorefrontCarouselSlide key={product.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <ProductCard
-                  product={product}
-                  store={store}
-                  theme={theme}
-                  rating={ratings[product.id]}
-                  onQuickView={onQuickView}
-                />
-              </motion.div>
+              <ProductCard
+                product={product}
+                store={store}
+                theme={theme}
+                rating={ratings[product.id]}
+                onQuickView={onQuickView}
+                layout="scroll"
+              />
             </StorefrontCarouselSlide>
           ))}
         </StorefrontCarouselTrack>

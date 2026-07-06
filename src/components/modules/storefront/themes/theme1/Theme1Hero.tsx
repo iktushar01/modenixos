@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import { Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { cn } from "@/lib/utils";
@@ -42,16 +43,27 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
       style={{ "--sf-hero-h": heroHeight } as CSSProperties}
     >
       <div className="absolute inset-0">
-        <Image
-          key={activeSrc}
-          src={activeSrc}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className={cn("object-cover transition-opacity duration-700", slides.length > 1 && "sf-hero-ken-burns")}
-          unoptimized
-        />
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={activeSrc}
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={activeSrc}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className={cn("object-cover", slides.length > 1 && "sf-hero-ken-burns")}
+              unoptimized
+            />
+          </motion.div>
+        </AnimatePresence>
+        <div className="sf-hero-overlay pointer-events-none absolute inset-0" />
       </div>
 
       {slides.length > 1 && (
@@ -67,8 +79,8 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
             >
               <span
                 className={cn(
-                  "block h-1 rounded-full bg-white/90 shadow-sm transition-all duration-300",
-                  i === index ? "w-8 opacity-100" : "w-4 opacity-45",
+                  "block h-1 rounded-full bg-white/90 shadow-sm transition-all duration-500 ease-out",
+                  i === index ? "w-8 opacity-100" : "w-4 opacity-40 hover:opacity-70",
                 )}
               />
             </button>
