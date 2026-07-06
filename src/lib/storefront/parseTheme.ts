@@ -185,7 +185,7 @@ export function resolveStorefrontNavLinks(
 
   const categoryLinks = categories.map((cat) => ({
     label: cat.name.toUpperCase(),
-    href: `${base}?category=${encodeURIComponent(cat.slug)}#shop`,
+    href: `${base}/categories/${encodeURIComponent(cat.slug)}`,
   }));
 
   if (theme.header.navSource === "manual") return manual;
