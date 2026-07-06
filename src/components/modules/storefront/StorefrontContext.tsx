@@ -58,7 +58,7 @@ export function StorefrontContextProvider({
 
     Promise.all([
       getPublicStoreAction(slug),
-      getPublicCategoriesAction(slug, { limit: "50" }),
+      getPublicCategoriesAction(slug, { limit: "50", sortBy: "sortOrder", sortOrder: "asc" }),
     ])
       .then(([storeData, categoriesRes]) => {
         if (cancelled) return;

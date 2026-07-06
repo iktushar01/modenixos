@@ -1,22 +1,13 @@
 "use client";
 
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, ChevronRight, Plus, Eye, Pencil, Trash2, Tags } from "lucide-react";
+import { Plus, Tags } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,11 +18,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getCategoriesAction, deleteCategoryAction } from "@/actions/catalog.actions";
-import { CategoryFormDialog, CategoryThumbnail } from "./CategoryFormDialog";
+import {
+  getCategoriesAction,
+  deleteCategoryAction,
+  reorderCategoriesAction,
+} from "@/actions/catalog.actions";
+import { CategoryFormDialog } from "./CategoryFormDialog";
 import { Category } from "@/types/store.types";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
 import { CategoryViewDialog } from "./CatalogViewDialogs";
+import { CategoriesSortableTable } from "./CategoriesSortableTable";
 
 export default function CategoriesPage() {
   const queryClient = useQueryClient();
@@ -44,7 +40,8 @@ export default function CategoriesPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => getCategoriesAction({ limit: 200 }),
+    queryFn: () =>
+      getCategoriesAction({ limit: 200, sortBy: "sortOrder", sortOrder: "asc" }),
   });
 
   const deleteMutation = useMutation({
@@ -57,9 +54,19 @@ export default function CategoriesPage() {
     onError: () => toast.error("Failed to delete category"),
   });
 
+  const reorderMutation = useMutation({
+    mutationFn: reorderCategoriesAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: () => {
+      toast.error("Failed to save category order");
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+
   const categories = data?.data ?? [];
   const tree = useMemo(() => buildCategoryTree(categories), [categories]);
-
 
   const openCreate = () => {
     setEditing(null);
@@ -98,6 +105,12 @@ export default function CategoriesPage() {
         }
       />
 
+      {tree.length > 0 && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Drag the handle on the left to reorder categories and subcategories on your storefront.
+        </p>
+      )}
+
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -113,131 +126,17 @@ export default function CategoriesPage() {
           icon={Tags}
         />
       ) : (
-        <DashboardTable label="Categories" count={categories.length}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[60px]">Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tree.map((parent) => {
-                const hasChildren = (parent.children?.length ?? 0) > 0;
-                const isOpen = expanded[parent.id] ?? hasChildren;
-
-                return (
-                  <Fragment key={parent.id}>
-                    <TableRow className="bg-muted/20">
-                      <TableCell>
-                        <CategoryThumbnail category={parent} />
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          {hasChildren ? (
-                            <button
-                              type="button"
-                              onClick={() => toggleExpanded(parent.id)}
-                              className="rounded p-0.5 hover:bg-muted"
-                              aria-label={isOpen ? "Collapse subcategories" : "Expand subcategories"}
-                            >
-                              {isOpen ? (
-                                <ChevronDown className="h-4 w-4" />
-                              ) : (
-                                <ChevronRight className="h-4 w-4" />
-                              )}
-                            </button>
-                          ) : (
-                            <span className="inline-block w-5" />
-                          )}
-                          {parent.name}
-                          {hasChildren && (
-                            <span className="text-xs text-muted-foreground">
-                              ({parent.children?.length} sub)
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">{parent.slug}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="hidden h-8 px-2 text-xs sm:inline-flex"
-                            onClick={() => openCreateSub(parent)}
-                          >
-                            <Plus className="mr-1 h-3.5 w-3.5" />
-                            Subcategory
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="sm:hidden"
-                            onClick={() => openCreateSub(parent)}
-                            aria-label="Add subcategory"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => setViewing(parent)} aria-label={`View ${parent.name}`}>
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => openEdit(parent)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => setDeleteId(parent.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-
-                    {isOpen &&
-                      parent.children?.map((child) => (
-                        <TableRow key={child.id}>
-                          <TableCell className="pl-8">
-                            <CategoryThumbnail category={child} compact />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2 pl-6">
-                              <span className="text-muted-foreground">↳</span>
-                              <span>{child.name}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{child.slug}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-1">
-                              <Button variant="ghost" size="icon" onClick={() => setViewing(child)} aria-label={`View ${child.name}`}>
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={() => openEdit(child)}>
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => setDeleteId(child.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </Fragment>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </DashboardTable>
+        <CategoriesSortableTable
+          tree={tree}
+          sortable
+          expanded={expanded}
+          onToggleExpanded={toggleExpanded}
+          onReorder={(parentId, categoryIds) => reorderMutation.mutate(categoryIds)}
+          onCreateSub={openCreateSub}
+          onView={setViewing}
+          onEdit={openEdit}
+          onDelete={setDeleteId}
+        />
       )}
 
       <CategoryViewDialog

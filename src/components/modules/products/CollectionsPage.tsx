@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Eye, Pencil, Trash2, Layers } from "lucide-react";
+import { Plus, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { DashboardTable } from "@/components/shared/DashboardTable";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,10 +18,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getCollectionsAction, deleteCollectionAction } from "@/actions/catalog.actions";
-import { CollectionFormDialog, CollectionThumbnail } from "./CollectionFormDialog";
+import {
+  getCollectionsAction,
+  deleteCollectionAction,
+  reorderCollectionsAction,
+} from "@/actions/catalog.actions";
+import { CollectionFormDialog } from "./CollectionFormDialog";
 import { Collection } from "@/types/store.types";
 import { CollectionViewDialog } from "./CatalogViewDialogs";
+import { CollectionsSortableTable } from "./CollectionsSortableTable";
 
 export default function CollectionsPage() {
   const queryClient = useQueryClient();
@@ -34,7 +37,8 @@ export default function CollectionsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["collections"],
-    queryFn: () => getCollectionsAction({ limit: 100 }),
+    queryFn: () =>
+      getCollectionsAction({ limit: 100, sortBy: "sortOrder", sortOrder: "asc" }),
   });
 
   const deleteMutation = useMutation({
@@ -47,8 +51,18 @@ export default function CollectionsPage() {
     onError: () => toast.error("Failed to delete collection"),
   });
 
-  const collections = data?.data ?? [];
+  const reorderMutation = useMutation({
+    mutationFn: reorderCollectionsAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
+    },
+    onError: () => {
+      toast.error("Failed to save collection order");
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
+    },
+  });
 
+  const collections = data?.data ?? [];
 
   const openCreate = () => {
     setEditing(null);
@@ -74,6 +88,12 @@ export default function CollectionsPage() {
         }
       />
 
+      {collections.length > 0 && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Drag the handle on the left to reorder collections on your storefront.
+        </p>
+      )}
+
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -89,49 +109,14 @@ export default function CollectionsPage() {
           icon={Layers}
         />
       ) : (
-        <DashboardTable label="Collections" count={collections.length}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[60px]">Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Featured</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {collections.map((col) => (
-                <TableRow key={col.id}>
-                  <TableCell>
-                    <CollectionThumbnail collection={col} />
-                  </TableCell>
-                  <TableCell className="font-medium">{col.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{col.slug}</TableCell>
-                  <TableCell>{col.isFeatured ? "Yes" : "No"}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => setViewing(col)} aria-label={`View ${col.name}`}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(col)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setDeleteId(col.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </DashboardTable>
+        <CollectionsSortableTable
+          collections={collections}
+          sortable
+          onReorder={(collectionIds) => reorderMutation.mutate(collectionIds)}
+          onView={setViewing}
+          onEdit={openEdit}
+          onDelete={setDeleteId}
+        />
       )}
 
       <CollectionViewDialog

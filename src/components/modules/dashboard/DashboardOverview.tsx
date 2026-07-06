@@ -68,7 +68,7 @@ export default function DashboardOverview() {
 
   const { data: categoriesRes } = useDashboardQuery({
     queryKey: ["dashboard-categories-count"],
-    queryFn: () => getCategoriesAction({ limit: 200 }),
+    queryFn: () => getCategoriesAction({ limit: 200, sortBy: "sortOrder", sortOrder: "asc" }),
   });
 
   const showPlaceholder =

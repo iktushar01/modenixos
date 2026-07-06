@@ -257,11 +257,11 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
   const { data: categoriesRes } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => getCategoriesAction({ limit: 100 }),
+    queryFn: () => getCategoriesAction({ limit: 100, sortBy: "sortOrder", sortOrder: "asc" }),
   });
   const { data: collectionsRes } = useQuery({
     queryKey: ["collections"],
-    queryFn: () => getCollectionsAction({ limit: 100 }),
+    queryFn: () => getCollectionsAction({ limit: 100, sortBy: "sortOrder", sortOrder: "asc" }),
   });
 
   const categories = categoriesRes?.data ?? [];

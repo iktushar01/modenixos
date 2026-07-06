@@ -59,7 +59,7 @@ export default function StoreHomePageClient() {
         ...(params.get("category") ? { category: params.get("category")! } : {}),
         ...(params.get("collection") ? { collection: params.get("collection")! } : {}),
       }),
-      getPublicCollectionsAction(slug, { limit: "50" }),
+      getPublicCollectionsAction(slug, { limit: "50", sortBy: "sortOrder", sortOrder: "asc" }),
       getPublicReviewsAction(slug, { limit: "10" }),
     ])
       .then(([catalogRes, collectionsRes, reviewsRes]) => {

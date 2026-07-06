@@ -68,7 +68,7 @@ export default function ProductsPage() {
 
   const { data: categoriesRes } = useDashboardQuery({
     queryKey: ["categories"],
-    queryFn: () => getCategoriesAction({ limit: 100 }),
+    queryFn: () => getCategoriesAction({ limit: 100, sortBy: "sortOrder", sortOrder: "asc" }),
   });
 
   const deleteMutation = useMutation({
