@@ -214,13 +214,14 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
         )}
       >
         <div className="sf-section border-b sf-border">
-          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2 py-3 sm:gap-3 md:grid-cols-3 md:gap-6 md:py-4">
-            <div className="flex min-w-0 items-center gap-1 sm:gap-2 md:justify-self-start">
+          <div className="sf-header-toolbar py-2.5 md:py-3">
+            {/* Left: menu + search */}
+            <div className="relative z-10 flex min-w-0 flex-1 items-center gap-2 pr-16 sm:pr-20 md:pr-24">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="sf-navbar-fg sf-touch-target h-11 w-11 shrink-0 lg:hidden"
+                className="sf-header-action lg:hidden"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open menu"
               >
@@ -228,13 +229,13 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               </Button>
 
               {theme.header.showSearch && (
-                <form onSubmit={handleSearch} className="hidden min-w-0 lg:block">
+                <form onSubmit={handleSearch} className="hidden min-w-0 lg:block lg:max-w-[15rem] xl:max-w-[18rem]">
                   <div className="sf-header-search">
                     <Input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search for products..."
-                      className="sf-input h-10 border-0 px-3 text-sm shadow-none focus-visible:ring-0"
+                      className="sf-input h-full border-0 px-3 text-sm shadow-none focus-visible:ring-0"
                     />
                     <Button
                       type="submit"
@@ -250,9 +251,10 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               )}
             </div>
 
+            {/* Center: logo (absolute — does not affect row height) */}
             <StorefrontNavLink
               href={base}
-              className="flex min-w-0 max-w-[52vw] flex-col items-center justify-self-center text-center sm:max-w-none"
+              className="absolute left-1/2 top-1/2 z-[5] max-w-[42vw] -translate-x-1/2 -translate-y-1/2 sm:max-w-[220px] md:max-w-[260px]"
             >
               {logoUrl ? (
                 <Image
@@ -260,24 +262,22 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   alt={store.brandName}
                   width={180}
                   height={56}
-                  className="h-7 w-auto max-w-full object-contain sm:h-8 md:h-10"
+                  className="mx-auto h-7 w-auto max-w-full object-contain sm:h-8 md:h-9"
                   unoptimized
                 />
               ) : (
-                <span className="sf-display-lg truncate text-base sm:text-lg md:text-xl">{store.brandName}</span>
-              )}
-              {theme.header.tagline && (
-                <span className="mt-1 hidden text-[10px] tracking-[0.22em] text-muted-foreground uppercase sm:block">
-                  {theme.header.tagline}
+                <span className="sf-display-lg block truncate text-center text-base sm:text-lg md:text-xl">
+                  {store.brandName}
                 </span>
               )}
             </StorefrontNavLink>
 
-            <div className="flex items-center justify-end gap-0.5 sm:gap-1 md:gap-3 md:justify-self-end">
+            {/* Right: actions */}
+            <div className="relative z-10 ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1">
               {theme.header.showPhone && theme.contact.phone && (
                 <a
                   href={`tel:${theme.contact.phone}`}
-                  className="sf-link sf-touch-target hidden p-2 lg:inline-flex"
+                  className="sf-header-action hidden lg:inline-flex"
                   aria-label="Call store"
                 >
                   <Phone className="h-5 w-5" strokeWidth={1.5} />
@@ -286,35 +286,41 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
               <StorefrontNavLink
                 href={`${base}/cart`}
-                className="sf-touch-target relative inline-flex items-center justify-center p-2.5"
+                className="sf-header-action relative"
                 aria-label="Cart"
               >
                 <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
-                {hydrated && (
-                  <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full text-[9px] font-semibold sf-primary">
+                {hydrated && cartCount > 0 && (
+                  <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full text-[9px] font-semibold sf-primary">
                     {cartCount}
                   </span>
                 )}
               </StorefrontNavLink>
 
-              <div className="hidden sm:block">
-                <StorefrontAccountMenu base={base} />
+              <div className="hidden sm:contents">
+                <StorefrontAccountMenu base={base} className="sf-header-action" />
               </div>
 
               <div className="hidden sm:block">
-                <StorefrontThemeToggle />
+                <StorefrontThemeToggle className="sf-header-action h-10 w-10" />
               </div>
             </div>
           </div>
 
+          {theme.header.tagline && (
+            <p className="sf-header-tagline -mt-1 pb-2.5 text-center sm:pb-3">
+              {theme.header.tagline}
+            </p>
+          )}
+
           {theme.header.showSearch && (
             <form onSubmit={handleSearch} className="pb-3 lg:hidden">
-              <div className="sf-header-search">
+              <div className="sf-header-search w-full max-w-none">
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for products..."
-                  className="sf-input h-10 border-0 px-3 text-sm shadow-none focus-visible:ring-0"
+                  className="sf-input h-full border-0 px-3 text-sm shadow-none focus-visible:ring-0"
                 />
                 <Button
                   type="submit"
