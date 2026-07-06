@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Collection } from "@/types/store.types";
 import { STOREFRONT_COLLECTION_ASPECT } from "@/lib/storefront/imageAspects";
+import { storeCollectionPath, storeShopPath } from "@/lib/storePaths";
 import {
   StorefrontCarousel,
   StorefrontCarouselHeaderAction,
@@ -31,7 +32,7 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
           subtitle="Handpicked edits for every occasion"
           action={
             <StorefrontCarouselHeaderAction
-              viewAllHref={`/store/${slug}#shop`}
+              viewAllHref={storeShopPath(slug)}
               itemCount={collections.length}
             />
           }
@@ -46,7 +47,7 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
                 viewport={{ once: true }}
               >
                 <StorefrontNavLink
-                  href={`/store/${slug}?collection=${col.slug}#shop`}
+                  href={storeCollectionPath(slug, col.slug)}
                   className="sf-editorial-card sf-image-zoom group relative block overflow-hidden"
                   style={{ aspectRatio: `${STOREFRONT_COLLECTION_ASPECT}` }}
                 >

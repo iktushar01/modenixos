@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { StorefrontThemeConfig } from "@/lib/storefront";
+import { storeShopPath } from "@/lib/storePaths";
 import { StorefrontCTA } from "./ui";
 
 interface BrandStoryProps {
@@ -12,7 +13,7 @@ interface BrandStoryProps {
 }
 
 export function BrandStory({ theme, slug, brandName }: BrandStoryProps) {
-  const shopHref = slug ? `/store/${slug}#shop` : "#shop";
+  const shopHref = slug ? storeShopPath(slug) : "/shop";
   const hasImage = Boolean(theme.brandStoryImage);
   const initial = (brandName ?? theme.brandStoryTitle ?? "B").charAt(0).toUpperCase();
 

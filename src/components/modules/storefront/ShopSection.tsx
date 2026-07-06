@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetHeader, SheetTitle, SheetTrigger, StorefrontSheetContent } from "@/components/modules/storefront/StorefrontSheet";
 import { useOptionalStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
+import { storeShopPath } from "@/lib/storePaths";
 
 interface ShopSectionProps {
   store: Store;
@@ -38,6 +39,9 @@ interface ShopSectionProps {
   onQuickView: (product: Product) => void;
   showFilters?: boolean;
   layout?: "grid" | "carousel";
+  /** When true, catalog is already filtered server-side (shop page) */
+  serverFiltered?: boolean;
+  fixedFilters?: Partial<ShopFilters>;
 }
 
 export function ShopSection({
@@ -50,6 +54,8 @@ export function ShopSection({
   onQuickView,
   showFilters = true,
   layout = "grid",
+  serverFiltered = false,
+  fixedFilters,
 }: ShopSectionProps) {
   const router = useRouter();
   const storefrontNav = useOptionalStorefrontNav();
@@ -57,7 +63,10 @@ export function ShopSection({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const filters = useMemo(() => parseShopFilters(searchParams), [searchParams]);
+  const filters = useMemo(
+    () => ({ ...parseShopFilters(searchParams), ...fixedFilters }),
+    [searchParams, fixedFilters],
+  );
   const categoryScopedCatalog = useMemo(() => {
     if (!filters.category) return catalog;
     return filterAndSortProducts(catalog, { sort: "newest", category: filters.category }, categories);
@@ -65,23 +74,26 @@ export function ShopSection({
 
   const facets = useMemo(() => extractShopFacets(categoryScopedCatalog), [categoryScopedCatalog]);
   const filtered = useMemo(
-    () => filterAndSortProducts(catalog, filters, categories),
-    [catalog, categories, filters],
+    () => (serverFiltered ? catalog : filterAndSortProducts(catalog, filters, categories)),
+    [catalog, categories, filters, serverFiltered],
   );
   const activeCount = countActiveFilters(filters);
   const isFiltered = hasShopFilters(filters);
 
+  const isShopPage = pathname.endsWith("/shop");
+
   const pushFilters = useCallback(
     (next: ShopFilters) => {
       const qs = shopFiltersToSearchParams(next).toString();
-      const href = qs ? `${pathname}?${qs}#shop` : `${pathname}#shop`;
+      const href = qs ? `${pathname}?${qs}` : pathname;
+      const target = isShopPage ? href : qs ? `${pathname}?${qs}#shop` : `${pathname}#shop`;
       if (storefrontNav) {
-        storefrontNav.navigate(href);
+        storefrontNav.navigate(target);
       } else {
-        startTransition(() => router.push(href, { scroll: false }));
+        startTransition(() => router.push(target, { scroll: false }));
       }
     },
-    [pathname, router, storefrontNav],
+    [pathname, router, storefrontNav, isShopPage],
   );
 
   const patchFilters = useCallback(
@@ -92,13 +104,13 @@ export function ShopSection({
   );
 
   const clearFilters = useCallback(() => {
-    const href = `${pathname}#shop`;
+    const target = isShopPage ? pathname : `${pathname}#shop`;
     if (storefrontNav) {
-      storefrontNav.navigate(href);
+      storefrontNav.navigate(target);
     } else {
-      startTransition(() => router.push(href, { scroll: false }));
+      startTransition(() => router.push(target, { scroll: false });
     }
-  }, [pathname, router, storefrontNav]);
+  }, [pathname, router, storefrontNav, isShopPage]);
 
   const title = useMemo(() => {
     if (layout === "carousel" && !isFiltered) return "All products";
@@ -161,7 +173,7 @@ export function ShopSection({
             subtitle={pieceLabel}
             action={
               <StorefrontCarouselHeaderAction
-                viewAllHref={`/store/${store.slug}#shop`}
+                viewAllHref={storeShopPath(store.slug)}
                 itemCount={catalog.length}
               />
             }

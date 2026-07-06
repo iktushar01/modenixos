@@ -313,6 +313,41 @@ export async function suspendStoreAction(id: string, isSuspended: boolean) {
   revalidatePath("/admin/admin-management");
 }
 
+async function getStorefrontCookieHeader(): Promise<string | undefined> {
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const header = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+    return header || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function fetchPublicApi(
+  path: string,
+  options?: { params?: Record<string, string>; tags?: string[]; revalidate?: number },
+) {
+  const qs = options?.params ? new URLSearchParams(options.params).toString() : "";
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}${qs ? `?${qs}` : ""}`;
+  const nextOpts = {
+    revalidate: options?.revalidate ?? 60,
+    tags: options?.tags,
+  };
+
+  let res = await fetch(url, { next: nextOpts });
+  if (!res.ok) {
+    const cookieHeader = await getStorefrontCookieHeader();
+    if (cookieHeader) {
+      res = await fetch(url, { headers: { Cookie: cookieHeader }, cache: "no-store" });
+    }
+  }
+  return res;
+}
+
 // Public
 async function fetchPublicStore(slug: string, cookieHeader?: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}`, {
@@ -329,12 +364,7 @@ export const getPublicStoreAction = cache(async (slug: string) => {
     const store = await fetchPublicStore(slug);
     if (store) return store;
 
-    const { cookies } = await import("next/headers");
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore
-      .getAll()
-      .map((c) => `${c.name}=${c.value}`)
-      .join("; ");
+    const cookieHeader = await getStorefrontCookieHeader();
     if (!cookieHeader) return null;
 
     return fetchPublicStore(slug, cookieHeader);
@@ -345,9 +375,9 @@ export const getPublicStoreAction = cache(async (slug: string) => {
 
 export async function getPublicProductsAction(slug: string, params?: Record<string, string>) {
   try {
-    const qs = new URLSearchParams(params).toString();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/products?${qs}`, {
-      next: { revalidate: 60, tags: [`store-products-${slug}`] },
+    const res = await fetchPublicApi(`/public/stores/${slug}/products`, {
+      params,
+      tags: [`store-products-${slug}`],
     });
     if (!res.ok) return { data: [], meta: null };
     return res.json();
@@ -370,27 +400,28 @@ export const getPublicProductAction = cache(async (slug: string, id: string) => 
 });
 
 export async function getPublicCollectionsAction(slug: string, params?: Record<string, string>) {
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/collections?${qs}`, {
-    next: { revalidate: 60, tags: [`store-collections-${slug}`] },
+  const res = await fetchPublicApi(`/public/stores/${slug}/collections`, {
+    params,
+    tags: [`store-collections-${slug}`],
   });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }
 
 export async function getPublicCategoriesAction(slug: string, params?: Record<string, string>) {
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/categories?${qs}`, {
-    next: { revalidate: 60, tags: [`store-categories-${slug}`] },
+  const res = await fetchPublicApi(`/public/stores/${slug}/categories`, {
+    params,
+    tags: [`store-categories-${slug}`],
   });
   if (!res.ok) return { data: [], meta: null };
   return res.json();
 }
 
 export async function getPublicReviewsAction(slug: string, params?: Record<string, string>) {
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/reviews?${qs}`, {
-    next: { revalidate: 120, tags: [`store-reviews-${slug}`] },
+  const res = await fetchPublicApi(`/public/stores/${slug}/reviews`, {
+    params,
+    revalidate: 120,
+    tags: [`store-reviews-${slug}`],
   });
   if (!res.ok) return { data: [], meta: null };
   return res.json();

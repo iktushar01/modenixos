@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
 import { STOREFRONT_CATEGORY_ASPECT } from "@/lib/storefront/imageAspects";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
+import { storeCategoryPath, storeShopPath } from "@/lib/storePaths";
 import {
   StorefrontCarousel,
   StorefrontCarouselHeaderAction,
@@ -33,7 +34,7 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
           subtitle="Explore our curated departments"
           action={
             <StorefrontCarouselHeaderAction
-              viewAllHref={`/store/${slug}#shop`}
+              viewAllHref={storeShopPath(slug)}
               itemCount={topLevel.length}
             />
           }
@@ -48,7 +49,7 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
                 viewport={{ once: true }}
               >
                 <StorefrontNavLink
-                  href={`/store/${slug}?category=${cat.slug}#shop`}
+                  href={storeCategoryPath(slug, cat.slug)}
                   className="sf-editorial-card sf-image-zoom group relative block w-full overflow-hidden"
                   style={{ aspectRatio: `${STOREFRONT_CATEGORY_ASPECT}` }}
                 >
