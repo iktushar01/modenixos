@@ -62,7 +62,7 @@ function FilterOption({
       className={cn(
         "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm transition-all duration-200",
         active
-          ? "sf-primary font-medium shadow-sm"
+          ? "sf-filter-pill-active border font-medium"
           : "sf-muted-fg hover:sf-surface hover:sf-fg",
         className,
       )}

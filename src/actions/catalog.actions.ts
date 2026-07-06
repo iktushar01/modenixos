@@ -377,7 +377,8 @@ export async function getPublicProductsAction(slug: string, params?: Record<stri
   try {
     const res = await fetchPublicApi(`/public/stores/${slug}/products`, {
       params,
-      tags: [`store-products-${slug}`],
+      revalidate: 0,
+      tags: [`store-products-${slug}`, `store-products-${slug}-${JSON.stringify(params ?? {})}`],
     });
     if (!res.ok) return { data: [], meta: null };
     return res.json();
