@@ -2,7 +2,7 @@
 
 import { cache } from "react";
 import { httpClient } from "@/lib/axios/httpClient";
-import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, Store } from "@/types/store.types";
+import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, AnalyticsCharts, Store } from "@/types/store.types";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 async function revalidateStorefront() {
@@ -255,7 +255,7 @@ export async function getAnalyticsOverviewAction() {
 }
 
 export async function getAnalyticsChartsAction() {
-  const res = await httpClient.get<{ monthlyRevenue: Array<{ month: string; revenue: number }> }>("/analytics/charts");
+  const res = await httpClient.get<AnalyticsCharts>("/analytics/charts");
   return res.data;
 }
 

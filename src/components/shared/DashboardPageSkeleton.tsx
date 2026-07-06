@@ -50,17 +50,35 @@ export function DashboardOverviewSkeleton() {
 
 export function DashboardAnalyticsSkeleton() {
   return (
-    <div className="space-y-6" role="status" aria-label="Loading analytics">
+    <div className="space-y-8" role="status" aria-label="Loading analytics">
       <div className="space-y-2">
         <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-4 w-72 max-w-full" />
+        <Skeleton className="h-4 w-96 max-w-full" />
       </div>
-      <div className="grid gap-4 md:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-24 w-full rounded-xl" />
-        ))}
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-32" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-28 w-full rounded-xl" />
+          ))}
+        </div>
       </div>
-      <Skeleton className="h-[300px] w-full rounded-xl" />
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-36" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={`lifetime-${i}`} className="h-24 w-full rounded-xl" />
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-4 xl:grid-cols-2">
+        <Skeleton className="h-[320px] w-full rounded-xl" />
+        <Skeleton className="h-[320px] w-full rounded-xl" />
+      </div>
+      <div className="grid gap-4 xl:grid-cols-2">
+        <Skeleton className="h-72 w-full rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-xl" />
+      </div>
     </div>
   );
 }

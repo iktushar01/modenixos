@@ -230,11 +230,42 @@ export interface Coupon {
   isActive: boolean;
 }
 
+export interface AnalyticsPeriodMetrics {
+  label: string;
+  revenue: number;
+  orders: number;
+  newCustomers: number;
+  aov: number;
+}
+
 export interface AnalyticsOverview {
   revenue: number;
   orders: number;
   products: number;
   customers: number;
+  aov: number;
   recentOrders: Order[];
-  bestSellers: Array<{ productId: string; name: string; quantity: number; revenue: number }>;
+  bestSellers: Array<{
+    productId: string;
+    name: string;
+    quantity: number;
+    revenue: number;
+    share: number;
+  }>;
+  period: AnalyticsPeriodMetrics;
+  previousPeriod: AnalyticsPeriodMetrics;
+  changes: {
+    revenue: number | null;
+    orders: number | null;
+    newCustomers: number | null;
+    aov: number | null;
+  };
+  orderStatusBreakdown: Array<{ status: Order["status"]; count: number }>;
+}
+
+export interface AnalyticsCharts {
+  monthlyRevenue: Array<{ month: string; label: string; revenue: number }>;
+  monthlyOrders: Array<{ month: string; label: string; orders: number }>;
+  dailyRevenue: Array<{ day: string; label: string; revenue: number }>;
+  totalOrders: number;
 }
