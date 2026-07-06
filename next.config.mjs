@@ -15,6 +15,10 @@ const nextConfig = {
     },
     // Next 15.5+ can truncate multipart bodies in server actions without this
     proxyClientMaxBodySize: "10mb",
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
   },
 };
 

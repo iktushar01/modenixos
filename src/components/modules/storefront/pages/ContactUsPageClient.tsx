@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
-import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
+import { StorePageTitle } from "@/components/modules/storefront/StorePageTitle";
 import { getStoreStaticPage } from "@/lib/storefront/storeStaticPages";
 import { parseStorefrontTheme } from "@/lib/storefront";
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, Clock, Mail, MapPin, Phone, Send } from "lucide-react";
 
 export default function ContactUsPageClient() {
-  const { store, categories, storeReady } = useStorefront();
+  const { store, storeReady } = useStorefront();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", orderNumber: "", subject: "", message: "" });
 
@@ -42,7 +42,8 @@ export default function ContactUsPageClient() {
   };
 
   return (
-    <StorefrontPageShell store={store} categories={categories}>
+    <>
+      <StorePageTitle pageId="contact-us" brandName={store.brandName} />
       <main className="sf-section w-full py-12 md:py-16">
         <nav className="sf-muted-fg mb-8 flex flex-wrap items-center gap-1.5 text-xs">
           <StorefrontNavLink href={base} className="sf-link sf-hover-fg transition-colors">
@@ -220,6 +221,6 @@ export default function ContactUsPageClient() {
           </aside>
         </div>
       </main>
-    </StorefrontPageShell>
+    </>
   );
 }

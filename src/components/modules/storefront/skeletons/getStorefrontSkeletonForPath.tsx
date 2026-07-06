@@ -5,6 +5,7 @@ import { StorefrontCheckoutSkeleton } from "./StorefrontCheckoutSkeleton";
 import { StorefrontHomeSkeleton } from "./StorefrontHomeSkeleton";
 import { StorefrontOrdersSkeleton } from "./StorefrontOrdersSkeleton";
 import { StorefrontProductSkeleton } from "./StorefrontProductSkeleton";
+import { StorefrontStaticPageSkeleton } from "./StorefrontStaticPageSkeleton";
 import { StorefrontWishlistSkeleton } from "./StorefrontWishlistSkeleton";
 
 export function getStorefrontSkeletonForPath(pathname: string) {
@@ -27,6 +28,8 @@ export function getStorefrontSkeletonForPath(pathname: string) {
       return <StorefrontWishlistSkeleton />;
     case "orders":
       return <StorefrontOrdersSkeleton />;
+    case "static":
+      return <StorefrontStaticPageSkeleton />;
     case "home":
     default:
       return <StorefrontHomeSkeleton />;

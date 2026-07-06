@@ -1,7 +1,7 @@
 "use client";
 
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
-import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
+import { StorePageTitle } from "@/components/modules/storefront/StorePageTitle";
 import { getStoreStaticPage, StoreStaticPageId } from "@/lib/storefront/storeStaticPages";
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import { storeBasePath } from "@/lib/storePaths";
@@ -12,7 +12,7 @@ interface StorePolicyPageClientProps {
 }
 
 export default function StorePolicyPageClient({ pageId }: StorePolicyPageClientProps) {
-  const { store, categories, storeReady } = useStorefront();
+  const { store, storeReady } = useStorefront();
 
   if (!storeReady || !store) {
     return null;
@@ -22,7 +22,8 @@ export default function StorePolicyPageClient({ pageId }: StorePolicyPageClientP
   const base = storeBasePath(store.slug);
 
   return (
-    <StorefrontPageShell store={store} categories={categories}>
+    <>
+      <StorePageTitle pageId={pageId} brandName={store.brandName} />
       <main className="sf-section w-full py-12 md:py-16">
         <nav className="sf-muted-fg mb-8 flex flex-wrap items-center gap-1.5 text-xs">
           <StorefrontNavLink href={base} className="sf-link sf-hover-fg transition-colors">
@@ -45,10 +46,7 @@ export default function StorePolicyPageClient({ pageId }: StorePolicyPageClientP
 
           <div className="space-y-6">
             {page.sections.map((section, index) => (
-              <article
-                key={section.title}
-                className="sf-editorial-card p-6 md:p-8"
-              >
+              <article key={section.title} className="sf-editorial-card p-6 md:p-8">
                 <div className="mb-4 flex items-start gap-4">
                   <span className="sf-eyebrow flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--sf-muted)] text-[10px]">
                     {String(index + 1).padStart(2, "0")}
@@ -74,6 +72,6 @@ export default function StorePolicyPageClient({ pageId }: StorePolicyPageClientP
           </div>
         </div>
       </main>
-    </StorefrontPageShell>
+    </>
   );
 }

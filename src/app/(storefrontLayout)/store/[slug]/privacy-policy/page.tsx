@@ -1,11 +1,6 @@
-import StorePolicyPageClient from "@/components/modules/storefront/pages/StorePolicyPageClient";
-import { getPublicStoreAction } from "@/actions/catalog.actions";
+"use client";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const store = await getPublicStoreAction(slug);
-  return { title: store ? `Privacy Policy — ${store.brandName}` : "Privacy Policy" };
-}
+import StorePolicyPageClient from "@/components/modules/storefront/pages/StorePolicyPageClient";
 
 export default function PrivacyPolicyPage() {
   return <StorePolicyPageClient pageId="privacy-policy" />;

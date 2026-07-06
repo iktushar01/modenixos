@@ -1,5 +1,5 @@
-import { StorefrontHomeSkeleton } from "@/components/modules/storefront/skeletons";
+import { StorefrontRouteLoading } from "@/components/modules/storefront/skeletons/StorefrontRouteLoading";
 
 export default function StoreLoading() {
-  return <StorefrontHomeSkeleton />;
+  return <StorefrontRouteLoading />;
 }
