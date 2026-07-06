@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   getPublicProductsAction,
@@ -26,30 +26,43 @@ const SHOP_FILTER_KEYS = [
 ] as const;
 
 function hasActiveShopFilters(searchParams: URLSearchParams) {
-  return SHOP_FILTER_KEYS.some((key) => {
-    const value = searchParams.getAll(key);
-    return value.length > 0;
-  });
+  return SHOP_FILTER_KEYS.some((key) => searchParams.getAll(key).length > 0);
 }
 
-export default function StoreHomePageClient() {
+interface StoreHomePageClientProps {
+  initialCatalog?: Product[];
+  initialCollections?: Collection[];
+  initialReviews?: Review[];
+}
+
+export default function StoreHomePageClient({
+  initialCatalog = [],
+  initialCollections = [],
+  initialReviews = [],
+}: StoreHomePageClientProps) {
   const searchParams = useSearchParams();
   const { slug, store, categories, storeReady } = useStorefront();
-  const [catalog, setCatalog] = useState<Product[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [dataReady, setDataReady] = useState(false);
+  const [catalog, setCatalog] = useState<Product[]>(initialCatalog);
+  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const skipInitialFetch = useRef(initialCatalog.length > 0 && !hasActiveShopFilters(searchParams));
 
   const filterKey = useMemo(() => searchParams.toString(), [searchParams]);
+  const filteredShop = useMemo(() => hasActiveShopFilters(searchParams), [searchParams]);
 
   useEffect(() => {
     if (!storeReady || !store) return;
 
+    if (skipInitialFetch.current) {
+      skipInitialFetch.current = false;
+      return;
+    }
+
     let cancelled = false;
-    setDataReady(false);
+    setIsRefreshing(true);
 
     const params = new URLSearchParams(filterKey);
-    const filteredShop = hasActiveShopFilters(params);
 
     Promise.all([
       getPublicProductsAction(slug, {
@@ -69,25 +82,31 @@ export default function StoreHomePageClient() {
         setReviews((reviewsRes.data ?? []) as Review[]);
       })
       .finally(() => {
-        if (!cancelled) setDataReady(true);
+        if (!cancelled) setIsRefreshing(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [slug, store, storeReady, filterKey]);
+  }, [slug, store, storeReady, filterKey, filteredShop]);
 
-  if (!storeReady || !store || !dataReady) {
+  if (!storeReady || !store) {
+    return <StorefrontHomeSkeleton />;
+  }
+
+  if (catalog.length === 0 && isRefreshing) {
     return <StorefrontHomeSkeleton />;
   }
 
   return (
-    <StorefrontHomeClient
-      store={store}
-      catalog={catalog}
-      categories={categories}
-      collections={collections}
-      reviews={reviews}
-    />
+    <div className={isRefreshing ? "pointer-events-none opacity-95 transition-opacity duration-200" : undefined}>
+      <StorefrontHomeClient
+        store={store}
+        catalog={catalog}
+        categories={categories}
+        collections={collections}
+        reviews={reviews}
+      />
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   getPublicProductsAction,
@@ -11,24 +11,28 @@ import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontP
 import { useStorefrontTheme } from "@/components/modules/storefront/StorefrontThemeShell";
 import { ShopSection } from "@/components/modules/storefront/ShopSection";
 import { QuickViewModal } from "@/components/modules/storefront/QuickViewModal";
-import { StorefrontHomeSkeleton } from "@/components/modules/storefront/skeletons";
 import { parseShopFilters } from "@/lib/shopFilters";
 import { Collection, Product } from "@/types/store.types";
 
 function ShopContent({
   fixedCategory,
   fixedCollection,
+  initialCatalog = [],
+  initialCollections = [],
 }: {
   fixedCategory?: string;
   fixedCollection?: string;
+  initialCatalog?: Product[];
+  initialCollections?: Collection[];
 }) {
   const searchParams = useSearchParams();
   const { slug, store, categories } = useStorefront();
   const { activeTheme } = useStorefrontTheme();
-  const [catalog, setCatalog] = useState<Product[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [dataReady, setDataReady] = useState(false);
+  const [catalog, setCatalog] = useState<Product[]>(initialCatalog);
+  const [collections, setCollections] = useState<Collection[]>(initialCollections);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const skipInitialFetch = useRef(initialCatalog.length > 0);
 
   const filters = useMemo(() => {
     const parsed = parseShopFilters(searchParams);
@@ -44,8 +48,13 @@ function ShopContent({
   useEffect(() => {
     if (!store) return;
 
+    if (skipInitialFetch.current) {
+      skipInitialFetch.current = false;
+      return;
+    }
+
     let cancelled = false;
-    setDataReady(false);
+    setIsRefreshing(true);
 
     const params: Record<string, string> = {
       limit: "48",
@@ -73,29 +82,18 @@ function ShopContent({
         setCollections((collectionsRes.data ?? []) as Collection[]);
       })
       .finally(() => {
-        if (!cancelled) setDataReady(true);
+        if (!cancelled) setIsRefreshing(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [slug, store, filterKey, filters]);
+  }, [slug, store, filterKey, filters, searchParams]);
 
-  if (!store || !dataReady) {
-    return (
-      <main className="sf-section w-full py-16 md:py-24">
-        <div className="sf-skeleton mb-8 h-10 w-48 rounded" />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="sf-skeleton aspect-[3/4] rounded-2xl" />
-          ))}
-        </div>
-      </main>
-    );
-  }
+  if (!store) return null;
 
   return (
-    <>
+    <div className={isRefreshing ? "pointer-events-none opacity-95 transition-opacity duration-200" : undefined}>
       <ShopSection
         store={store}
         theme={activeTheme}
@@ -119,26 +117,35 @@ function ShopContent({
         theme={activeTheme}
         onClose={() => setQuickViewProduct(null)}
       />
-    </>
+    </div>
   );
 }
 
 export default function ShopPageClient({
   fixedCategory,
   fixedCollection,
+  initialCatalog = [],
+  initialCollections = [],
 }: {
   fixedCategory?: string;
   fixedCollection?: string;
+  initialCatalog?: Product[];
+  initialCollections?: Collection[];
 } = {}) {
   const { store, categories, storeReady } = useStorefront();
 
   if (!storeReady || !store) {
-    return <StorefrontHomeSkeleton />;
+    return null;
   }
 
   return (
     <StorefrontPageShell store={store} categories={categories}>
-      <ShopContent fixedCategory={fixedCategory} fixedCollection={fixedCollection} />
+      <ShopContent
+        fixedCategory={fixedCategory}
+        fixedCollection={fixedCollection}
+        initialCatalog={initialCatalog}
+        initialCollections={initialCollections}
+      />
     </StorefrontPageShell>
   );
 }

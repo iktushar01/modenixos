@@ -31,35 +31,28 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
   }, [slides.length]);
 
   if (slides.length === 0) {
-    return (
-      <section className="sf-muted sf-hero-height w-full" aria-hidden />
-    );
+    return <section className="sf-muted sf-hero-height w-full" aria-hidden />;
   }
+
+  const activeSrc = slides[index]!;
 
   return (
     <section
       className="sf-hero-height relative w-full overflow-hidden"
       style={{ "--sf-hero-h": heroHeight } as CSSProperties}
     >
-      {slides.map((src, i) => (
-        <div
-          key={`${src}-${i}`}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-[1200ms] ease-in-out",
-            i === index ? "opacity-100" : "opacity-0",
-          )}
-          aria-hidden={i !== index}
-        >
-          <Image
-            src={src}
-            alt=""
-            fill
-            priority={i === 0}
-            className={cn("object-cover", i === index && "sf-hero-ken-burns")}
-            unoptimized
-          />
-        </div>
-      ))}
+      <div className="absolute inset-0">
+        <Image
+          key={activeSrc}
+          src={activeSrc}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className={cn("object-cover transition-opacity duration-700", slides.length > 1 && "sf-hero-ken-burns")}
+          unoptimized
+        />
+      </div>
 
       {slides.length > 1 && (
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1 sm:gap-2 md:bottom-6">

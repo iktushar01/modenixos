@@ -1,23 +1,23 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { getStorefrontSkeletonForPath } from "@/components/modules/storefront/skeletons/getStorefrontSkeletonForPath";
 import { useStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
+import { cn } from "@/lib/utils";
 
-/**
- * Shows the target route skeleton immediately on in-store navigation,
- * before Next.js finishes the client transition.
- */
+/** Keeps page content mounted during in-store navigation — no full skeleton swap. */
 export function StorefrontNavContent({ children }: { children: ReactNode }) {
-  const { activePath, isNavigating } = useStorefrontNav();
+  const { isNavigating } = useStorefrontNav();
 
-  if (isNavigating) {
-    return (
-      <div aria-busy="true" aria-live="polite">
-        {getStorefrontSkeletonForPath(activePath)}
-      </div>
-    );
-  }
-
-  return <>{children}</>;
+  return (
+    <div className="relative">
+      <div
+        aria-hidden={!isNavigating}
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-0 z-[60] h-0.5 origin-left bg-[var(--sf-primary)] transition-transform duration-300",
+          isNavigating ? "scale-x-100" : "scale-x-0",
+        )}
+      />
+      {children}
+    </div>
+  );
 }

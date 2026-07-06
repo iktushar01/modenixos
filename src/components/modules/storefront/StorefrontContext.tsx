@@ -8,10 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  getPublicStoreAction,
-  getPublicCategoriesAction,
-} from "@/actions/catalog.actions";
+import { getPublicStoreAction, getPublicCategoriesAction } from "@/actions/catalog.actions";
 import { getStorefrontCustomerAction } from "@/actions/storefront-customer.actions";
 import { StorefrontPreviewBanner } from "@/components/modules/storefront/StorefrontPreviewBanner";
 import { Category, Store, StorefrontCustomer } from "@/types/store.types";
@@ -56,42 +53,36 @@ export function StorefrontContextProvider({
 
   useEffect(() => {
     let cancelled = false;
-    setCustomer(null);
-    setCustomerReady(false);
 
     if (!initialStore) {
       setStoreReady(false);
       setStoreNotFound(false);
       setStore(null);
       setCategories([]);
-    }
 
-    const loadStore = async () => {
-      const [storeData, categoriesRes] = await Promise.all([
+      Promise.all([
         getPublicStoreAction(slug),
         getPublicCategoriesAction(slug, { limit: "50", sortBy: "sortOrder", sortOrder: "asc" }),
-      ]);
+      ])
+        .then(([storeData, categoriesRes]) => {
+          if (cancelled) return;
+          if (!storeData) {
+            setStoreNotFound(true);
+            return;
+          }
+          setStore(storeData);
+          setCategories((categoriesRes.data ?? []) as Category[]);
+        })
+        .catch(() => {
+          if (!cancelled) setStoreNotFound(true);
+        })
+        .finally(() => {
+          if (!cancelled) setStoreReady(true);
+        });
+    }
 
-      if (cancelled) return;
-
-      if (!storeData) {
-        setStoreNotFound(true);
-        setStore(null);
-        setCategories([]);
-      } else {
-        setStore(storeData);
-        setCategories((categoriesRes.data ?? []) as Category[]);
-        setStoreNotFound(false);
-      }
-      setStoreReady(true);
-    };
-
-    loadStore().catch(() => {
-      if (!cancelled) {
-        setStoreNotFound(true);
-        setStoreReady(true);
-      }
-    });
+    setCustomer(null);
+    setCustomerReady(false);
 
     getStorefrontCustomerAction(slug)
       .then((data) => {
@@ -107,7 +98,7 @@ export function StorefrontContextProvider({
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, initialStore]);
 
   const value = useMemo(
     () => ({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -22,7 +22,7 @@ interface ProductCardProps {
   layout?: "grid" | "scroll";
 }
 
-export function ProductCard({ product, store, theme, rating, onQuickView, layout = "grid" }: ProductCardProps) {
+function ProductCardInner({ product, store, rating, onQuickView, layout = "grid" }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
   const { price, compareAt, discountPercent } = productDisplayPrice(product);
@@ -49,19 +49,8 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
     toast.success("Added to cart");
   };
 
-  return (
-    <motion.article
-      layout={layout === "grid"}
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className={cn(
-        "group",
-        layout === "scroll" && "w-[min(78vw,260px)] shrink-0 snap-start sm:w-[280px]",
-      )}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+  const card = (
+    <>
       <div className="sf-editorial-card sf-image-zoom relative overflow-hidden">
         <StorefrontNavLink href={`/store/${store.slug}/products/${product.id}`} className="block">
           <div className="relative aspect-[3/4] overflow-hidden sf-muted">
@@ -71,8 +60,9 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
                   src={product.images[0]}
                   alt={product.name}
                   fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className={cn(
-                    "object-cover transition-all duration-700",
+                    "object-cover transition-opacity duration-500",
                     hovered && secondImage ? "opacity-0" : "opacity-100",
                   )}
                   unoptimized
@@ -82,10 +72,12 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
                     src={secondImage}
                     alt=""
                     fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     className={cn(
-                      "object-cover transition-all duration-700",
+                      "object-cover transition-opacity duration-500",
                       hovered ? "opacity-100" : "opacity-0",
                     )}
+                    loading="lazy"
                     unoptimized
                   />
                 )}
@@ -153,6 +145,33 @@ export function ProductCard({ product, store, theme, rating, onQuickView, layout
           ) : null}
         </div>
       </div>
-    </motion.article>
+    </>
+  );
+
+  if (layout === "scroll") {
+    return (
+      <motion.article
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        className="group w-[min(78vw,260px)] shrink-0 snap-start sm:w-[280px]"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {card}
+      </motion.article>
+    );
+  }
+
+  return (
+    <article
+      className="group"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {card}
+    </article>
   );
 }
+
+export const ProductCard = memo(ProductCardInner);

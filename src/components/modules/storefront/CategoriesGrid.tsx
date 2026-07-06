@@ -2,7 +2,6 @@
 
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Category } from "@/types/store.types";
 import { STOREFRONT_CATEGORY_ASPECT } from "@/lib/storefront/imageAspects";
 import { buildCategoryTree } from "@/lib/catalog/categoryTree";
@@ -43,12 +42,7 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
         <StorefrontCarouselTrack>
           {topLevel.map((cat) => (
             <StorefrontCarouselSlide key={cat.id} className={STOREFRONT_CAROUSEL_TILE_CLASS}>
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <StorefrontNavLink
+              <StorefrontNavLink
                   href={storeCategoryPath(slug, cat.slug)}
                   className="sf-editorial-card sf-image-zoom group relative block w-full overflow-hidden"
                   style={{ aspectRatio: `${STOREFRONT_CATEGORY_ASPECT}` }}
@@ -71,7 +65,6 @@ export function CategoriesGrid({ slug, categories }: CategoriesGridProps) {
                     <p className="sf-eyebrow sf-image-overlay-muted mt-1.5">Shop now</p>
                   </div>
                 </StorefrontNavLink>
-              </motion.div>
             </StorefrontCarouselSlide>
           ))}
         </StorefrontCarouselTrack>

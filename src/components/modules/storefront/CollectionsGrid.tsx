@@ -2,7 +2,6 @@
 
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Collection } from "@/types/store.types";
 import { STOREFRONT_COLLECTION_ASPECT } from "@/lib/storefront/imageAspects";
 import { storeCollectionPath, storeShopPath } from "@/lib/storePaths";
@@ -41,12 +40,7 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
         <StorefrontCarouselTrack>
           {collections.map((col, i) => (
             <StorefrontCarouselSlide key={col.id} className={STOREFRONT_CAROUSEL_TILE_CLASS}>
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <StorefrontNavLink
+              <StorefrontNavLink
                   href={storeCollectionPath(slug, col.slug)}
                   className="sf-editorial-card sf-image-zoom group relative block overflow-hidden"
                   style={{ aspectRatio: `${STOREFRONT_COLLECTION_ASPECT}` }}
@@ -69,7 +63,6 @@ export function CollectionsGrid({ slug, collections }: CollectionsGridProps) {
                     )}
                   </div>
                 </StorefrontNavLink>
-              </motion.div>
             </StorefrontCarouselSlide>
           ))}
         </StorefrontCarouselTrack>
