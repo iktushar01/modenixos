@@ -33,15 +33,15 @@ interface AnalyticsChartsSectionProps {
 }
 
 const revenueChartConfig = {
-  revenue: { label: "Revenue", color: "hsl(var(--chart-1))" },
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
 };
 
 const ordersChartConfig = {
-  orders: { label: "Orders", color: "hsl(var(--chart-2))" },
+  orders: { label: "Orders", color: "var(--chart-2)" },
 };
 
 const dailyChartConfig = {
-  revenue: { label: "Revenue", color: "hsl(var(--chart-3))" },
+  revenue: { label: "Revenue", color: "var(--chart-3)" },
 };
 
 export function AnalyticsChartsSection({ charts, overview, currency }: AnalyticsChartsSectionProps) {
@@ -65,7 +65,7 @@ export function AnalyticsChartsSection({ charts, overview, currency }: Analytics
   }));
 
   const bestSellerConfig = {
-    revenue: { label: "Revenue", color: "hsl(var(--chart-1))" },
+    revenue: { label: "Revenue", color: "var(--chart-1)" },
   };
 
   return (

@@ -21,10 +21,10 @@ export const ORDER_STATUS_LABELS: Record<Order["status"], string> = {
 };
 
 export const ORDER_STATUS_COLORS: Record<Order["status"], string> = {
-  PENDING: "hsl(var(--chart-4))",
-  CONFIRMED: "hsl(var(--chart-1))",
-  PACKED: "hsl(var(--chart-2))",
-  SHIPPED: "hsl(var(--chart-3))",
-  DELIVERED: "hsl(142 76% 36%)",
-  CANCELLED: "hsl(0 72% 51%)",
+  PENDING: "var(--chart-4)",
+  CONFIRMED: "var(--chart-1)",
+  PACKED: "var(--chart-2)",
+  SHIPPED: "var(--chart-3)",
+  DELIVERED: "var(--chart-2)",
+  CANCELLED: "var(--chart-5)",
 };
