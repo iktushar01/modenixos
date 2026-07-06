@@ -23,9 +23,7 @@ const DEFAULT_PROMPTS = [
   "Show me the demo store",
 ];
 
-const DEFAULT_PANEL_SIZE = { width: 400, height: 560 };
-const MIN_PANEL_SIZE = { width: 320, height: 420 };
-const LG_BREAKPOINT = 1024;
+type PanelSize = { width: number; height: number };
 
 function getSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -41,32 +39,71 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-function getMaxPanelSize() {
+function getMinPanelSize(): PanelSize {
   if (typeof window === "undefined") {
-    return { width: 720, height: 720 };
+    return { width: 280, height: 320 };
   }
+
+  const narrow = window.innerWidth < 640;
   return {
-    width: Math.min(720, Math.floor(window.innerWidth * 0.5)),
-    height: Math.floor(window.innerHeight - 96),
+    width: narrow ? 260 : 300,
+    height: narrow ? 300 : 360,
   };
 }
 
-function loadPanelSize(): { width: number; height: number } {
-  if (typeof window === "undefined") return DEFAULT_PANEL_SIZE;
+function getMaxPanelSize(): PanelSize {
+  if (typeof window === "undefined") {
+    return { width: 720, height: 720 };
+  }
+
+  const margin = window.innerWidth < 640 ? 12 : 20;
+  const bottomOffset = window.innerWidth < 640 ? 12 : 20;
+
+  return {
+    width: Math.floor(window.innerWidth - margin * 2),
+    height: Math.floor(window.innerHeight - bottomOffset - margin),
+  };
+}
+
+function getDefaultPanelSize(): PanelSize {
+  const max = getMaxPanelSize();
+  const min = getMinPanelSize();
+
+  const preferred = {
+    width: Math.min(400, max.width),
+    height: Math.min(560, max.height),
+  };
+
+  return {
+    width: clamp(preferred.width, min.width, max.width),
+    height: clamp(preferred.height, min.height, max.height),
+  };
+}
+
+function normalizePanelSize(size: PanelSize): PanelSize {
+  const min = getMinPanelSize();
+  const max = getMaxPanelSize();
+
+  return {
+    width: clamp(size.width, min.width, max.width),
+    height: clamp(size.height, min.height, max.height),
+  };
+}
+
+function loadPanelSize(): PanelSize {
+  if (typeof window === "undefined") return getDefaultPanelSize();
 
   try {
     const stored = localStorage.getItem(PANEL_SIZE_KEY);
-    if (!stored) return DEFAULT_PANEL_SIZE;
+    if (!stored) return getDefaultPanelSize();
 
     const parsed = JSON.parse(stored) as { width?: number; height?: number };
-    const max = getMaxPanelSize();
-
-    return {
-      width: clamp(parsed.width ?? DEFAULT_PANEL_SIZE.width, MIN_PANEL_SIZE.width, max.width),
-      height: clamp(parsed.height ?? DEFAULT_PANEL_SIZE.height, MIN_PANEL_SIZE.height, max.height),
-    };
+    return normalizePanelSize({
+      width: parsed.width ?? getDefaultPanelSize().width,
+      height: parsed.height ?? getDefaultPanelSize().height,
+    });
   } catch {
-    return DEFAULT_PANEL_SIZE;
+    return getDefaultPanelSize();
   }
 }
 
@@ -84,8 +121,7 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
-  const [panelSize, setPanelSize] = useState(DEFAULT_PANEL_SIZE);
+  const [panelSize, setPanelSize] = useState<PanelSize>(getDefaultPanelSize);
   const [isResizing, setIsResizing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const panelSizeRef = useRef(panelSize);
@@ -93,6 +129,10 @@ export default function ChatWidget() {
   useEffect(() => {
     panelSizeRef.current = panelSize;
   }, [panelSize]);
+
+  useEffect(() => {
+    setPanelSize(loadPanelSize());
+  }, []);
 
   useEffect(() => {
     fetchChatbotConfig()
@@ -106,33 +146,13 @@ export default function ChatWidget() {
   }, []);
 
   useEffect(() => {
-    const media = window.matchMedia(`(min-width: ${LG_BREAKPOINT}px)`);
-    const sync = () => {
-      setIsLargeScreen(media.matches);
-      if (media.matches) {
-        setPanelSize(loadPanelSize());
-      }
-    };
-
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, []);
-
-  useEffect(() => {
-    if (!isLargeScreen) return;
-
     const onResize = () => {
-      const max = getMaxPanelSize();
-      setPanelSize((current) => ({
-        width: clamp(current.width, MIN_PANEL_SIZE.width, max.width),
-        height: clamp(current.height, MIN_PANEL_SIZE.height, max.height),
-      }));
+      setPanelSize((current) => normalizePanelSize(current));
     };
 
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [isLargeScreen]);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -151,28 +171,23 @@ export default function ChatWidget() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
-  useEffect(() => {
-    document.body.style.overflow = open && !isLargeScreen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open, isLargeScreen]);
-
   const startResize = useCallback(
     (direction: ResizeDirection) => (event: React.PointerEvent<HTMLDivElement>) => {
-      if (!isLargeScreen) return;
-
       event.preventDefault();
       event.stopPropagation();
 
       const startX = event.clientX;
       const startY = event.clientY;
       const startSize = panelSizeRef.current;
-      const max = getMaxPanelSize();
 
       setIsResizing(true);
+      const target = event.currentTarget;
+      target.setPointerCapture(event.pointerId);
 
       const onPointerMove = (moveEvent: PointerEvent) => {
+        const max = getMaxPanelSize();
+        const min = getMinPanelSize();
+
         let width = startSize.width;
         let height = startSize.height;
 
@@ -184,19 +199,21 @@ export default function ChatWidget() {
         }
 
         const next = {
-          width: clamp(width, MIN_PANEL_SIZE.width, max.width),
-          height: clamp(height, MIN_PANEL_SIZE.height, max.height),
+          width: clamp(width, min.width, max.width),
+          height: clamp(height, min.height, max.height),
         };
 
         panelSizeRef.current = next;
         setPanelSize(next);
       };
 
-      const onPointerUp = () => {
+      const onPointerUp = (upEvent: PointerEvent) => {
         setIsResizing(false);
         localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(panelSizeRef.current));
-        document.removeEventListener("pointermove", onPointerMove);
-        document.removeEventListener("pointerup", onPointerUp);
+        target.releasePointerCapture(upEvent.pointerId);
+        target.removeEventListener("pointermove", onPointerMove);
+        target.removeEventListener("pointerup", onPointerUp);
+        target.removeEventListener("pointercancel", onPointerUp);
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
       };
@@ -209,10 +226,11 @@ export default function ChatWidget() {
             ? "ns-resize"
             : "nwse-resize";
 
-      document.addEventListener("pointermove", onPointerMove);
-      document.addEventListener("pointerup", onPointerUp);
+      target.addEventListener("pointermove", onPointerMove);
+      target.addEventListener("pointerup", onPointerUp);
+      target.addEventListener("pointercancel", onPointerUp);
     },
-    [isLargeScreen],
+    [],
   );
 
   const submitMessage = useCallback(
@@ -265,7 +283,7 @@ export default function ChatWidget() {
           aria-label="Open chat assistant"
           onClick={() => setOpen(true)}
           className={cn(
-            "fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full p-0 shadow-lg shadow-primary/25",
+            "fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full p-0 shadow-lg shadow-primary/25 sm:bottom-5 sm:right-5",
             "transition-transform hover:scale-105 active:scale-95",
           )}
         >
@@ -278,10 +296,7 @@ export default function ChatWidget() {
           <button
             type="button"
             aria-label="Close chat assistant"
-            className={cn(
-              "fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px]",
-              isLargeScreen ? "bg-black/10" : "",
-            )}
+            className="fixed inset-0 z-50 bg-black/15 backdrop-blur-[1px]"
             onClick={() => setOpen(false)}
           />
 
@@ -289,57 +304,45 @@ export default function ChatWidget() {
             role="dialog"
             aria-label={`${APP_NAME} Assistant`}
             className={cn(
-              "fixed z-50 flex flex-col bg-popover text-popover-foreground shadow-2xl",
-              isLargeScreen
-                ? "bottom-5 right-5 overflow-hidden rounded-2xl border border-border/60 ring-1 ring-black/5"
-                : "inset-0 h-full w-full",
+              "fixed z-50 flex flex-col overflow-hidden bg-popover text-popover-foreground shadow-2xl",
+              "bottom-3 right-3 rounded-2xl border border-border/60 ring-1 ring-black/5",
+              "sm:bottom-5 sm:right-5",
               isResizing && "select-none",
             )}
-            style={
-              isLargeScreen
-                ? { width: panelSize.width, height: panelSize.height }
-                : undefined
-            }
+            style={{ width: panelSize.width, height: panelSize.height }}
             onClick={(event) => event.stopPropagation()}
           >
-            {isLargeScreen && (
-              <>
-                <div
-                  role="separator"
-                  aria-orientation="vertical"
-                  aria-label="Resize chat width"
-                  className="absolute inset-y-0 left-0 z-10 w-2 cursor-ew-resize touch-none"
-                  onPointerDown={startResize("left")}
-                />
-                <div
-                  role="separator"
-                  aria-orientation="horizontal"
-                  aria-label="Resize chat height"
-                  className="absolute inset-x-0 top-0 z-10 h-2 cursor-ns-resize touch-none"
-                  onPointerDown={startResize("top")}
-                />
-                <div
-                  aria-label="Resize chat panel"
-                  className="absolute left-0 top-0 z-20 flex h-5 w-5 cursor-nwse-resize items-center justify-center rounded-br-md bg-muted/80 text-muted-foreground touch-none"
-                  onPointerDown={startResize("corner")}
-                >
-                  <GripHorizontal className="h-3 w-3 -rotate-45" aria-hidden />
-                </div>
-              </>
-            )}
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize chat width"
+              className="absolute inset-y-0 left-0 z-10 w-4 cursor-ew-resize touch-none sm:w-3"
+              onPointerDown={startResize("left")}
+            />
+            <div
+              role="separator"
+              aria-orientation="horizontal"
+              aria-label="Resize chat height"
+              className="absolute inset-x-0 top-0 z-10 h-4 cursor-ns-resize touch-none sm:h-3"
+              onPointerDown={startResize("top")}
+            />
+            <div
+              aria-label="Resize chat panel"
+              className="absolute left-0 top-0 z-20 flex h-8 w-8 cursor-nwse-resize items-center justify-center rounded-br-lg bg-muted/90 text-muted-foreground touch-none sm:h-6 sm:w-6"
+              onPointerDown={startResize("corner")}
+            >
+              <GripHorizontal className="h-3.5 w-3.5 -rotate-45 sm:h-3 sm:w-3" aria-hidden />
+            </div>
 
-            <header className="relative shrink-0 border-b border-border/60 px-4 py-4 pr-12">
+            <header className="relative shrink-0 border-b border-border/60 px-4 py-3.5 pr-12 sm:py-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                   <Sparkles className="h-4 w-4 text-primary" aria-hidden />
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate text-base font-medium">{APP_NAME} Assistant</h2>
                   <p className="text-xs text-muted-foreground">
-                    Ask about features, pricing, or how to get started
-                    {isLargeScreen && (
-                      <span className="hidden sm:inline"> · drag edges to resize</span>
-                    )}
+                    Ask about features, pricing, or how to get started · drag edges to resize
                   </p>
                 </div>
               </div>
@@ -349,7 +352,7 @@ export default function ChatWidget() {
                 variant="ghost"
                 size="icon-sm"
                 aria-label="Close chat"
-                className="absolute right-3 top-3"
+                className="absolute right-2 top-2 sm:right-3 sm:top-3"
                 onClick={() => setOpen(false)}
               >
                 <X className="h-4 w-4" aria-hidden />
@@ -429,7 +432,7 @@ export default function ChatWidget() {
             </div>
 
             <form
-              className="shrink-0 border-t border-border/60 p-4"
+              className="shrink-0 border-t border-border/60 p-3 sm:p-4"
               onSubmit={(event) => {
                 event.preventDefault();
                 void submitMessage(input);
