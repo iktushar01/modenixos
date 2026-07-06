@@ -19,6 +19,7 @@ import {
   StorefrontColorMode,
   StorefrontColorPalette,
   StorefrontTypography,
+  StorefrontTemplateId,
   DEFAULT_STOREFRONT_TYPOGRAPHY,
   validatePalette,
   harmonizePalette,
@@ -48,7 +49,7 @@ export default function StoreAppearancePage() {
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState<StorefrontColorMode>("light");
   const [form, setForm] = useState({
-    templateId: "theme1" as const,
+    templateId: "theme1" as StorefrontTemplateId,
     colorMode: "light" as StorefrontColorMode,
     palettePreset: "classic-retail",
     brandColors: { primary: "#0f172a", accent: "#0f172a" } as StorefrontBrandColors,

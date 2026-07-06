@@ -308,7 +308,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
           </div>
 
           {theme.header.tagline && (
-            <p className="sf-header-tagline -mt-1 pb-2.5 text-center sm:pb-3 lg:pb-2.5">
+            <p className="sf-header-tagline -mt-1 hidden pb-2.5 text-center md:block sm:pb-3 lg:pb-2.5">
               {theme.header.tagline}
             </p>
           )}
