@@ -14,6 +14,7 @@ import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice } from "@/lib/storefrontTheme";
 import { placeOrderAction, validateCouponAction } from "@/actions/catalog.actions";
+import { createSslPaymentAction } from "@/actions/payment.actions";
 import { StorefrontPageShell } from "./StorefrontPageShell";
 import { useOptionalStorefrontCustomer } from "./StorefrontCustomerContext";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ export default function CheckoutClient({
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "SSLCOMMERZ">("SSLCOMMERZ");
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     customerName: "",
@@ -77,7 +79,7 @@ export default function CheckoutClient({
     e.preventDefault();
     setLoading(true);
     try {
-      const order = await placeOrderAction(store.slug, {
+      const payload = {
         items,
         customerName: form.customerName,
         customerEmail: form.customerEmail,
@@ -93,15 +95,24 @@ export default function CheckoutClient({
         discount,
         total: finalTotal,
         couponCode: coupon || undefined,
-        paymentMethod: "COD",
-      });
+        paymentMethod,
+      };
+
+      if (paymentMethod === "SSLCOMMERZ") {
+        const result = await createSslPaymentAction(store.slug, payload);
+        clearStore(store.id);
+        window.location.href = result.paymentUrl;
+        return;
+      }
+
+      const order = await placeOrderAction(store.slug, payload);
       clearStore(store.id);
       toast.success("Order placed successfully!");
       router.push(
         `${base}/orders/confirmation?order=${encodeURIComponent(order.orderNumber)}&email=${encodeURIComponent(form.customerEmail)}`,
       );
-    } catch {
-      toast.error("Failed to place order");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to place order");
     } finally {
       setLoading(false);
     }
@@ -198,13 +209,40 @@ export default function CheckoutClient({
 
             <section>
               <h2 className="sf-eyebrow mb-6">Payment</h2>
-              <div className="sf-editorial-card inline-flex items-center gap-3 px-5 py-3">
-                <span className="sf-eyebrow">Cash on delivery</span>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("SSLCOMMERZ")}
+                  className={cn(
+                    "sf-editorial-card rounded-xl px-5 py-4 text-left transition-all",
+                    paymentMethod === "SSLCOMMERZ" && "ring-2 ring-[var(--sf-primary)]",
+                  )}
+                >
+                  <p className="font-medium">Pay online</p>
+                  <p className="sf-muted-fg mt-1 text-xs">SSLCommerz — Card, bKash, Nagad & more</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("COD")}
+                  className={cn(
+                    "sf-editorial-card rounded-xl px-5 py-4 text-left transition-all",
+                    paymentMethod === "COD" && "ring-2 ring-[var(--sf-primary)]",
+                  )}
+                >
+                  <p className="font-medium">Cash on delivery</p>
+                  <p className="sf-muted-fg mt-1 text-xs">Pay when your order arrives</p>
+                </button>
               </div>
             </section>
 
             <Button type="submit" className="sf-btn-primary h-12 w-full rounded-full sm:w-auto sm:px-12" disabled={loading}>
-              {loading ? "Placing order…" : "Place order"}
+              {loading
+                ? paymentMethod === "SSLCOMMERZ"
+                  ? "Redirecting to payment…"
+                  : "Placing order…"
+                : paymentMethod === "SSLCOMMERZ"
+                  ? "Pay now"
+                  : "Place order"}
             </Button>
           </form>
 

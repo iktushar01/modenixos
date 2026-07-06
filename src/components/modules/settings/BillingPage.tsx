@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   CreditCard,
@@ -10,6 +10,7 @@ import {
   Loader2,
   Receipt,
   Sparkles,
+  Wallet,
   XCircle,
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ import {
   createBillingPortalAction,
   getBillingOverviewAction,
   getBillingPlansAction,
+  type BillingProvider,
 } from "@/actions/billing.actions";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 const planLabels: Record<string, string> = {
   FREE: "Starter",
@@ -42,6 +45,7 @@ const statusVariant = (status: string) => {
 export default function BillingPage() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const [paymentProvider, setPaymentProvider] = useState<BillingProvider>("STRIPE");
 
   const { data: overview, isLoading } = useQuery({
     queryKey: ["billing-overview"],
@@ -55,15 +59,26 @@ export default function BillingPage() {
 
   useEffect(() => {
     const checkout = searchParams.get("checkout");
-    if (checkout === "success") toast.success("Subscription updated successfully.");
+    if (checkout === "success") {
+      toast.success("Subscription updated successfully.");
+      queryClient.invalidateQueries({ queryKey: ["billing-overview"] });
+    }
     if (checkout === "cancelled") toast.message("Checkout cancelled.");
-  }, [searchParams]);
+    if (checkout === "failed") toast.error("Payment failed. Please try again.");
+  }, [searchParams, queryClient]);
+
+  useEffect(() => {
+    if (!overview) return;
+    if (overview.sslConfigured && !overview.stripeConfigured) {
+      setPaymentProvider("SSLCOMMERZ");
+    }
+  }, [overview]);
 
   const checkoutMutation = useMutation({
-    mutationFn: () => createBillingCheckoutAction("PRO"),
+    mutationFn: () => createBillingCheckoutAction("PRO", paymentProvider),
     onSuccess: (data) => {
       if (data?.url) window.location.href = data.url;
-      else toast.error("Could not start checkout. Check Stripe configuration.");
+      else toast.error("Could not start checkout. Check payment gateway configuration.");
     },
     onError: (error: Error) => toast.error(error.message || "Failed to start checkout."),
   });
@@ -107,11 +122,56 @@ export default function BillingPage() {
         description="Manage your plan, payment methods, and invoices."
       />
 
-      {!overview?.stripeConfigured && (
+      {!overview?.stripeConfigured && !overview?.sslConfigured && (
         <Card className="border-amber-500/30 bg-amber-500/5">
           <CardContent className="flex items-start gap-3 pt-6 text-sm text-muted-foreground">
             <Sparkles className="mt-0.5 size-4 shrink-0 text-amber-600" />
-            Stripe is not configured on the server yet. Plan display and admin overrides work; live checkout requires STRIPE_SECRET_KEY and STRIPE_PRICE_PRO_MONTHLY.
+            No payment gateway is configured yet. Add Stripe or SSLCommerz credentials on the server to enable live checkout.
+          </CardContent>
+        </Card>
+      )}
+
+      {(overview?.stripeConfigured || overview?.sslConfigured) && currentPlan === "FREE" && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Payment method for upgrade</CardTitle>
+            <CardDescription>Choose how you want to pay for your Growth plan subscription.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              disabled={!overview?.stripeConfigured}
+              onClick={() => setPaymentProvider("STRIPE")}
+              className={cn(
+                "rounded-xl border p-4 text-left transition-all",
+                paymentProvider === "STRIPE" && "border-primary ring-2 ring-primary/20",
+                !overview?.stripeConfigured && "cursor-not-allowed opacity-50",
+              )}
+            >
+              <div className="flex items-center gap-2 font-medium">
+                <CreditCard className="size-4" />
+                Stripe
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">International cards · recurring billing · $29/mo</p>
+            </button>
+            <button
+              type="button"
+              disabled={!overview?.sslConfigured}
+              onClick={() => setPaymentProvider("SSLCOMMERZ")}
+              className={cn(
+                "rounded-xl border p-4 text-left transition-all",
+                paymentProvider === "SSLCOMMERZ" && "border-primary ring-2 ring-primary/20",
+                !overview?.sslConfigured && "cursor-not-allowed opacity-50",
+              )}
+            >
+              <div className="flex items-center gap-2 font-medium">
+                <Wallet className="size-4" />
+                SSLCommerz
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                bKash, Nagad, local cards · ৳{overview?.sslBillingAmountBdt ?? 2900}/mo
+              </p>
+            </button>
           </CardContent>
         </Card>
       )}
@@ -161,22 +221,26 @@ export default function BillingPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {overview?.paymentMethods?.[0] ? (
+            {overview?.subscription.billingProvider === "SSLCOMMERZ" ? (
+              <p className="text-sm">SSLCommerz · bKash, Nagad & local cards</p>
+            ) : overview?.paymentMethods?.[0] ? (
               <p className="text-sm">
                 {(overview.paymentMethods[0].brand ?? "Card").toUpperCase()} •••• {overview.paymentMethods[0].last4}
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">No card on file</p>
             )}
-            <Button
-              className="mt-3"
-              size="sm"
-              variant="outline"
-              disabled={!overview?.stripeConfigured || portalMutation.isPending}
-              onClick={() => portalMutation.mutate()}
-            >
-              {portalMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : "Manage payment"}
-            </Button>
+            {overview?.subscription.billingProvider === "STRIPE" && (
+              <Button
+                className="mt-3"
+                size="sm"
+                variant="outline"
+                disabled={!overview?.stripeConfigured || portalMutation.isPending}
+                onClick={() => portalMutation.mutate()}
+              >
+                {portalMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : "Manage payment"}
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -209,10 +273,20 @@ export default function BillingPage() {
                 ) : plan.plan === "PRO" ? (
                   <Button
                     className="w-full"
-                    disabled={!overview?.stripeConfigured || checkoutMutation.isPending}
+                    disabled={
+                      checkoutMutation.isPending ||
+                      (paymentProvider === "STRIPE" && !overview?.stripeConfigured) ||
+                      (paymentProvider === "SSLCOMMERZ" && !overview?.sslConfigured)
+                    }
                     onClick={() => checkoutMutation.mutate()}
                   >
-                    {checkoutMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : "Upgrade to Growth"}
+                    {checkoutMutation.isPending ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : paymentProvider === "SSLCOMMERZ" ? (
+                      "Upgrade via SSLCommerz"
+                    ) : (
+                      "Upgrade via Stripe"
+                    )}
                   </Button>
                 ) : plan.plan === "ENTERPRISE" ? (
                   <Button className="w-full" variant="outline" asChild>
@@ -225,7 +299,9 @@ export default function BillingPage() {
         })}
       </div>
 
-      {currentPlan !== "FREE" && overview?.subscription?.stripeSubscriptionId && (
+      {currentPlan !== "FREE" &&
+        (overview?.subscription?.stripeSubscriptionId ||
+          overview?.subscription?.billingProvider === "SSLCOMMERZ") && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -271,7 +347,9 @@ export default function BillingPage() {
                   <TableRow key={inv.id}>
                     <TableCell>{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      ${Number(inv.amount).toFixed(2)} {inv.currency.toUpperCase()}
+                      {inv.provider === "SSLCOMMERZ"
+                        ? `৳${Number(inv.amount).toFixed(2)} ${inv.currency.toUpperCase()}`
+                        : `$${Number(inv.amount).toFixed(2)} ${inv.currency.toUpperCase()}`}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{inv.status}</Badge>

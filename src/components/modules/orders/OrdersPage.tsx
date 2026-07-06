@@ -439,6 +439,19 @@ export default function OrdersPage() {
                           })
                         }
                       />
+                      {order.payment && (
+                        <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
+                          <div>
+                            Payment: <span className="font-medium text-foreground">{order.payment.status}</span>
+                            {" · "}
+                            {order.payment.provider}
+                          </div>
+                          <div className="font-mono">{order.payment.transactionId}</div>
+                          {order.payment.paidAt && (
+                            <div>Paid {new Date(order.payment.paidAt).toLocaleString()}</div>
+                          )}
+                        </div>
+                      )}
                     </TableCell>
                   )}
                   {visibleColumns.date && (

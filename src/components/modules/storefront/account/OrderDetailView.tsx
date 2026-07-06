@@ -122,6 +122,20 @@ export function OrderDetailView({ store, order, base, showBackLink = true }: Ord
             <div>
               <dt className="sf-eyebrow">Payment</dt>
               <dd className="mt-1">{order.paymentMethod}</dd>
+              {order.payment && (
+                <dd className="sf-muted-fg mt-2 space-y-1 text-sm">
+                  <div>
+                    Status: <span className="font-medium text-[var(--sf-fg)]">{order.payment.status}</span>
+                  </div>
+                  {order.payment.paidAt && (
+                    <div>Paid {formatOrderDate(order.payment.paidAt)}</div>
+                  )}
+                  <div className="font-mono text-xs">{order.payment.transactionId}</div>
+                  {order.payment.validationId && (
+                    <div className="font-mono text-xs">Val: {order.payment.validationId}</div>
+                  )}
+                </dd>
+              )}
             </div>
           </dl>
           <div className="sf-border mt-6 space-y-2 border-t pt-5 text-sm">

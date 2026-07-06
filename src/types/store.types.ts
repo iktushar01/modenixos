@@ -140,6 +140,19 @@ export interface OrderItem {
   image?: string;
 }
 
+export interface Payment {
+  id: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  provider: string;
+  transactionId: string;
+  validationId?: string | null;
+  status: "PENDING" | "PAID" | "FAILED" | "CANCELLED" | "REFUNDED";
+  paidAt?: string | null;
+  createdAt: string;
+}
+
 export interface Order {
   id: string;
   storeId: string;
@@ -158,6 +171,7 @@ export interface Order {
   couponCode?: string | null;
   trackingNumber?: string | null;
   trackingCarrier?: string | null;
+  payment?: Payment | null;
   createdAt: string;
 }
 

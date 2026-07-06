@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import axios from "axios";
 import { httpClient } from "@/lib/axios/httpClient";
 
+export type BillingProvider = "STRIPE" | "SSLCOMMERZ";
+
 export type BillingPlan = {
   plan: "FREE" | "PRO" | "ENTERPRISE";
   label: string;
@@ -16,6 +18,8 @@ export type BillingPlan = {
   prioritySupport: boolean;
   mrr: number;
   stripePriceConfigured: boolean;
+  sslPriceConfigured?: boolean;
+  sslPriceBdt?: number | null;
 };
 
 export type BillingOverview = {
@@ -24,6 +28,7 @@ export type BillingOverview = {
     id: string;
     plan: string;
     status: string;
+    billingProvider?: string | null;
     stripeSubscriptionId?: string | null;
     currentPeriodEnd: string | null;
     cancelAtPeriodEnd: boolean;
@@ -41,6 +46,7 @@ export type BillingOverview = {
     amount: string | number;
     currency: string;
     status: string;
+    provider?: string | null;
     invoiceUrl: string | null;
     pdfUrl: string | null;
     paidAt: string | null;
@@ -49,6 +55,8 @@ export type BillingOverview = {
   usage: { productCount: number; memberCount: number };
   limits: BillingPlan;
   stripeConfigured: boolean;
+  sslConfigured?: boolean;
+  sslBillingAmountBdt?: number;
 };
 
 export async function getBillingPlansAction() {
@@ -61,9 +69,9 @@ export async function getBillingOverviewAction() {
   return res.data;
 }
 
-export async function createBillingCheckoutAction(plan: "PRO") {
+export async function createBillingCheckoutAction(plan: "PRO", provider: BillingProvider = "STRIPE") {
   try {
-    const res = await httpClient.post<{ url: string | null }>("/billing/checkout", { plan });
+    const res = await httpClient.post<{ url: string | null }>("/billing/checkout", { plan, provider });
     return res.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
