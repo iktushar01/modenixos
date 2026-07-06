@@ -1,5 +1,9 @@
 /** Match dashboard sidebar href against the active path (optimistic or resolved). */
 export function isDashboardNavActive(currentPath: string, href: string): boolean {
+  // Root dashboard links must be exact — otherwise every /dashboard/* route matches.
+  if (href === "/dashboard" || href === "/admin/dashboard") {
+    return currentPath === href;
+  }
   if (href === "/dashboard/store") {
     return currentPath === "/dashboard/store";
   }
