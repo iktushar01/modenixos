@@ -26,7 +26,9 @@ interface StoreTypographyEditorProps {
   onTypographyChange: (typography: StorefrontTypography) => void;
 }
 
-const editorFontsHref = buildGoogleFontsHrefForFamilies([...STOREFRONT_FONT_OPTIONS]);
+const editorFontsHref = buildGoogleFontsHrefForFamilies(
+  STOREFRONT_SITE_FONT_PRESETS.map((preset) => preset.font),
+);
 
 function FontPreview({ font }: { font: string }) {
   const href = useMemo(() => buildGoogleFontsHref(font, font), [font]);
@@ -52,6 +54,9 @@ export function StoreTypographyEditor({
   onTypographyChange,
 }: StoreTypographyEditorProps) {
   const siteFont = getSiteFont(typography);
+  const fontOptions = STOREFRONT_FONT_OPTIONS.includes(siteFont as (typeof STOREFRONT_FONT_OPTIONS)[number])
+    ? [...STOREFRONT_FONT_OPTIONS]
+    : ([siteFont, ...STOREFRONT_FONT_OPTIONS] as string[]);
   const isCustom = !STOREFRONT_SITE_FONT_PRESETS.some((preset) => preset.font === siteFont);
 
   const handleFontSelect = (font: string) => {
@@ -118,8 +123,8 @@ export function StoreTypographyEditor({
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            {STOREFRONT_FONT_OPTIONS.map((font) => (
+          <SelectContent className="max-h-72">
+            {fontOptions.map((font) => (
               <SelectItem key={font} value={font}>
                 <span style={{ fontFamily: `"${font}", sans-serif` }}>{font}</span>
               </SelectItem>
