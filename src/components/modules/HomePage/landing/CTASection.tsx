@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import AnimatedContent from "@/components/AnimatedContent";
 import { Button } from "@/components/ui/button";
-import { APP_NAME } from "@/lib/app-config";
+import { APP_NAME, DEMO_STORE_PATH } from "@/lib/app-config";
 import { StartFreeLink } from "../StartFreeLink";
 
 const heroBtnClass =
@@ -30,7 +30,7 @@ export default function CTASection() {
               </StartFreeLink>
             </Button>
             <Button asChild size="lg" variant="outline" className={`${heroBtnClass} gap-2 homepage-glass`}>
-              <Link href="/store/luxe-threads" target="_blank" rel="noreferrer">
+              <Link href={DEMO_STORE_PATH} target="_blank" rel="noreferrer">
                 <ExternalLink className="h-4 w-4" aria-hidden />
                 Explore live demo
               </Link>

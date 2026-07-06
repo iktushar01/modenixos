@@ -42,7 +42,7 @@ const ownerSteps = [
     step: "4",
     title: "Open your storefront",
     description: "Share your store URL and place a test order with guest checkout (COD).",
-    href: "/store/luxe-threads",
+    href: DEMO_STORE_PATH,
     cta: "Demo store",
   },
 ];
@@ -84,7 +84,7 @@ export default function TryProjectSection() {
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Button asChild size="lg" className="flex-1 gap-2 rounded-md">
-                    <Link href="/store/luxe-threads" target="_blank">
+                    <Link href={DEMO_STORE_PATH} target="_blank">
                       <ExternalLink className="h-4 w-4" />
                       Open demo storefront
                     </Link>

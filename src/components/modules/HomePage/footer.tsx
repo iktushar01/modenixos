@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Logo from "@/components/shared/logo/logo";
-import { APP_NAME } from "@/lib/app-config";
+import { APP_NAME, DEMO_STORE_PATH } from "@/lib/app-config";
 import { StartFreeLink } from "./StartFreeLink";
 import { Github, Linkedin, Twitter } from "lucide-react";
 
@@ -22,7 +22,8 @@ const footerColumns = {
   ],
   resources: [
     { href: "/#faq", label: "FAQ" },
-    { href: "/store/luxe-threads", label: "Live demo", external: true },
+    { href: DEMO_STORE_PATH, label: "Live demo", external: true },
+    { href: "/demo", label: "Demo shortcut" },
     { href: "/register", label: "Documentation" },
   ],
   company: [

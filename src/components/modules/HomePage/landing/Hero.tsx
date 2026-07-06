@@ -5,7 +5,7 @@ import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { APP_NAME } from "@/lib/app-config";
+import { APP_NAME, DEMO_STORE_PATH } from "@/lib/app-config";
 import { industries } from "../landing-data";
 import HeroDashboard from "./HeroDashboard";
 import { StartFreeLink } from "../StartFreeLink";
@@ -67,7 +67,7 @@ export default function Hero() {
               </StartFreeLink>
             </Button>
             <Button asChild size="lg" variant="outline" className={`${heroBtnClass} gap-2 homepage-glass`}>
-              <Link href="/store/luxe-threads" target="_blank" rel="noreferrer">
+              <Link href={DEMO_STORE_PATH} target="_blank" rel="noreferrer">
                 <ExternalLink className="h-4 w-4" aria-hidden />
                 Live demo
               </Link>

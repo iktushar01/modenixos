@@ -6,7 +6,7 @@ import { ArrowRight, LayoutDashboard, Package, ShoppingCart, Store, TrendingUp }
 import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import AnimatedContent from "@/components/AnimatedContent";
-import { cn } from "@/lib/utils";
+import { DEMO_STORE_PATH } from "@/lib/app-config";
 import { MarketingSectionHeader } from "../MarketingSectionHeader";
 import { StartFreeLink } from "../StartFreeLink";
 import { industries, type IndustryPreview } from "../landing-data";
@@ -155,7 +155,7 @@ export default function ProductPreview() {
                 </p>
                 <Button asChild className="mt-6 w-fit gap-2 rounded-xl">
                   {view === "storefront" ? (
-                    <Link href="/store/luxe-threads" target="_blank">
+                    <Link href={DEMO_STORE_PATH} target="_blank">
                       View live demo
                       <ArrowRight className="h-4 w-4" aria-hidden />
                     </Link>
