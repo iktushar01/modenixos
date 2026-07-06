@@ -18,6 +18,7 @@ interface ProductMediaSectionProps {
   onColorImagesChange: (map: Record<string, string>) => void;
   colorNewFiles: Record<string, File>;
   onColorNewFilesChange: (map: Record<string, File>) => void;
+  showColorMode?: boolean;
 }
 
 export function ProductMediaSection({
@@ -32,29 +33,32 @@ export function ProductMediaSection({
   onColorImagesChange,
   colorNewFiles,
   onColorNewFilesChange,
+  showColorMode = true,
 }: ProductMediaSectionProps) {
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant={mode === "standard" ? "default" : "outline"}
-          onClick={() => onModeChange("standard")}
-        >
-          Standard gallery
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={mode === "color" ? "default" : "outline"}
-          onClick={() => onModeChange("color")}
-        >
-          By color
-        </Button>
-      </div>
+      {showColorMode && (
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === "standard" ? "default" : "outline"}
+            onClick={() => onModeChange("standard")}
+          >
+            Standard gallery
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === "color" ? "default" : "outline"}
+            onClick={() => onModeChange("color")}
+          >
+            By color
+          </Button>
+        </div>
+      )}
 
-      {mode === "standard" ? (
+      {mode === "standard" || !showColorMode ? (
         <>
           <p className="text-xs text-muted-foreground">
             Upload multiple images. The first image is the storefront cover.

@@ -1,0 +1,10 @@
+export { ProductBasicInfo } from "./ProductBasicInfo";
+export { ProductPricing } from "./ProductPricing";
+export { ProductInventory } from "./ProductInventory";
+export { ProductMedia } from "./ProductMedia";
+export { ProductSEO } from "./ProductSEO";
+export { ProductStatus } from "./ProductStatus";
+export { CategoryFields } from "./CategoryFields";
+export { ProductAttributes } from "./ProductAttributes";
+export { ProductVariants } from "./ProductVariants";
+export { ProductExtras } from "./ProductExtras";

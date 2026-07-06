@@ -72,6 +72,26 @@ export interface ProductDetails {
   dimensions?: ProductDimensions;
   condition?: "NEW" | "USED" | "REFURBISHED";
   videoUrl?: string;
+  slug?: string;
+  barcode?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  trackInventory?: boolean;
+  lowStockAlert?: number;
+  featured?: boolean;
+  categoryAttributes?: Record<string, string | number>;
+  enableVariants?: boolean;
+  variantAttributes?: { name: string; options: string[] }[];
+  variants?: {
+    id: string;
+    options: Record<string, string>;
+    sku?: string;
+    price?: number;
+    salePrice?: number;
+    stock: number;
+    image?: string;
+    status: "ACTIVE" | "DRAFT";
+  }[];
 }
 
 export interface StorefrontShopProfile {
