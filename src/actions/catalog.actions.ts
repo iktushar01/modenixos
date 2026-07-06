@@ -110,6 +110,11 @@ export async function deleteProductAction(id: string) {
   revalidatePath("/dashboard/products");
 }
 
+export async function reorderProductsAction(productIds: string[]) {
+  await httpClient.patch("/products/reorder", { productIds });
+  revalidatePath("/dashboard/products");
+}
+
 // Orders
 export async function getOrdersAction(params?: Record<string, unknown>) {
   return httpClient.get<Order[]>("/orders", { params });

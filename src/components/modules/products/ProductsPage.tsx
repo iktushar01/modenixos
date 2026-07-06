@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Package, Eye, Pencil, Trash2 } from "lucide-react";
+import { GripVertical, Plus, Search, Package } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -17,15 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
@@ -41,26 +31,13 @@ import {
   getProductsAction,
   deleteProductAction,
   getCategoriesAction,
+  reorderProductsAction,
 } from "@/actions/catalog.actions";
-import { Product } from "@/types/store.types";
-import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
 import { useDashboardQuery } from "@/hooks/useDashboardQuery";
 import { DashboardAsyncContent } from "@/components/shared/DashboardAsyncContent";
-import { DashboardTable } from "@/components/shared/DashboardTable";
-import { cn } from "@/lib/utils";
 import { ProductViewDialog } from "./CatalogViewDialogs";
-
-function statusBadgeClass(status: Product["status"]) {
-  switch (status) {
-    case "ACTIVE":
-      return "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400";
-    case "ARCHIVED":
-      return "border-muted bg-muted text-muted-foreground";
-    default:
-      return "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400";
-  }
-}
+import { ProductsSortableTable } from "./ProductsSortableTable";
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();
@@ -72,7 +49,14 @@ export default function ProductsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
 
-  const queryParams: Record<string, string> = { limit: "50" };
+  const canReorder =
+    !search.trim() && statusFilter === "all" && categoryFilter === "all";
+
+  const queryParams: Record<string, string> = {
+    limit: canReorder ? "200" : "50",
+    sortBy: "sortOrder",
+    sortOrder: "asc",
+  };
   if (search.trim()) queryParams.searchTerm = search.trim();
   if (statusFilter !== "all") queryParams.status = statusFilter;
   if (categoryFilter !== "all") queryParams.categoryId = categoryFilter;
@@ -97,16 +81,26 @@ export default function ProductsPage() {
     onError: () => toast.error("Failed to delete product"),
   });
 
+  const reorderMutation = useMutation({
+    mutationFn: reorderProductsAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: () => {
+      toast.error("Failed to save product order");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+
   const products = data?.data ?? [];
   const categories = categoriesRes?.data ?? [];
-
 
   return (
     <div className="dashboard-page">
       <PageHeader
         eyebrow="Catalog"
         title="Products"
-        description="Manage your fashion catalog with images, variants, and pricing."
+        description="Manage your catalog. Drag products to set the order shown on your storefront."
         action={
           <Button asChild size="default">
             <Link href="/dashboard/products/new">
@@ -145,11 +139,26 @@ export default function ProductsPage() {
           <SelectContent>
             <SelectItem value="all">All categories</SelectItem>
             {categories.map((c) => (
-              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
+
+      {canReorder && products.length > 1 && (
+        <p className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
+          <GripVertical className="h-4 w-4 shrink-0" />
+          Drag the handle on the left to reorder products on your storefront.
+        </p>
+      )}
+
+      {!canReorder && products.length > 0 && (
+        <p className="mb-3 text-sm text-muted-foreground">
+          Clear search and filters to drag and reorder products.
+        </p>
+      )}
 
       <DashboardAsyncContent
         showPlaceholder={isPending && products.length === 0}
@@ -162,106 +171,22 @@ export default function ProductsPage() {
         }
       >
         {products.length === 0 ? (
-        <EmptyState
-          title="No products yet"
-          description="Add your first product with images, sizes, and pricing."
-          actionLabel="Add product"
-          actionHref="/dashboard/products/new"
-          icon={Package}
-        />
-      ) : (
-        <DashboardTable label="Catalog" count={products.length}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[72px]">Image</TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>
-                    <div className="relative h-12 w-12 overflow-hidden rounded-md border bg-muted">
-                      {p.images[0] ? (
-                        <Image src={p.images[0]} alt={p.name} fill className="object-cover" unoptimized />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <Package className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <p className="font-medium">{p.name}</p>
-                    {p.sku && <p className="text-xs text-muted-foreground">SKU: {p.sku}</p>}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {p.category?.name ?? "—"}
-                    {p.collection?.name && (
-                      <span className="block text-xs">{p.collection.name}</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {p.discountPrice ? (
-                      <div>
-                        <span className="font-medium">{formatPrice(p.discountPrice, storeCurrency)}</span>
-                        <span className="ml-1 text-xs text-muted-foreground line-through">
-                          {formatPrice(p.price, storeCurrency)}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="font-medium">{formatPrice(p.price, storeCurrency)}</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <span className={cn(p.stock < 5 && "font-medium text-amber-600")}>
-                      {p.stock}
-                      {p.stock < 5 && p.stock > 0 && (
-                        <span className="ml-1 text-xs">(low)</span>
-                      )}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={statusBadgeClass(p.status)}>
-                      {p.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setViewId(p.id)}
-                        aria-label={`View ${p.name}`}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/dashboard/products/${p.id}/edit`}>
-                          <Pencil className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setDeleteId(p.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </DashboardTable>
+          <EmptyState
+            title="No products yet"
+            description="Add your first product with images, sizes, and pricing."
+            actionLabel="Add product"
+            actionHref="/dashboard/products/new"
+            icon={Package}
+          />
+        ) : (
+          <ProductsSortableTable
+            products={products}
+            currency={storeCurrency}
+            sortable={canReorder}
+            onReorder={(productIds) => reorderMutation.mutate(productIds)}
+            onView={setViewId}
+            onDelete={setDeleteId}
+          />
         )}
       </DashboardAsyncContent>
 
@@ -277,7 +202,8 @@ export default function ProductsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete product?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. The product will be removed from your catalog and storefront.
+              This action cannot be undone. The product will be removed from your catalog and
+              storefront.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

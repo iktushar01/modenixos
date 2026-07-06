@@ -124,6 +124,7 @@ export interface Product {
   tags: string[];
   details?: ProductDetails | null;
   status: "DRAFT" | "ACTIVE" | "ARCHIVED";
+  sortOrder?: number;
   category?: Category | null;
   collection?: Collection | null;
   reviews?: Review[];
