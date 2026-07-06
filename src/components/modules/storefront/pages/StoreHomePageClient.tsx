@@ -12,22 +12,11 @@ import { StorefrontHomeClient } from "@/components/modules/storefront/Storefront
 import { StorefrontHomeSkeleton } from "@/components/modules/storefront/skeletons";
 import { Collection, Product, Review } from "@/types/store.types";
 
-const SHOP_FILTER_KEYS = [
-  "category",
-  "collection",
-  "minPrice",
-  "maxPrice",
-  "size",
-  "color",
-  "tag",
-  "sale",
-  "search",
-  "q",
-] as const;
-
-function hasActiveShopFilters(searchParams: URLSearchParams) {
-  return SHOP_FILTER_KEYS.some((key) => searchParams.getAll(key).length > 0);
-}
+import {
+  parseShopFilters,
+  shopFiltersToApiParams,
+  hasActiveShopFiltersFromParams,
+} from "@/lib/shopFilters";
 
 interface StoreHomePageClientProps {
   initialCatalog?: Product[];
@@ -46,10 +35,13 @@ export default function StoreHomePageClient({
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const skipInitialFetch = useRef(initialCatalog.length > 0 && !hasActiveShopFilters(searchParams));
+  const skipInitialFetch = useRef(
+    initialCatalog.length > 0 && !hasActiveShopFiltersFromParams(searchParams),
+  );
 
   const filterKey = useMemo(() => searchParams.toString(), [searchParams]);
-  const filteredShop = useMemo(() => hasActiveShopFilters(searchParams), [searchParams]);
+  const filteredShop = useMemo(() => hasActiveShopFiltersFromParams(searchParams), [searchParams]);
+  const homeFilters = useMemo(() => parseShopFilters(searchParams), [searchParams]);
 
   useEffect(() => {
     if (!storeReady || !store) return;

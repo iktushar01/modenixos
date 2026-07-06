@@ -19,11 +19,13 @@ function ShopContent({
   fixedCollection,
   initialCatalog = [],
   initialCollections = [],
+  initialFilterKey = "",
 }: {
   fixedCategory?: string;
   fixedCollection?: string;
   initialCatalog?: Product[];
   initialCollections?: Collection[];
+  initialFilterKey?: string;
 }) {
   const searchParams = useSearchParams();
   const { slug, store, categories } = useStorefront();
@@ -32,7 +34,6 @@ function ShopContent({
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const skipInitialFetch = useRef(initialCatalog.length > 0);
 
   const filters = useMemo(() => {
     const parsed = parseShopFilters(searchParams);
@@ -44,6 +45,10 @@ function ShopContent({
   }, [searchParams, fixedCategory, fixedCollection]);
 
   const filterKey = useMemo(() => JSON.stringify(filters), [filters]);
+  const currentFilterKey = useMemo(() => searchParams.toString(), [searchParams]);
+  const skipInitialFetch = useRef(
+    initialCatalog.length > 0 && currentFilterKey === initialFilterKey,
+  );
 
   useEffect(() => {
     if (!store) return;
@@ -56,21 +61,10 @@ function ShopContent({
     let cancelled = false;
     setIsRefreshing(true);
 
-    const params: Record<string, string> = {
-      limit: "48",
-      page: searchParams.get("page") ?? "1",
-    };
-
-    if (filters.category) params.category = filters.category;
-    if (filters.collection) params.collection = filters.collection;
-    if (filters.size) params.size = filters.size;
-    if (filters.color) params.color = filters.color;
-    if (filters.tag) params.tag = filters.tag;
-    if (filters.sale) params.sale = "true";
-    if (filters.minPrice != null) params.minPrice = String(filters.minPrice);
-    if (filters.maxPrice != null) params.maxPrice = String(filters.maxPrice);
-    if (filters.sort) params.sort = filters.sort;
-    if (filters.search) params.search = filters.search;
+    const params = shopFiltersToApiParams(filters, {
+      limit: 48,
+      page: Number(searchParams.get("page") ?? 1),
+    });
 
     Promise.all([
       getPublicProductsAction(slug, params),
@@ -88,7 +82,7 @@ function ShopContent({
     return () => {
       cancelled = true;
     };
-  }, [slug, store, filterKey, filters, searchParams]);
+  }, [slug, store, filterKey, filters, searchParams, currentFilterKey]);
 
   if (!store) return null;
 
@@ -126,11 +120,13 @@ export default function ShopPageClient({
   fixedCollection,
   initialCatalog = [],
   initialCollections = [],
+  initialFilterKey = "",
 }: {
   fixedCategory?: string;
   fixedCollection?: string;
   initialCatalog?: Product[];
   initialCollections?: Collection[];
+  initialFilterKey?: string;
 } = {}) {
   const { store, categories, storeReady } = useStorefront();
 
@@ -145,6 +141,7 @@ export default function ShopPageClient({
         fixedCollection={fixedCollection}
         initialCatalog={initialCatalog}
         initialCollections={initialCollections}
+        initialFilterKey={initialFilterKey}
       />
     </StorefrontPageShell>
   );
