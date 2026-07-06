@@ -22,6 +22,7 @@ interface ProductStatusProps {
   currency: string;
   productType: ProductTypeKey;
   categoryTree: Category[];
+  collections: Collection[];
   selectedCategory?: Category;
   showCondition: boolean;
   onCategoryChange: (id: string) => void;

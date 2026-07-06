@@ -9,7 +9,6 @@ import { TagInput } from "../TagInput";
 import { SizeChartEditor } from "../SizeChartEditor";
 import { ProductCustomFieldsEditor } from "../ProductCustomFieldsEditor";
 import { ProductFormValues } from "@/zod/product.validation";
-import { ProductSizeChart } from "@/types/store.types";
 
 interface ProductExtrasProps {
   values: ProductFormValues;
@@ -132,7 +131,7 @@ export function ProductExtras({
           {showSizeChart && (
             <SizeChartEditor
               value={values.details.sizeChart}
-              onChange={(chart: ProductSizeChart) => onDetailsChange({ sizeChart: chart })}
+              onChange={(chart) => onDetailsChange({ sizeChart: chart })}
             />
           )}
         </CardContent>
