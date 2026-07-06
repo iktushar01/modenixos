@@ -26,6 +26,8 @@ const LOGO_RATIOS = [
   { label: "Free", value: undefined },
 ];
 
+const LOGO_UPLOAD_BOX = "aspect-square h-[140px] w-[140px] shrink-0";
+
 function extractErrorMessage(err: unknown): string {
   if (err instanceof Error && err.message) return err.message;
   if (err && typeof err === "object") {
@@ -231,7 +233,8 @@ export default function StoreBrandingPage() {
               defaultShape="rectangle"
               existingUrl={clearLogo ? null : store?.logo}
               outputFileName="logo.jpg"
-              previewClassName="aspect-square max-w-[160px]"
+              previewClassName={LOGO_UPLOAD_BOX}
+              dropzoneClassName={LOGO_UPLOAD_BOX}
               onCroppedFile={(file) => {
                 setLogoFile(file);
                 if (file) setClearLogo(false);
@@ -253,8 +256,8 @@ export default function StoreBrandingPage() {
                   defaultShape="rectangle"
                   existingUrl={clearLogo ? null : store?.logo}
                   outputFileName="logo-light.jpg"
-                  previewClassName="aspect-square w-full bg-white"
-                  dropzoneClassName="aspect-square w-full bg-white"
+                  previewClassName={cn(LOGO_UPLOAD_BOX, "bg-white")}
+                  dropzoneClassName={cn(LOGO_UPLOAD_BOX, "bg-white")}
                   previewFit="contain"
                   cropTitle="Crop light mode logo"
                   onCroppedFile={(file) => {
@@ -277,8 +280,8 @@ export default function StoreBrandingPage() {
                   defaultShape="rectangle"
                   existingUrl={clearLogoDark ? null : store?.logoDark}
                   outputFileName="logo-dark.jpg"
-                  previewClassName="aspect-square w-full bg-zinc-900"
-                  dropzoneClassName="aspect-square w-full bg-zinc-900 text-zinc-300"
+                  previewClassName={cn(LOGO_UPLOAD_BOX, "bg-zinc-900")}
+                  dropzoneClassName={cn(LOGO_UPLOAD_BOX, "bg-zinc-900 text-zinc-300")}
                   previewFit="contain"
                   cropTitle="Crop dark mode logo"
                   onCroppedFile={(file) => {

@@ -108,6 +108,9 @@ export function ImageCropUpload({
     onClear?.();
   };
 
+  const sizeClass = dropzoneClassName ?? previewClassName;
+  const isCompactUpload = sizeClass?.includes("aspect-square");
+
   return (
     <div className="space-y-3">
       <div>
@@ -135,12 +138,20 @@ export function ImageCropUpload({
       ) : (
         <label
           className={cn(
-            "flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors hover:border-primary/50 hover:bg-muted/50",
-            dropzoneClassName ?? previewClassName,
+            "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors hover:border-primary/50 hover:bg-muted/50",
+            isCompactUpload ? "p-4" : "w-full p-8",
+            sizeClass,
           )}
         >
-          <Upload className="mb-2 h-7 w-7 text-muted-foreground" />
-          <span className="text-sm font-medium">Upload image</span>
+          <Upload
+            className={cn(
+              "mb-2 text-muted-foreground",
+              isCompactUpload ? "h-5 w-5" : "h-7 w-7",
+            )}
+          />
+          <span className={cn("font-medium", isCompactUpload ? "text-xs" : "text-sm")}>
+            Upload image
+          </span>
           <input
             type="file"
             accept="image/*"
