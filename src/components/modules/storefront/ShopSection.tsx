@@ -26,6 +26,7 @@ import {
 } from "./ui";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetHeader, SheetTitle, SheetTrigger, StorefrontSheetContent } from "@/components/modules/storefront/StorefrontSheet";
+import { useOptionalStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
 
 interface ShopSectionProps {
   store: Store;
@@ -51,6 +52,7 @@ export function ShopSection({
   layout = "grid",
 }: ShopSectionProps) {
   const router = useRouter();
+  const storefrontNav = useOptionalStorefrontNav();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -73,9 +75,13 @@ export function ShopSection({
     (next: ShopFilters) => {
       const qs = shopFiltersToSearchParams(next).toString();
       const href = qs ? `${pathname}?${qs}#shop` : `${pathname}#shop`;
-      startTransition(() => router.push(href, { scroll: false }));
+      if (storefrontNav) {
+        storefrontNav.navigate(href);
+      } else {
+        startTransition(() => router.push(href, { scroll: false }));
+      }
     },
-    [pathname, router],
+    [pathname, router, storefrontNav],
   );
 
   const patchFilters = useCallback(
@@ -86,8 +92,13 @@ export function ShopSection({
   );
 
   const clearFilters = useCallback(() => {
-    startTransition(() => router.push(`${pathname}#shop`, { scroll: false }));
-  }, [pathname, router]);
+    const href = `${pathname}#shop`;
+    if (storefrontNav) {
+      storefrontNav.navigate(href);
+    } else {
+      startTransition(() => router.push(href, { scroll: false }));
+    }
+  }, [pathname, router, storefrontNav]);
 
   const title = useMemo(() => {
     if (layout === "carousel" && !isFiltered) return "All products";

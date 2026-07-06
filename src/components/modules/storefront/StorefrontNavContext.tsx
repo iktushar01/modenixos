@@ -7,13 +7,20 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   startTransition,
   type ReactNode,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useOptionalStorefront } from "@/components/modules/storefront/StorefrontContext";
-import { buildStorefrontPath, parseStorefrontHref } from "@/lib/storefront/navigation";
+import {
+  applyStorefrontScrollAfterNav,
+  buildStorefrontPath,
+  parseStorefrontHref,
+  scrollStorefrontToHash,
+  scrollStorefrontToTop,
+} from "@/lib/storefront/navigation";
 
 interface StorefrontNavContextValue {
   activePath: string;
@@ -30,18 +37,44 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
   const storefront = useOptionalStorefront();
   const slug = storefront?.slug ?? "";
   const [optimisticLocation, setOptimisticLocation] = useState<string | null>(null);
+  const pendingHashRef = useRef<string | null>(null);
+  const hasMountedRef = useRef(false);
+  const previousPathnameRef = useRef(pathname);
 
   const currentSearch = searchParams.toString();
   const currentLocation = buildStorefrontPath(
     pathname,
     currentSearch ? `?${currentSearch}` : "",
   );
+  const locationKey = `${pathname}?${currentSearch}`;
 
   useLayoutEffect(() => {
     if (optimisticLocation !== null && optimisticLocation === currentLocation) {
       setOptimisticLocation(null);
     }
   }, [currentLocation, optimisticLocation]);
+
+  // Scroll after route updates (covers navigate(), Link, and browser back/forward).
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      previousPathnameRef.current = pathname;
+      return;
+    }
+
+    const hash = pendingHashRef.current ?? window.location.hash;
+    pendingHashRef.current = null;
+    const pathChanged = previousPathnameRef.current !== pathname;
+    previousPathnameRef.current = pathname;
+
+    requestAnimationFrame(() => {
+      if (pathChanged) {
+        applyStorefrontScrollAfterNav(hash || undefined);
+      } else if (hash) {
+        scrollStorefrontToHash(hash);
+      }
+    });
+  }, [locationKey, pathname]);
 
   const navigate = useCallback(
     (href: string) => {
@@ -54,26 +87,27 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
       }
 
       if (targetBase === currentLocation && hash) {
+        scrollStorefrontToHash(hash);
         startTransition(() => {
           router.push(targetLocation, { scroll: false });
-        });
-        requestAnimationFrame(() => {
-          document.getElementById(hash.slice(1))?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
         });
         return;
       }
 
       if (!targetPath || targetBase === optimisticLocation) return;
 
+      const isPathnameChange = targetPath !== pathname;
+
+      pendingHashRef.current = hash || null;
       setOptimisticLocation(targetBase);
+      if (isPathnameChange) {
+        scrollStorefrontToTop();
+      }
       startTransition(() => {
         router.push(targetLocation, { scroll: false });
       });
     },
-    [currentLocation, optimisticLocation, router],
+    [currentLocation, optimisticLocation, pathname, router],
   );
 
   useEffect(() => {

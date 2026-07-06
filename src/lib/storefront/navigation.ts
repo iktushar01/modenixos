@@ -21,6 +21,29 @@ export function isStorefrontClientNavHref(href: string): boolean {
   return href.startsWith("/store/");
 }
 
+export function scrollStorefrontToTop() {
+  if (typeof window === "undefined") return;
+  window.scrollTo(0, 0);
+}
+
+export function scrollStorefrontToHash(hash: string, behavior: ScrollBehavior = "smooth") {
+  if (!hash || typeof window === "undefined") return;
+  const id = hash.startsWith("#") ? hash.slice(1) : hash;
+  if (!id) return;
+  requestAnimationFrame(() => {
+    document.getElementById(id)?.scrollIntoView({ behavior, block: "start" });
+  });
+}
+
+/** After navigation settles: jump to hash target or page top. */
+export function applyStorefrontScrollAfterNav(hash?: string) {
+  if (hash) {
+    scrollStorefrontToHash(hash);
+  } else {
+    scrollStorefrontToTop();
+  }
+}
+
 export type StorefrontSkeletonVariant =
   | "home"
   | "product"
