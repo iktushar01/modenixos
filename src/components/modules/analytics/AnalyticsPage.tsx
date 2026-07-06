@@ -23,22 +23,18 @@ import { useDashboardQuery } from "@/hooks/useDashboardQuery";
 import { AnalyticsKpiCard } from "./AnalyticsKpiCard";
 import { AnalyticsChartsSection } from "./AnalyticsChartsSection";
 import { AnalyticsTablesSection } from "./AnalyticsTablesSection";
-import { AnalyticsUpgradePanel } from "./AnalyticsUpgradePanel";
 
 export default function AnalyticsPage() {
   const { data: store } = useMyStore();
   const currency = store?.currency ?? "USD";
-  const hasAdvancedAnalytics = store?.plan !== "FREE";
-
   const { data: overview, isPending: overviewPending } = useDashboardQuery({
     queryKey: ["analytics-overview"],
     queryFn: getAnalyticsOverviewAction,
   });
 
-  const { data: charts, isPending: chartsPending } = useDashboardQuery({
+  const { data: charts, isPending: chartsPending, isError: chartsError } = useDashboardQuery({
     queryKey: ["analytics-charts"],
     queryFn: getAnalyticsChartsAction,
-    enabled: hasAdvancedAnalytics,
   });
 
   const showPlaceholder = overviewPending && overview === undefined;
@@ -162,29 +158,28 @@ export default function AnalyticsPage() {
                   Revenue, orders, and fulfillment breakdown
                 </p>
               </div>
-              {!hasAdvancedAnalytics && (
-                <Badge variant="secondary">Starter plan · basic analytics</Badge>
-              )}
             </div>
 
-            {hasAdvancedAnalytics ? (
-              chartsPending && !charts ? (
-                <Card className="dashboard-panel">
-                  <CardContent className="flex h-[320px] items-center justify-center text-sm text-muted-foreground">
-                    Loading charts…
-                  </CardContent>
-                </Card>
-              ) : charts ? (
-                <AnalyticsChartsSection charts={charts} overview={overview!} currency={currency} />
-              ) : (
-                <Card className="dashboard-panel">
-                  <CardContent className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
-                    No chart data yet. Orders will populate these charts over time.
-                  </CardContent>
-                </Card>
-              )
+            {chartsPending && !charts ? (
+              <Card className="dashboard-panel">
+                <CardContent className="flex h-[320px] items-center justify-center text-sm text-muted-foreground">
+                  Loading charts…
+                </CardContent>
+              </Card>
+            ) : chartsError ? (
+              <Card className="dashboard-panel">
+                <CardContent className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+                  Could not load charts. Refresh the page to try again.
+                </CardContent>
+              </Card>
+            ) : charts && overview ? (
+              <AnalyticsChartsSection charts={charts} overview={overview} currency={currency} />
             ) : (
-              <AnalyticsUpgradePanel />
+              <Card className="dashboard-panel">
+                <CardContent className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+                  No chart data yet. Orders will populate these charts over time.
+                </CardContent>
+              </Card>
             )}
           </section>
 

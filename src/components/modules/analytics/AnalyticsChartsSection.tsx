@@ -87,7 +87,7 @@ function TrendChart({
           axisLine={false}
           tickFormatter={(v) => formatPrice(v, currency)}
           width={76}
-          domain={[0, "auto"]}
+          domain={[0, (dataMax: number) => Math.max(dataMax * 1.15, 1)]}
         />
         <ChartTooltip
           content={
@@ -172,7 +172,13 @@ export function AnalyticsChartsSection({ charts, overview, currency }: Analytics
                 <BarChart data={charts.monthlyOrders} margin={{ left: 4, right: 4 }}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} allowDecimals={false} width={40} />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                    width={40}
+                    domain={[0, (dataMax: number) => Math.max(dataMax, 1)]}
+                  />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="orders" fill="var(--color-orders)" radius={[6, 6, 0, 0]} />
                 </BarChart>
