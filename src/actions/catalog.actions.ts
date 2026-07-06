@@ -56,6 +56,12 @@ export async function deleteCategoryAction(id: string) {
   await revalidateStorefront();
 }
 
+export async function reorderCategoriesAction(categoryIds: string[]) {
+  await httpClient.patch("/categories/reorder", { categoryIds });
+  revalidatePath("/dashboard/categories");
+  await revalidateStorefront();
+}
+
 // Collections
 export async function getCollectionsAction(params?: Record<string, unknown>) {
   return httpClient.get<Collection[]>("/collections", { params });
@@ -77,6 +83,12 @@ export async function updateCollectionAction(id: string, data: FormData) {
 
 export async function deleteCollectionAction(id: string) {
   await httpClient.delete(`/collections/${id}`);
+  revalidatePath("/dashboard/collections");
+  await revalidateStorefront();
+}
+
+export async function reorderCollectionsAction(collectionIds: string[]) {
+  await httpClient.patch("/collections/reorder", { collectionIds });
   revalidatePath("/dashboard/collections");
   await revalidateStorefront();
 }

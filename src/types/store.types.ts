@@ -25,6 +25,7 @@ export interface Category {
   name: string;
   slug: string;
   image?: string | null;
+  sortOrder?: number;
   children?: Category[];
 }
 
@@ -35,6 +36,7 @@ export interface Collection {
   slug: string;
   image?: string | null;
   isFeatured: boolean;
+  sortOrder?: number;
 }
 
 export interface ProductSizeChart {

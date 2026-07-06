@@ -1,5 +1,9 @@
 import { Category } from "@/types/store.types";
 
+function sortByOrder(a: Category, b: Category) {
+  return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+}
+
 export function buildCategoryTree(categories: Category[]): Category[] {
   const byParent = new Map<string | null, Category[]>();
 
@@ -10,12 +14,37 @@ export function buildCategoryTree(categories: Category[]): Category[] {
     byParent.set(key, list);
   }
 
+  for (const [key, list] of byParent) {
+    byParent.set(key, [...list].sort(sortByOrder));
+  }
+
   const attachChildren = (category: Category): Category => ({
     ...category,
     children: (byParent.get(category.id) ?? []).map(attachChildren),
   });
 
   return (byParent.get(null) ?? []).map(attachChildren);
+}
+
+export function reorderCategorySiblings(
+  tree: Category[],
+  parentId: string | null,
+  orderedIds: string[],
+): Category[] {
+  if (parentId === null) {
+    const byId = new Map(tree.map((c) => [c.id, c]));
+    return orderedIds.map((id) => byId.get(id)).filter((c): c is Category => Boolean(c));
+  }
+
+  return tree.map((parent) => {
+    if (parent.id !== parentId) return parent;
+    const children = parent.children ?? [];
+    const byId = new Map(children.map((c) => [c.id, c]));
+    return {
+      ...parent,
+      children: orderedIds.map((id) => byId.get(id)).filter((c): c is Category => Boolean(c)),
+    };
+  });
 }
 
 export function flattenCategoryTree(tree: Category[]): Category[] {
