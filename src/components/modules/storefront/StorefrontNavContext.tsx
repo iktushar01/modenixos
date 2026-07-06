@@ -29,7 +29,7 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
   const storefront = useOptionalStorefront();
   const slug = storefront?.slug ?? "";
-  const [optimisticPath, setOptimisticPath] = useState<string | null>(null);
+  const [optimisticLocation, setOptimisticLocation] = useState<string | null>(null);
 
   const currentSearch = searchParams.toString();
   const currentLocation = buildStorefrontPath(
@@ -38,21 +38,22 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
   );
 
   useLayoutEffect(() => {
-    if (optimisticPath !== null && optimisticPath === pathname) {
-      setOptimisticPath(null);
+    if (optimisticLocation !== null && optimisticLocation === currentLocation) {
+      setOptimisticLocation(null);
     }
-  }, [pathname, optimisticPath]);
+  }, [currentLocation, optimisticLocation]);
 
   const navigate = useCallback(
     (href: string) => {
       const { pathname: targetPath, search, hash } = parseStorefrontHref(href);
       const targetLocation = buildStorefrontPath(targetPath, search, hash);
+      const targetBase = buildStorefrontPath(targetPath, search);
 
       if (targetLocation === currentLocation) {
         return;
       }
 
-      if (targetPath === pathname && !search && hash) {
+      if (targetBase === currentLocation && hash) {
         startTransition(() => {
           router.push(targetLocation, { scroll: false });
         });
@@ -65,14 +66,14 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (!targetPath || targetPath === optimisticPath) return;
+      if (!targetPath || targetBase === optimisticLocation) return;
 
-      setOptimisticPath(targetPath);
+      setOptimisticLocation(targetBase);
       startTransition(() => {
         router.push(targetLocation, { scroll: false });
       });
     },
-    [currentLocation, optimisticPath, pathname, router],
+    [currentLocation, optimisticLocation, router],
   );
 
   useEffect(() => {
@@ -91,13 +92,17 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
     routes.forEach((route) => router.prefetch(route));
   }, [slug, router]);
 
+  const activePath = optimisticLocation
+    ? parseStorefrontHref(optimisticLocation).pathname
+    : pathname;
+
   const value = useMemo<StorefrontNavContextValue>(
     () => ({
-      activePath: optimisticPath ?? pathname,
+      activePath,
       navigate,
-      isNavigating: optimisticPath !== null,
+      isNavigating: optimisticLocation !== null,
     }),
-    [optimisticPath, pathname, navigate],
+    [activePath, navigate, optimisticLocation],
   );
 
   return (

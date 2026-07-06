@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { getStorefrontSkeletonForPath } from "@/components/modules/storefront/skeletons/getStorefrontSkeletonForPath";
 import { useStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
@@ -10,10 +9,9 @@ import { useStorefrontNav } from "@/components/modules/storefront/StorefrontNavC
  * before Next.js finishes the client transition.
  */
 export function StorefrontNavContent({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
   const { activePath, isNavigating } = useStorefrontNav();
 
-  if (isNavigating && activePath !== pathname) {
+  if (isNavigating) {
     return (
       <div aria-busy="true" aria-live="polite">
         {getStorefrontSkeletonForPath(activePath)}
