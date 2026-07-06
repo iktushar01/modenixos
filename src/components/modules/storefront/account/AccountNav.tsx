@@ -23,7 +23,6 @@ export function AccountNav({ base }: { base: string }) {
     <nav className="flex flex-wrap gap-2">
       {links.map((link) => {
         const href = link.external ? `${base}/${link.href}` : `${base}/account/${link.href}`;
-        const { pathname: hrefPath } = parseStorefrontHref(href);
         const active = link.external
           ? activePath === `${base}/track` || activePath.startsWith(`${base}/track/`)
           : activePath.startsWith(`${base}/account/${link.href}`);
