@@ -3,14 +3,14 @@ import { Toaster } from "@/components/ui/sonner";
 import QueryProviders from "@/providers/QueryProvider";
 import { NavigationProgress } from "@/components/shared/NavigationProgress";
 import type { Metadata } from "next";
-import { Sora, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 // @ts-ignore: side-effect CSS import
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 
-const sora = Sora({
-  variable: "--font-sora",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${sora.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
         <QueryProviders>
