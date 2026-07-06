@@ -34,7 +34,7 @@ export function CategoriesSection({ slug, categories }: CategoriesSectionProps) 
               >
                 <span className="sf-t2-category-index">{String(index + 1).padStart(2, "0")}</span>
                 <span className="sf-t2-category-name flex-1">{cat.name}</span>
-                <span className="sf-t2-category-cta opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="sf-t2-category-cta opacity-0 transition-all group-hover:opacity-100">
                   Explore →
                 </span>
               </StorefrontNavLink>

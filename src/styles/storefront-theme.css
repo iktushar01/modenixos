@@ -1212,8 +1212,117 @@
   color: var(--sf-muted-fg);
 }
 
+.storefront-theme[data-storefront-theme="theme2"] a.sf-t2-category-row,
+.storefront-theme[data-storefront-theme="theme2"] a.sf-t2-collection-band {
+  color: inherit;
+  text-decoration: none;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-category-name,
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-collection-title,
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-title {
+  transition: color 0.2s ease;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-category-row {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-category-row:hover {
+  background: color-mix(in srgb, var(--sf-muted) 40%, transparent);
+}
+
 .storefront-theme[data-storefront-theme="theme2"] .sf-t2-category-row:hover .sf-t2-category-name {
   color: var(--sf-primary);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-category-row:hover .sf-t2-category-index,
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-category-row:hover .sf-t2-category-cta {
+  color: var(--sf-primary);
+  opacity: 1;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-collection-band {
+  transition: background-color 0.2s ease;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-collection-band:hover {
+  background: color-mix(in srgb, var(--sf-muted) 35%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-collection-band:hover .sf-t2-collection-title,
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-collection-band:hover .sf-t2-link-underline {
+  color: var(--sf-primary);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-list {
+  transition: background-color 0.2s ease;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-list:hover {
+  background: color-mix(in srgb, var(--sf-muted) 35%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-list:hover .sf-t2-product-title {
+  color: var(--sf-primary);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-card:hover .sf-t2-product-title,
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-link:hover .sf-t2-product-title {
+  color: var(--sf-primary);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-card:hover .sf-t2-product-arrow {
+  color: var(--sf-primary);
+  opacity: 1;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-link-underline {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-link-underline:hover {
+  color: var(--sf-primary);
+  opacity: 1;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-nav-menu-item:hover {
+  color: var(--sf-primary);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-header-action:hover {
+  color: var(--sf-primary);
+  background-color: color-mix(in srgb, var(--sf-primary) 10%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-review-card {
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-review-card:hover {
+  border-color: color-mix(in srgb, var(--sf-primary) 35%, var(--sf-border));
+  background: color-mix(in srgb, var(--sf-muted) 30%, var(--sf-card));
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-t2-footer-link:hover {
+  color: var(--sf-primary);
+}
+
+/* Tailwind group-hover helpers for custom sf tokens */
+.storefront-theme .group:hover .group-hover\:sf-primary-text {
+  color: var(--sf-primary);
+}
+
+.storefront-theme .hover\:sf-fg:hover {
+  color: var(--sf-fg);
+}
+
+.storefront-theme .hover\:sf-surface:hover {
+  background-color: var(--sf-surface);
+}
+
+.storefront-theme .hover\:sf-muted:hover {
+  background-color: var(--sf-muted);
 }
 
 /* Collections */
