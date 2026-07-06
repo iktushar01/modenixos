@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { Instagram, Twitter, Facebook } from "lucide-react";
 import { Category, Store } from "@/types/store.types";
-import { StorefrontThemeConfig, resolveStorefrontNavLinks } from "@/lib/storefront";
+import { StorefrontThemeConfig, resolveStorefrontNavLinks, resolveStoreLogo } from "@/lib/storefront";
+import { useStorefrontTheme } from "@/components/modules/storefront/StorefrontThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -16,9 +17,11 @@ interface StoreFooterProps {
 }
 
 export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps) {
+  const { colorMode } = useStorefrontTheme();
   const base = `/store/${store.slug}`;
   const [email, setEmail] = useState("");
   const navLinks = resolveStorefrontNavLinks(theme, store.slug, categories).slice(0, 6);
+  const logoUrl = resolveStoreLogo(store, theme, colorMode);
 
   const handleNewsletter = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,9 +32,9 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
     <footer className="sf-border sf-footer border-t">
       <div className="sf-section w-full py-16 md:py-20">
         <div className="mb-14 text-center md:mb-16">
-          {store.logo ? (
+          {logoUrl ? (
             <Image
-              src={store.logo}
+              src={logoUrl}
               alt={store.brandName}
               width={180}
               height={60}

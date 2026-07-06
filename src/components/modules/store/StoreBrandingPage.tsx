@@ -2,18 +2,21 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { useMyStore } from "@/hooks/useMyStore";
 import { revalidateStoreBrandingAction } from "@/actions/store.actions";
 import { parseStorefrontTheme } from "@/lib/storefrontTheme";
+import { StorefrontLogoMode } from "@/lib/storefront";
 import { uploadStoreBranding } from "@/lib/uploadStoreBranding";
 import { ImageCropUpload } from "./ImageCropUpload";
 import { HeroSlideItem, HeroSlidesUpload, buildHeroSlidesMeta } from "./HeroSlidesUpload";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
 import { StoreSection } from "./StoreSection";
 import { StoreSaveBar } from "./StoreSaveBar";
+import { cn } from "@/lib/utils";
 
 const LOGO_RATIOS = [
   { label: "1:1", value: 1 },
@@ -39,15 +42,32 @@ export default function StoreBrandingPage() {
   const [saving, setSaving] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [clearLogo, setClearLogo] = useState(false);
+  const [logoDarkFile, setLogoDarkFile] = useState<File | null>(null);
+  const [clearLogoDark, setClearLogoDark] = useState(false);
   const [heroSlides, setHeroSlides] = useState<HeroSlideItem[]>([]);
   const [slidesDirty, setSlidesDirty] = useState(false);
+
+  const savedLogoMode = useMemo<StorefrontLogoMode>(() => {
+    if (!store) return "single";
+    return parseStorefrontTheme(store).branding.logoMode;
+  }, [store]);
+
+  const [logoMode, setLogoMode] = useState<StorefrontLogoMode>("single");
+
+  useEffect(() => {
+    if (store) setLogoMode(savedLogoMode);
+  }, [store?.id, store?.updatedAt, savedLogoMode, store]);
 
   const existingHeroSlides = useMemo(() => {
     if (!store) return [];
     return parseStorefrontTheme(store).heroSlides;
   }, [store]);
 
-  const hasPendingChanges = Boolean(logoFile || clearLogo || slidesDirty);
+  const logoModeDirty = logoMode !== savedLogoMode;
+
+  const hasPendingChanges = Boolean(
+    logoFile || clearLogo || logoDarkFile || clearLogoDark || slidesDirty || logoModeDirty,
+  );
 
   useEffect(() => {
     if (!store || slidesDirty) return;
@@ -72,9 +92,16 @@ export default function StoreBrandingPage() {
       return;
     }
 
+    if (logoMode === "dual" && !logoFile && !store.logo && !clearLogo) {
+      toast.error("Upload a light mode logo first");
+      return;
+    }
+
     setSaving(true);
     try {
       const fd = new FormData();
+
+      fd.append("theme", JSON.stringify({ branding: { logoMode } }));
 
       if (logoFile) {
         if (logoFile.size === 0) {
@@ -84,6 +111,20 @@ export default function StoreBrandingPage() {
         fd.append("logo", logoFile, logoFile.name);
       } else if (clearLogo) {
         fd.append("logo", "");
+      }
+
+      if (logoMode === "dual") {
+        if (logoDarkFile) {
+          if (logoDarkFile.size === 0) {
+            toast.error("Dark logo file is empty — try cropping again");
+            return;
+          }
+          fd.append("logoDark", logoDarkFile, logoDarkFile.name);
+        } else if (clearLogoDark) {
+          fd.append("logoDark", "");
+        }
+      } else if (store.logoDark || logoDarkFile) {
+        fd.append("logoDark", "");
       }
 
       if (slidesDirty) {
@@ -110,6 +151,8 @@ export default function StoreBrandingPage() {
       toast.success("Branding saved");
       setLogoFile(null);
       setClearLogo(false);
+      setLogoDarkFile(null);
+      setClearLogoDark(false);
       setSlidesDirty(false);
       await refetch();
     } catch (err) {
@@ -129,7 +172,7 @@ export default function StoreBrandingPage() {
       <PageHeader
         eyebrow="Shop"
         title="Branding"
-        description="Crop your logo or hero slides, then click Save branding to upload."
+        description="Upload your shop logo for light and dark storefront themes, or use one logo for both."
         action={
           hasPendingChanges ? (
             <Badge variant="secondary" className="shrink-0">
@@ -142,26 +185,122 @@ export default function StoreBrandingPage() {
       <StoreSection
         eyebrow="Identity"
         title="Logo"
-        description="Crop your logo, then save. Appears in the storefront navbar and footer."
+        description="Choose one logo for all themes, or separate logos optimized for light and dark backgrounds."
       >
-        <ImageCropUpload
-          label="Shop logo"
-          defaultAspect={1}
-          ratioOptions={LOGO_RATIOS}
-          allowShapeSelection
-          defaultShape="rectangle"
-          existingUrl={clearLogo ? null : store?.logo}
-          outputFileName="logo.jpg"
-          previewClassName="aspect-square max-w-[160px]"
-          onCroppedFile={(file) => {
-            setLogoFile(file);
-            if (file) setClearLogo(false);
-          }}
-          onClear={() => {
-            setClearLogo(true);
-            setLogoFile(null);
-          }}
-        />
+        <div className="space-y-6">
+          <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Logo mode">
+            <button
+              type="button"
+              role="radio"
+              aria-checked={logoMode === "single"}
+              onClick={() => setLogoMode("single")}
+              className={cn(
+                "rounded-lg border border-border p-4 text-left transition-colors",
+                logoMode === "single" && "border-primary bg-primary/5 ring-1 ring-primary/20",
+              )}
+            >
+              <p className="text-sm font-medium">One logo for all themes</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Same logo on light and dark storefront modes
+              </p>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={logoMode === "dual"}
+              onClick={() => setLogoMode("dual")}
+              className={cn(
+                "rounded-lg border border-border p-4 text-left transition-colors",
+                logoMode === "dual" && "border-primary bg-primary/5 ring-1 ring-primary/20",
+              )}
+            >
+              <p className="text-sm font-medium">Separate light &amp; dark logos</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Light logo for bright backgrounds, dark logo for dark mode
+              </p>
+            </button>
+          </div>
+
+          {logoMode === "single" ? (
+            <ImageCropUpload
+              label="Shop logo"
+              description="Used in the navbar and footer on your storefront."
+              defaultAspect={1}
+              ratioOptions={LOGO_RATIOS}
+              allowShapeSelection
+              defaultShape="rectangle"
+              existingUrl={clearLogo ? null : store?.logo}
+              outputFileName="logo.jpg"
+              previewClassName="aspect-square max-w-[160px]"
+              onCroppedFile={(file) => {
+                setLogoFile(file);
+                if (file) setClearLogo(false);
+              }}
+              onClear={() => {
+                setClearLogo(true);
+                setLogoFile(null);
+              }}
+            />
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              <ImageCropUpload
+                label="Light mode logo"
+                description="Shown on light backgrounds (default storefront theme)."
+                defaultAspect={1}
+                ratioOptions={LOGO_RATIOS}
+                allowShapeSelection
+                defaultShape="rectangle"
+                existingUrl={clearLogo ? null : store?.logo}
+                outputFileName="logo-light.jpg"
+                previewClassName="aspect-square max-w-[160px] bg-white"
+                previewFit="contain"
+                cropTitle="Crop light mode logo"
+                onCroppedFile={(file) => {
+                  setLogoFile(file);
+                  if (file) setClearLogo(false);
+                }}
+                onClear={() => {
+                  setClearLogo(true);
+                  setLogoFile(null);
+                }}
+              />
+              <div className="rounded-lg border border-dashed border-border bg-muted/20 p-4">
+                <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                  <Moon className="h-4 w-4" />
+                  Dark mode preview area
+                </div>
+                <ImageCropUpload
+                  label="Dark mode logo"
+                  description="Shown when customers switch to dark mode. Often a lighter/white variant."
+                  defaultAspect={1}
+                  ratioOptions={LOGO_RATIOS}
+                  allowShapeSelection
+                  defaultShape="rectangle"
+                  existingUrl={clearLogoDark ? null : store?.logoDark}
+                  outputFileName="logo-dark.jpg"
+                  previewClassName="aspect-square max-w-[160px] bg-zinc-900"
+                  previewFit="contain"
+                  cropTitle="Crop dark mode logo"
+                  onCroppedFile={(file) => {
+                    setLogoDarkFile(file);
+                    if (file) setClearLogoDark(false);
+                  }}
+                  onClear={() => {
+                    setClearLogoDark(true);
+                    setLogoDarkFile(null);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {logoMode === "dual" && (
+            <p className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Sun className="h-3.5 w-3.5" />
+              Tip: use a dark logo on light backgrounds and a white or light logo for dark mode.
+            </p>
+          )}
+        </div>
       </StoreSection>
 
       <StoreSection

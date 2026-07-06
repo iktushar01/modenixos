@@ -4,6 +4,7 @@ export interface Store {
   brandName: string;
   slug: string;
   logo?: string | null;
+  logoDark?: string | null;
   banner?: string | null;
   country: string;
   currency: string;

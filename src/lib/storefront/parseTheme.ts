@@ -211,6 +211,14 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
   const colors = resolveColors(raw, colorMode);
   const typography = parseTypography(raw);
 
+  const brandingRaw = (raw.branding ?? {}) as Record<string, unknown>;
+  const branding = {
+    logoMode:
+      brandingRaw.logoMode === "dual" || (store.logoDark && brandingRaw.logoMode !== "single")
+        ? ("dual" as const)
+        : ("single" as const),
+  };
+
   return {
     templateId: ((raw.templateId as StorefrontTemplateId) ?? "theme1") as StorefrontTemplateId,
     colorMode,
@@ -238,6 +246,7 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
     brandStoryImage: (raw.brandStoryImage as string) ?? store.banner ?? null,
     newsletterEnabled: raw.newsletterEnabled !== false,
     sections: { ...defaultSections, ...sectionsRaw },
+    branding,
     social,
   };
 }

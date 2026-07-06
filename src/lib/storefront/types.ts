@@ -1,3 +1,9 @@
+export type StorefrontLogoMode = "single" | "dual";
+
+export interface StorefrontBrandingConfig {
+  logoMode: StorefrontLogoMode;
+}
+
 export type StorefrontTemplateId = "theme1";
 export type StorefrontColorMode = "light" | "dark";
 export type StorefrontNavSource = "manual" | "categories" | "both";
@@ -113,6 +119,7 @@ export interface StorefrontThemeConfig {
   brandStoryImage: string | null;
   newsletterEnabled: boolean;
   sections: StorefrontSections;
+  branding: StorefrontBrandingConfig;
   social: {
     instagram?: string;
     twitter?: string;

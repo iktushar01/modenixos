@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Menu, ChevronDown, Phone, Search, ShoppingBag, X } from "lucide-react";
 import { Category, Store } from "@/types/store.types";
-import { StorefrontThemeConfig, resolveStorefrontNavLinks } from "@/lib/storefront";
+import { StorefrontThemeConfig, resolveStorefrontNavLinks, resolveStoreLogo } from "@/lib/storefront";
 import {
   buildStorefrontCategoryNav,
   type StorefrontNavItem,
@@ -24,6 +24,7 @@ import { StorefrontAccountMenu } from "../../StorefrontAccountMenu";
 import { StorefrontNavLink } from "../../StorefrontNavLink";
 import { useOptionalStorefrontNav } from "../../StorefrontNavContext";
 import { useOptionalStorefrontCustomer } from "../../StorefrontCustomerContext";
+import { useStorefrontTheme } from "../../StorefrontThemeContext";
 import { cn } from "@/lib/utils";
 
 interface StoreHeaderProps {
@@ -133,6 +134,7 @@ function NavCategoryDropdown({ item }: { item: NavGroupItem }) {
 
 export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
   const router = useRouter();
+  const { colorMode } = useStorefrontTheme();
   const storefrontNav = useOptionalStorefrontNav();
   const hydrated = useCartHydrated();
   const cartCount = useStoreCartCount(store.id);
@@ -140,6 +142,11 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const logoUrl = useMemo(
+    () => resolveStoreLogo(store, theme, colorMode),
+    [store, theme, colorMode],
+  );
 
   const base = `/store/${store.slug}`;
   const isLoggedIn = Boolean(customerCtx?.customer);
@@ -247,9 +254,9 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               href={base}
               className="flex min-w-0 max-w-[52vw] flex-col items-center justify-self-center text-center sm:max-w-none"
             >
-              {store.logo ? (
+              {logoUrl ? (
                 <Image
-                  src={store.logo}
+                  src={logoUrl}
                   alt={store.brandName}
                   width={180}
                   height={56}
