@@ -30,6 +30,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
+import { useDashboardReady } from "@/components/shared/DashboardRouteTemplate";
 
 const planLabels: Record<string, string> = {
   FREE: "Starter",
