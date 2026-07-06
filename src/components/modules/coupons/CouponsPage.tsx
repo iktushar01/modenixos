@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getCouponsAction, createCouponAction, deleteCouponAction } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/currency";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -55,11 +55,18 @@ export default function CouponsPage() {
         action={
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button>Create Coupon</Button></DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>New Coupon</DialogTitle></DialogHeader>
-              <div className="space-y-4">
-                <div><Label>Code</Label><Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} /></div>
-                <div><Label>Type</Label>
+            <DialogContent size="md">
+              <DialogHeader>
+                <DialogTitle>New coupon</DialogTitle>
+                <DialogDescription>Create a discount code for your storefront checkout.</DialogDescription>
+              </DialogHeader>
+              <DialogBody className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Code</Label>
+                  <Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} placeholder="SUMMER20" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Type</Label>
                   <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -68,9 +75,17 @@ export default function CouponsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div><Label>Value</Label><Input type="number" value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} /></div>
-                <Button onClick={() => createMutation.mutate()} disabled={!form.code || !form.value}>Create</Button>
-              </div>
+                <div className="space-y-2">
+                  <Label>Value</Label>
+                  <Input type="number" value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} placeholder={form.type === "PERCENT" ? "20" : "10"} />
+                </div>
+              </DialogBody>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                <Button onClick={() => createMutation.mutate()} disabled={!form.code || !form.value || createMutation.isPending}>
+                  Create coupon
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         }

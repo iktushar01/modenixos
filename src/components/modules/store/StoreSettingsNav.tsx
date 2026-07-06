@@ -17,33 +17,31 @@ export function StoreSettingsNav() {
   const pathname = usePathname();
 
   return (
-    <nav
-      aria-label="Store settings"
-      className="admin-panel flex gap-1 overflow-x-auto p-1.5"
-    >
-      {LINKS.map((link) => {
-        const active =
-          link.href === "/dashboard/store"
-            ? pathname === link.href
-            : pathname.startsWith(link.href);
-        const Icon = link.icon;
+    <nav aria-label="Store settings" className="dashboard-toolbar overflow-x-auto">
+      <div className="dashboard-segment-group min-w-max flex-1">
+        {LINKS.map((link) => {
+          const active =
+            link.href === "/dashboard/store"
+              ? pathname === link.href
+              : pathname.startsWith(link.href);
+          const Icon = link.icon;
 
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm font-medium whitespace-nowrap transition-all",
-              active
-                ? "bg-background text-foreground shadow-sm ring-1 ring-border/60"
-                : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
-            )}
-          >
-            <Icon className={cn("size-4 shrink-0", active && "text-[var(--admin-accent-strong)]")} />
-            {link.label}
-          </Link>
-        );
-      })}
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              data-active={active ? "true" : undefined}
+              className={cn(
+                "dashboard-segment-btn flex items-center gap-2 whitespace-nowrap",
+                active && "text-[var(--admin-accent-strong)]",
+              )}
+            >
+              <Icon className="size-4 shrink-0" />
+              {link.label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

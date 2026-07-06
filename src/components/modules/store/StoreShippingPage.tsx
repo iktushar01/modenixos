@@ -1,19 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyStore } from "@/hooks/useMyStore";
 import { updateStoreAction } from "@/actions/store.actions";
 import { StoreShippingConfig } from "@/types/store.types";
 import { getCurrencyName } from "@/lib/currency";
 import { DashboardFormSkeleton } from "@/components/shared/DashboardPageSkeleton";
+import { StoreSection } from "./StoreSection";
+import { StoreSaveBar } from "./StoreSaveBar";
 
 const defaultShipping: StoreShippingConfig = {
   deliveryPolicy: "",
@@ -61,45 +60,42 @@ export default function StoreShippingPage() {
     }
   };
 
-
   if (isLoading) {
     return <DashboardFormSkeleton compact />;
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
+        eyebrow="Shop"
         title="Shipping & delivery"
         description="Delivery policy shown on every product page under the Delivery Options tab."
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Delivery policy</CardTitle>
-          <CardDescription>
-            Write your delivery zones, charges, and timelines. Supports Bengali, English, or any language.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="deliveryPolicy">Delivery options text</Label>
-            <Textarea
-              id="deliveryPolicy"
-              rows={10}
-              value={form.deliveryPolicy ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, deliveryPolicy: e.target.value }))}
-              placeholder={"Inside Dhaka City: Home delivery 70 TK...\nOutside Dhaka: Courier 150 TK..."}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <StoreSection
+        eyebrow="Policy"
+        title="Delivery policy"
+        description="Write your delivery zones, charges, and timelines. Supports Bengali, English, or any language."
+      >
+        <div className="space-y-2">
+          <Label htmlFor="deliveryPolicy">Delivery options text</Label>
+          <Textarea
+            id="deliveryPolicy"
+            rows={10}
+            value={form.deliveryPolicy ?? ""}
+            onChange={(e) => setForm((f) => ({ ...f, deliveryPolicy: e.target.value }))}
+            placeholder={"Inside Dhaka City: Home delivery 70 TK...\nOutside Dhaka: Courier 150 TK..."}
+            className="min-h-[220px] resize-y"
+          />
+        </div>
+      </StoreSection>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Delivery rates (optional)</CardTitle>
-          <CardDescription>For future checkout integration. Not used on checkout yet.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+      <StoreSection
+        eyebrow="Rates"
+        title="Delivery rates (optional)"
+        description="For future checkout integration. Not used on checkout yet."
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="insideRate">
               Inside city rate ({store?.currency ?? "USD"} — {getCurrencyName(store?.currency ?? "USD")})
@@ -109,6 +105,7 @@ export default function StoreShippingPage() {
               type="number"
               min="0"
               step="0.01"
+              className="h-10"
               value={form.insideRate ?? ""}
               onChange={(e) =>
                 setForm((f) => ({
@@ -127,6 +124,7 @@ export default function StoreShippingPage() {
               type="number"
               min="0"
               step="0.01"
+              className="h-10"
               value={form.outsideRate ?? ""}
               onChange={(e) =>
                 setForm((f) => ({
@@ -136,13 +134,15 @@ export default function StoreShippingPage() {
               }
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </StoreSection>
 
-      <Button onClick={handleSave} disabled={saving}>
-        {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save shipping settings
-      </Button>
-    </div>
+      <StoreSaveBar
+        label="Save shipping settings"
+        onSave={handleSave}
+        saving={saving}
+        hint="Delivery text appears on every product page."
+      />
+    </>
   );
 }

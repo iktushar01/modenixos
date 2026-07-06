@@ -399,6 +399,10 @@
     @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_oklch(0.25_0.04_285/0.16),0_16px_40px_color-mix(in_oklch,var(--primary)_45%,transparent)];
   }
 
+  .dashboard-toggle-row {
+    @apply flex items-center justify-between gap-4 rounded-xl border border-border/55 bg-muted/20 p-4 transition-colors hover:bg-muted/30;
+  }
+
   .dashboard-segment-group {
     @apply flex flex-wrap gap-1 rounded-xl border border-border/55 bg-muted/30 p-1.5;
   }
