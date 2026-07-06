@@ -11,6 +11,7 @@ import {
   useState,
   startTransition,
   type ReactNode,
+  Suspense,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useOptionalStorefront } from "@/components/modules/storefront/StorefrontContext";
@@ -30,7 +31,22 @@ interface StorefrontNavContextValue {
 
 const StorefrontNavContext = createContext<StorefrontNavContextValue | null>(null);
 
-export function StorefrontNavProvider({ children }: { children: ReactNode }) {
+/** Minimal nav context while search params are still streaming in. */
+function StorefrontNavProviderFallback({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const value = useMemo<StorefrontNavContextValue>(
+    () => ({
+      activePath: pathname,
+      navigate: () => {},
+      isNavigating: false,
+    }),
+    [pathname],
+  );
+
+  return <StorefrontNavContext.Provider value={value}>{children}</StorefrontNavContext.Provider>;
+}
+
+function StorefrontNavProviderActive({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -148,6 +164,14 @@ export function StorefrontNavProvider({ children }: { children: ReactNode }) {
 
   return (
     <StorefrontNavContext.Provider value={value}>{children}</StorefrontNavContext.Provider>
+  );
+}
+
+export function StorefrontNavProvider({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<StorefrontNavProviderFallback>{children}</StorefrontNavProviderFallback>}>
+      <StorefrontNavProviderActive>{children}</StorefrontNavProviderActive>
+    </Suspense>
   );
 }
 

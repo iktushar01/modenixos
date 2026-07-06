@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
-import { useStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
+import { useOptionalStorefrontNav } from "@/components/modules/storefront/StorefrontNavContext";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
 import { StorefrontShellProvider } from "@/components/modules/storefront/StorefrontShellContext";
 import { isStoreHomePath } from "@/lib/storefront/navigation";
@@ -16,7 +16,8 @@ import type { ReactNode } from "react";
 export function StorefrontInnerLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { slug, store, categories, storeReady } = useStorefront();
-  const { isNavigating } = useStorefrontNav();
+  const nav = useOptionalStorefrontNav();
+  const isNavigating = nav?.isNavigating ?? false;
   const isHome = isStoreHomePath(pathname, slug);
 
   if (isHome || !storeReady || !store) {
