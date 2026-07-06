@@ -1,5 +1,6 @@
 import Footer from "@/components/modules/HomePage/footer";
 import Navbar from "@/components/modules/HomePage/navbar";
+import ChatWidget from "@/components/modules/HomePage/ChatWidget";
 
 export default function CommonLayout({
   children,
@@ -11,6 +12,7 @@ export default function CommonLayout({
       <Navbar />
       {children}
       <Footer />
+      <ChatWidget />
     </div>
   );
 }
