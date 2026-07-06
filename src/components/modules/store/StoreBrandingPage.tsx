@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Moon, Sun } from "lucide-react";
+import { Sun } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -243,32 +243,31 @@ export default function StoreBrandingPage() {
             />
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
-              <ImageCropUpload
-                label="Light mode logo"
-                description="Shown on light backgrounds (default storefront theme)."
-                defaultAspect={1}
-                ratioOptions={LOGO_RATIOS}
-                allowShapeSelection
-                defaultShape="rectangle"
-                existingUrl={clearLogo ? null : store?.logo}
-                outputFileName="logo-light.jpg"
-                previewClassName="aspect-square max-w-[160px] bg-white"
-                previewFit="contain"
-                cropTitle="Crop light mode logo"
-                onCroppedFile={(file) => {
-                  setLogoFile(file);
-                  if (file) setClearLogo(false);
-                }}
-                onClear={() => {
-                  setClearLogo(true);
-                  setLogoFile(null);
-                }}
-              />
-              <div className="rounded-lg border border-dashed border-border bg-muted/20 p-4">
-                <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <Moon className="h-4 w-4" />
-                  Dark mode preview area
-                </div>
+              <div className="rounded-lg border border-border p-4">
+                <ImageCropUpload
+                  label="Light mode logo"
+                  description="Shown on light backgrounds (default storefront theme)."
+                  defaultAspect={1}
+                  ratioOptions={LOGO_RATIOS}
+                  allowShapeSelection
+                  defaultShape="rectangle"
+                  existingUrl={clearLogo ? null : store?.logo}
+                  outputFileName="logo-light.jpg"
+                  previewClassName="aspect-square w-full bg-white"
+                  dropzoneClassName="aspect-square w-full bg-white"
+                  previewFit="contain"
+                  cropTitle="Crop light mode logo"
+                  onCroppedFile={(file) => {
+                    setLogoFile(file);
+                    if (file) setClearLogo(false);
+                  }}
+                  onClear={() => {
+                    setClearLogo(true);
+                    setLogoFile(null);
+                  }}
+                />
+              </div>
+              <div className="rounded-lg border border-border p-4">
                 <ImageCropUpload
                   label="Dark mode logo"
                   description="Shown when customers switch to dark mode. Often a lighter/white variant."
@@ -278,7 +277,8 @@ export default function StoreBrandingPage() {
                   defaultShape="rectangle"
                   existingUrl={clearLogoDark ? null : store?.logoDark}
                   outputFileName="logo-dark.jpg"
-                  previewClassName="aspect-square max-w-[160px] bg-zinc-900"
+                  previewClassName="aspect-square w-full bg-zinc-900"
+                  dropzoneClassName="aspect-square w-full bg-zinc-900 text-zinc-300"
                   previewFit="contain"
                   cropTitle="Crop dark mode logo"
                   onCroppedFile={(file) => {

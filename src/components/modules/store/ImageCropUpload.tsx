@@ -23,6 +23,7 @@ interface ImageCropUploadProps {
   outputFileName: string;
   previewClassName?: string;
   previewFit?: "cover" | "contain";
+  dropzoneClassName?: string;
   allowRecrop?: boolean;
   cropTitle?: string;
 }
@@ -40,6 +41,7 @@ export function ImageCropUpload({
   outputFileName,
   previewClassName,
   previewFit = "cover",
+  dropzoneClassName,
   allowRecrop = true,
   cropTitle,
 }: ImageCropUploadProps) {
@@ -131,7 +133,12 @@ export function ImageCropUpload({
           />
         </div>
       ) : (
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors hover:border-primary/50 hover:bg-muted/50">
+        <label
+          className={cn(
+            "flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors hover:border-primary/50 hover:bg-muted/50",
+            dropzoneClassName ?? previewClassName,
+          )}
+        >
           <Upload className="mb-2 h-7 w-7 text-muted-foreground" />
           <span className="text-sm font-medium">Upload image</span>
           <input
