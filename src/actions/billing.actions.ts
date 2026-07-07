@@ -5,21 +5,55 @@ import axios from "axios";
 import { httpClient } from "@/lib/axios/httpClient";
 
 export type BillingProvider = "STRIPE" | "SSLCOMMERZ";
+export type BillingInterval = "MONTHLY" | "YEARLY";
+export type StorePlanId = "FREE" | "PRO" | "PRO_PLUS" | "ULTRA";
+export type PaidPlanId = "PRO" | "PRO_PLUS" | "ULTRA";
 
 export type BillingPlan = {
-  plan: "FREE" | "PRO" | "ENTERPRISE";
+  plan: StorePlanId;
   label: string;
-  priceMonthly: number | null;
+  tagline: string;
+  monthlyUsd: number;
+  yearlyUsd: number;
+  monthlyBdt: number;
+  yearlyBdt: number;
   maxProducts: number;
+  maxOrdersPerMonth: number;
   coupons: boolean;
   advancedAnalytics: boolean;
   customBranding: boolean;
   customDomain: boolean;
   prioritySupport: boolean;
+  maxNewsletterSubscribers: number;
+  maxNewsletterCampaignsPerMonth: number;
+  maxProductsPerCampaign: number;
+  comparisonFeatures: string[];
   mrr: number;
   stripePriceConfigured: boolean;
   sslPriceConfigured?: boolean;
-  sslPriceBdt?: number | null;
+};
+
+export type BillingEntitlements = {
+  plan: StorePlanId;
+  subscriptionPlan: StorePlanId;
+  status: string;
+  limits: BillingPlan;
+  isTrialing: boolean;
+  trialDaysLeft: number | null;
+  trialEndsAt: string | null;
+  trialUsed: boolean;
+  canStartTrial: boolean;
+  billingInterval: BillingInterval;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+  billingProvider: string | null;
+  isPaid: boolean;
+};
+
+export type ComparisonRow = {
+  key: string;
+  label: string;
+  values: Record<"FREE" | "PRO" | "PRO_PLUS" | "ULTRA", string | boolean>;
 };
 
 export type BillingOverview = {
@@ -29,10 +63,14 @@ export type BillingOverview = {
     plan: string;
     status: string;
     billingProvider?: string | null;
+    billingInterval?: BillingInterval;
     stripeSubscriptionId?: string | null;
     currentPeriodEnd: string | null;
     cancelAtPeriodEnd: boolean;
+    trialEndsAt?: string | null;
+    trialUsed?: boolean;
   };
+  entitlements: BillingEntitlements;
   paymentMethods: Array<{
     id: string;
     brand: string | null;
@@ -54,9 +92,9 @@ export type BillingOverview = {
   }>;
   usage: { productCount: number; memberCount: number };
   limits: BillingPlan;
+  comparisonRows: ComparisonRow[];
   stripeConfigured: boolean;
   sslConfigured?: boolean;
-  sslBillingAmountBdt?: number;
 };
 
 export async function getBillingPlansAction() {
@@ -69,13 +107,37 @@ export async function getBillingOverviewAction() {
   return res.data;
 }
 
-export async function createBillingCheckoutAction(plan: "PRO", provider: BillingProvider = "STRIPE") {
+export async function createBillingCheckoutAction(
+  plan: PaidPlanId,
+  provider: BillingProvider = "STRIPE",
+  interval: BillingInterval = "MONTHLY",
+) {
   try {
-    const res = await httpClient.post<{ url: string | null }>("/billing/checkout", { plan, provider });
+    const res = await httpClient.post<{ url: string | null }>("/billing/checkout", {
+      plan,
+      provider,
+      interval,
+    });
     return res.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data?.message ?? "Failed to start checkout.");
+    }
+    throw error;
+  }
+}
+
+export async function startBillingTrialAction() {
+  try {
+    const res = await httpClient.post<{ message: string; entitlements: BillingEntitlements }>(
+      "/billing/start-trial",
+      {},
+    );
+    revalidatePath("/dashboard/settings/billing");
+    return res.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message ?? "Failed to start trial.");
     }
     throw error;
   }
@@ -126,7 +188,10 @@ export async function getAdminFailedPaymentsAction() {
   return res.data ?? [];
 }
 
-export async function overrideStorePlanAction(storeId: string, plan: "FREE" | "PRO" | "ENTERPRISE") {
+export async function overrideStorePlanAction(
+  storeId: string,
+  plan: StorePlanId | "ENTERPRISE",
+) {
   await httpClient.patch(`/admin/stores/${storeId}/plan`, { plan });
   revalidatePath("/admin/subscriptions");
   revalidatePath("/admin/admin-management");
