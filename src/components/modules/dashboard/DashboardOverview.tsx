@@ -62,8 +62,8 @@ export default function DashboardOverview() {
   const { data: store, isLoading: storeLoading } = useMyStore();
 
   const { data: overview, isPending: overviewPending } = useDashboardQuery({
-    queryKey: ["analytics-overview"],
-    queryFn: getAnalyticsOverviewAction,
+    queryKey: ["analytics-overview", "30d"],
+    queryFn: () => getAnalyticsOverviewAction("30d"),
   });
 
   const { data: categoriesRes } = useDashboardQuery({

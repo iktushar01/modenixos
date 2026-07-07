@@ -17,7 +17,7 @@ export function AnalyticsUpgradePanel() {
         <div className="max-w-md space-y-2">
           <h3 className="text-lg font-semibold tracking-tight">Unlock advanced analytics</h3>
           <p className="text-sm text-muted-foreground">
-            Revenue trends, order volume charts, and daily performance are available on Growth and
+            Conversion funnel, 90-day ranges, and visitor insights are available on Growth and
             Scale plans.
           </p>
         </div>
