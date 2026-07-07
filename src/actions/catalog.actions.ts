@@ -209,7 +209,28 @@ export async function updateOrderStatusAction(
 ) {
   const res = await httpClient.patch<Order>(`/orders/${id}/status`, { status, ...tracking });
   revalidatePath("/dashboard/orders");
+  revalidatePath(`/dashboard/orders/${id}`);
   return res;
+}
+
+export async function getOrderAction(id: string) {
+  return httpClient.get<Order>(`/orders/${id}`);
+}
+
+export async function refundOrderAction(id: string, reason?: string) {
+  const res = await httpClient.post<Order>(`/orders/${id}/refund`, { reason });
+  revalidatePath("/dashboard/orders");
+  revalidatePath(`/dashboard/orders/${id}`);
+  return res;
+}
+
+export async function retryOrderPaymentAction(id: string) {
+  return httpClient.post<{ paymentUrl: string; orderNumber: string }>(`/orders/${id}/retry-payment`, {});
+}
+
+export async function getOwnerInvoiceUrl(orderId: string) {
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+  return `${base}/orders/${orderId}/invoice`;
 }
 
 export async function createDashboardOrderAction(payload: {
@@ -502,6 +523,52 @@ export async function placeOrderAction(slug: string, data: Record<string, unknow
   const json = await res.json();
   if (!res.ok) throw new Error(json.message ?? "Failed to place order");
   return json.data as Order;
+}
+
+export async function previewCheckoutAction(
+  slug: string,
+  data: {
+    items: Array<Record<string, unknown>>;
+    shippingAddress: Record<string, string>;
+    couponCode?: string;
+  },
+) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/checkout/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message ?? "Failed to calculate checkout");
+  return json.data as {
+    lineItems: Order["items"];
+    subtotal: number;
+    shipping: number;
+    discount: number;
+    total: number;
+    couponCode?: string;
+  };
+}
+
+export async function getCheckoutOptionsAction(slug: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/checkout/options`, {
+    next: { revalidate: 60, tags: [`checkout-options-${slug}`] },
+  });
+  if (!res.ok) {
+    return { codEnabled: true, sslEnabled: false, storeCountry: "US", shipping: null };
+  }
+  const json = await res.json();
+  return json.data as {
+    codEnabled: boolean;
+    sslEnabled: boolean;
+    storeCountry: string;
+    shipping: Record<string, unknown> | null;
+  };
+}
+
+export function getPublicInvoiceUrl(slug: string, orderNumber: string, email: string) {
+  const params = new URLSearchParams({ email });
+  return `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/orders/${encodeURIComponent(orderNumber)}/invoice?${params}`;
 }
 
 export async function validateCouponAction(slug: string, code: string, subtotal: number) {

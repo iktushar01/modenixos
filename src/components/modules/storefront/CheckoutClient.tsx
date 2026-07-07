@@ -13,7 +13,7 @@ import { useCartStore } from "@/stores/cart.store";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice } from "@/lib/storefrontTheme";
-import { placeOrderAction, validateCouponAction } from "@/actions/catalog.actions";
+import { placeOrderAction, previewCheckoutAction, validateCouponAction } from "@/actions/catalog.actions";
 import { createSslPaymentAction } from "@/actions/payment.actions";
 import { StorefrontPageShell } from "./StorefrontPageShell";
 import { useOptionalStorefrontCustomer } from "./StorefrontCustomerContext";
@@ -36,11 +36,12 @@ export default function CheckoutClient({
   const clearStore = useCartStore((s) => s.clearStore);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [shipping, setShipping] = useState(0);
+  const [previewTotal, setPreviewTotal] = useState<number | null>(null);
   const [couponApplied, setCouponApplied] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"COD" | "SSLCOMMERZ">(() => {
-    const sslEnabled = process.env.NEXT_PUBLIC_SSLCOMMERZ_ENABLED === "true";
-    return sslEnabled ? "SSLCOMMERZ" : "COD";
-  });
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "SSLCOMMERZ">("COD");
+  const [codEnabled, setCodEnabled] = useState(true);
+  const [sslEnabled, setSslEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     customerName: "",
@@ -63,14 +64,83 @@ export default function CheckoutClient({
     }));
   }, [customerCtx?.customer]);
 
-  const shipping = 5;
-  const finalTotal = total + shipping - discount;
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { getCheckoutOptionsAction } = await import("@/actions/catalog.actions");
+        const options = await getCheckoutOptionsAction(store.slug);
+        if (cancelled) return;
+        setCodEnabled(options.codEnabled);
+        setSslEnabled(options.sslEnabled);
+        if (options.sslEnabled && !options.codEnabled) setPaymentMethod("SSLCOMMERZ");
+        else if (options.codEnabled) setPaymentMethod("COD");
+        if (options.storeCountry) {
+          setForm((prev) => ({
+            ...prev,
+            country: prev.country || options.storeCountry,
+          }));
+        }
+      } catch {
+        const envSsl = process.env.NEXT_PUBLIC_SSLCOMMERZ_ENABLED === "true";
+        setSslEnabled(envSsl);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [store.slug]);
+
+  useEffect(() => {
+    if (!items.length || !form.line1 || !form.city || !form.postalCode) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const preview = await previewCheckoutAction(store.slug, {
+          items,
+          shippingAddress: {
+            line1: form.line1,
+            city: form.city,
+            postalCode: form.postalCode,
+            country: form.country,
+          },
+          couponCode: couponApplied ? coupon : undefined,
+        });
+        if (cancelled) return;
+        setShipping(preview.shipping);
+        setDiscount(preview.discount);
+        setPreviewTotal(preview.total);
+      } catch {
+        if (!cancelled) {
+          setShipping(0);
+          setPreviewTotal(null);
+        }
+      }
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [store.slug, items, form.line1, form.city, form.postalCode, form.country, coupon, couponApplied]);
+
+  const finalTotal = previewTotal ?? total + shipping - discount;
   const base = `/store/${store.slug}`;
 
   const applyCoupon = async () => {
     try {
-      const result = await validateCouponAction(store.slug, coupon, total);
-      setDiscount(result.discount);
+      const preview = await previewCheckoutAction(store.slug, {
+        items,
+        shippingAddress: {
+          line1: form.line1 || "—",
+          city: form.city || "—",
+          postalCode: form.postalCode || "—",
+          country: form.country,
+        },
+        couponCode: coupon,
+      });
+      setDiscount(preview.discount);
+      setShipping(preview.shipping);
+      setPreviewTotal(preview.total);
       setCouponApplied(true);
       toast.success("Coupon applied");
     } catch {
@@ -103,7 +173,9 @@ export default function CheckoutClient({
 
       if (paymentMethod === "SSLCOMMERZ") {
         const result = await createSslPaymentAction(store.slug, payload);
-        clearStore(store.id);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(`modenixos_pending_cart_${store.id}`, JSON.stringify(items));
+        }
         window.location.href = result.paymentUrl;
         return;
       }
@@ -213,28 +285,32 @@ export default function CheckoutClient({
             <section>
               <h2 className="sf-eyebrow mb-6">Payment</h2>
               <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("SSLCOMMERZ")}
-                  className={cn(
-                    "sf-editorial-card rounded-xl px-5 py-4 text-left transition-all",
-                    paymentMethod === "SSLCOMMERZ" && "ring-2 ring-[var(--sf-primary)]",
-                  )}
-                >
-                  <p className="font-medium">Pay online</p>
-                  <p className="sf-muted-fg mt-1 text-xs">SSLCommerz — Card, bKash, Nagad & more</p>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("COD")}
-                  className={cn(
-                    "sf-editorial-card rounded-xl px-5 py-4 text-left transition-all",
-                    paymentMethod === "COD" && "ring-2 ring-[var(--sf-primary)]",
-                  )}
-                >
-                  <p className="font-medium">Cash on delivery</p>
-                  <p className="sf-muted-fg mt-1 text-xs">Pay when your order arrives</p>
-                </button>
+                {sslEnabled && (
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("SSLCOMMERZ")}
+                    className={cn(
+                      "sf-editorial-card rounded-xl px-5 py-4 text-left transition-all",
+                      paymentMethod === "SSLCOMMERZ" && "ring-2 ring-[var(--sf-primary)]",
+                    )}
+                  >
+                    <p className="font-medium">Pay online</p>
+                    <p className="sf-muted-fg mt-1 text-xs">SSLCommerz — Card, bKash, Nagad & more</p>
+                  </button>
+                )}
+                {codEnabled && (
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("COD")}
+                    className={cn(
+                      "sf-editorial-card rounded-xl px-5 py-4 text-left transition-all",
+                      paymentMethod === "COD" && "ring-2 ring-[var(--sf-primary)]",
+                    )}
+                  >
+                    <p className="font-medium">Cash on delivery</p>
+                    <p className="sf-muted-fg mt-1 text-xs">Pay when your order arrives</p>
+                  </button>
+                )}
               </div>
             </section>
 

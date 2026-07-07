@@ -15,6 +15,7 @@ export interface Store {
   plan: "FREE" | "PRO" | "ENTERPRISE";
   theme?: Record<string, unknown> | null;
   shipping?: Record<string, unknown> | null;
+  payments?: Record<string, unknown> | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -109,6 +110,14 @@ export interface StoreShippingConfig {
   deliveryPolicy?: string;
   insideRate?: number;
   outsideRate?: number;
+  freeShippingMin?: number;
+}
+
+export interface StorePaymentConfig {
+  codEnabled?: boolean;
+  sslEnabled?: boolean;
+  sslStoreId?: string;
+  sslStorePassword?: string;
 }
 
 export interface Product {
@@ -161,7 +170,9 @@ export interface Payment {
 export interface Order {
   id: string;
   storeId: string;
+  customerId?: string | null;
   orderNumber: string;
+  invoiceNumber?: string | null;
   status: "PENDING" | "CONFIRMED" | "PACKED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
   paymentMethod: string;
   items: OrderItem[];
@@ -176,8 +187,10 @@ export interface Order {
   couponCode?: string | null;
   trackingNumber?: string | null;
   trackingCarrier?: string | null;
+  statusHistory?: Array<{ status: string; at: string; note?: string }>;
   payment?: Payment | null;
   platformEarning?: PlatformEarning | null;
+  customer?: Pick<Customer, "id" | "email" | "name" | "phone" | "orderCount"> | null;
   createdAt: string;
 }
 
