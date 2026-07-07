@@ -127,7 +127,7 @@ function Theme2HomeContent({
       {activeTheme.sections.reviews && !isShopFiltered && <ReviewsSection reviews={reviews} />}
 
       {activeTheme.sections.newsletter && !isShopFiltered && (
-        <NewsletterSection brandName={store.brandName} theme={activeTheme} />
+        <NewsletterSection brandName={store.brandName} storeSlug={store.slug} theme={activeTheme} />
       )}
 
       <Footer store={store} theme={activeTheme} categories={categories} />

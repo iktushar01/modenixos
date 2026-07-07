@@ -6,13 +6,15 @@ import { toast } from "sonner";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { subscribeNewsletterAction } from "@/actions/newsletter.actions";
 
 interface NewsletterSectionProps {
   brandName: string;
+  storeSlug: string;
   theme: StorefrontThemeConfig;
 }
 
-export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) {
+export function NewsletterSection({ brandName, storeSlug, theme }: NewsletterSectionProps) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,10 +24,15 @@ export function NewsletterSection({ brandName, theme }: NewsletterSectionProps) 
     e.preventDefault();
     if (!email.trim()) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    toast.success("You're subscribed! Check your inbox for updates.");
-    setEmail("");
-    setLoading(false);
+    try {
+      const result = await subscribeNewsletterAction(storeSlug, email.trim(), "homepage");
+      toast.success(result.message);
+      setEmail("");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to subscribe");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

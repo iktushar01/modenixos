@@ -4,6 +4,8 @@ import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNav
 import Image from "next/image";
 import { useState } from "react";
 import { Instagram, Twitter, Facebook } from "lucide-react";
+import { toast } from "sonner";
+import { subscribeNewsletterAction } from "@/actions/newsletter.actions";
 import { Category, Store } from "@/types/store.types";
 import { StorefrontThemeConfig, resolveStorefrontNavLinks, resolveStoreLogo } from "@/lib/storefront";
 import { useStorefrontTheme } from "@/components/modules/storefront/StorefrontThemeContext";
@@ -37,12 +39,23 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
   const { colorMode } = useStorefrontTheme();
   const base = storeBasePath(store.slug);
   const [email, setEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
   const navLinks = resolveStorefrontNavLinks(theme, store.slug, categories).slice(0, 5);
   const logoUrl = resolveStoreLogo(store, theme, colorMode);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEmail("");
+    if (!email.trim()) return;
+    setNewsletterLoading(true);
+    try {
+      const result = await subscribeNewsletterAction(store.slug, email.trim(), "footer");
+      toast.success(result.message);
+      setEmail("");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to subscribe");
+    } finally {
+      setNewsletterLoading(false);
+    }
   };
 
   return (
@@ -163,6 +176,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
           </div>
 
           {/* Newsletter */}
+          {theme.newsletterEnabled && (
           <div>
             <p className="sf-eyebrow mb-5">Newsletter</p>
             <p className="sf-muted-fg mb-4 text-sm leading-relaxed">
@@ -177,11 +191,12 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
                 className="sf-input w-full"
                 required
               />
-              <Button type="submit" className="sf-btn-primary sf-btn-interactive w-full rounded-full">
-                Subscribe
+              <Button type="submit" disabled={newsletterLoading} className="sf-btn-primary sf-btn-interactive w-full rounded-full">
+                {newsletterLoading ? "Subscribing…" : "Subscribe"}
               </Button>
             </form>
           </div>
+          )}
         </div>
 
         {/* Bottom bar */}

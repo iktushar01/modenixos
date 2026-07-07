@@ -126,7 +126,7 @@ function Theme1HomeContent({
       {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
 
       {activeTheme.sections.newsletter && !isShopFiltered && (
-        <NewsletterSection brandName={store.brandName} theme={activeTheme} />
+        <NewsletterSection brandName={store.brandName} storeSlug={store.slug} theme={activeTheme} />
       )}
 
       <StoreFooter store={store} theme={activeTheme} categories={categories} />
