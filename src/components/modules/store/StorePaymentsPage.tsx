@@ -125,7 +125,7 @@ export default function StorePaymentsPage() {
         </div>
       </StoreSection>
 
-      <StoreSaveBar saving={saving} onSave={handleSave} />
+      <StoreSaveBar label="Save payment settings" saving={saving} onSave={handleSave} />
     </>
   );
 }

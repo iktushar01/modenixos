@@ -97,7 +97,7 @@ export default function CheckoutClient({
     const timer = setTimeout(async () => {
       try {
         const preview = await previewCheckoutAction(store.slug, {
-          items,
+          items: items as unknown as Array<Record<string, unknown>>,
           shippingAddress: {
             line1: form.line1,
             city: form.city,
@@ -129,7 +129,7 @@ export default function CheckoutClient({
   const applyCoupon = async () => {
     try {
       const preview = await previewCheckoutAction(store.slug, {
-        items,
+        items: items as unknown as Array<Record<string, unknown>>,
         shippingAddress: {
           line1: form.line1 || "—",
           city: form.city || "—",

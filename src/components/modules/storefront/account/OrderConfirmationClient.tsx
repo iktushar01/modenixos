@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Category, Order, Store } from "@/types/store.types";
+import { getPublicInvoiceUrl } from "@/actions/catalog.actions";
 import { formatPrice } from "@/lib/storefrontTheme";
 import { formatOrderDate } from "@/lib/storefront/orderTracking";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
@@ -30,8 +31,11 @@ export default function OrderConfirmationClient({
           <p className="sf-eyebrow">Thank you</p>
           <h1 className="sf-display-lg mt-2">Order confirmed</h1>
           <p className="sf-muted-fg mx-auto mt-3 max-w-lg text-sm">
-            We&apos;ve received your order <span className="font-medium sf-fg">{order.orderNumber}</span>. A
-            confirmation has been sent to {order.customerEmail}.
+            We&apos;ve received your order <span className="font-medium sf-fg">{order.orderNumber}</span>.
+            {order.invoiceNumber ? (
+              <> Your invoice <span className="font-medium sf-fg">{order.invoiceNumber}</span> is ready.</>
+            ) : null}{" "}
+            A confirmation email has been sent to {order.customerEmail} when email delivery is configured.
           </p>
           <p className="sf-muted-fg mt-1 text-xs">{formatOrderDate(order.createdAt)}</p>
         </div>
@@ -65,6 +69,15 @@ export default function OrderConfirmationClient({
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild className="sf-btn-primary flex-1 rounded-full">
                 <Link href={`${base}/account/orders/${encodeURIComponent(order.orderNumber)}`}>View order</Link>
+              </Button>
+              <Button asChild variant="outline" className="sf-btn-outline flex-1 rounded-full">
+                <a
+                  href={getPublicInvoiceUrl(store.slug, order.orderNumber, order.customerEmail)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download invoice
+                </a>
               </Button>
               <Button asChild variant="outline" className="sf-btn-outline flex-1 rounded-full">
                 <Link href={base}>Continue shopping</Link>

@@ -42,6 +42,7 @@ export const clientSidebarData: SidebarData = {
         { label: "Header", icon: "Layers", href: "/dashboard/store/header" },
         { label: "Pages", icon: "FileText", href: "/dashboard/store/pages" },
         { label: "Shipping", icon: "Truck", href: "/dashboard/store/shipping" },
+        { label: "Payments", icon: "CreditCard", href: "/dashboard/store/payments" },
         { label: "Appearance", icon: "Palette", href: "/dashboard/store/appearance" },
       ],
     },

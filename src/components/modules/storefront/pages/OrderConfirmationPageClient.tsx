@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useStorefront } from "@/components/modules/storefront/StorefrontContext";
+import { useCartStore } from "@/stores/cart.store";
 import { trackGuestOrderAction } from "@/actions/storefront-orders.actions";
 import OrderConfirmationClient from "@/components/modules/storefront/account/OrderConfirmationClient";
 import { StorefrontOrdersSkeleton } from "@/components/modules/storefront/skeletons";
@@ -15,13 +16,21 @@ export default function OrderConfirmationPageClient() {
   const { slug, store, categories, storeReady } = useStorefront();
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
 
+  const clearStore = useCartStore((s) => s.clearStore);
+
   useEffect(() => {
     if (!storeReady || !store || !orderNumber || !email) return;
 
     trackGuestOrderAction(slug, orderNumber, email)
-      .then(setOrder)
+      .then((loaded) => {
+        setOrder(loaded);
+        clearStore(store.id);
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem(`modenixos_pending_cart_${store.id}`);
+        }
+      })
       .catch(() => setOrder(null));
-  }, [email, orderNumber, slug, store, storeReady]);
+  }, [clearStore, email, orderNumber, slug, store, storeReady]);
 
   if (!orderNumber || !email) {
     return (

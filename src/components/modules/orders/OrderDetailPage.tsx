@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -65,7 +65,6 @@ async function openAuthenticatedInvoice(orderId: string) {
 
 export default function OrderDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const orderId = params.id as string;
   const queryClient = useQueryClient();
   const { data: store } = useMyStore();
@@ -74,10 +73,12 @@ export default function OrderDetailPage() {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [trackingCarrier, setTrackingCarrier] = useState("");
 
-  const { data: order, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["order", orderId],
     queryFn: () => getOrderAction(orderId),
   });
+
+  const order = data?.data;
 
   useEffect(() => {
     if (!order) return;
@@ -113,8 +114,8 @@ export default function OrderDetailPage() {
 
   const retryMutation = useMutation({
     mutationFn: () => retryOrderPaymentAction(orderId),
-    onSuccess: (data) => {
-      if (data.paymentUrl) window.location.href = data.paymentUrl;
+    onSuccess: (res) => {
+      if (res.data?.paymentUrl) window.location.href = res.data.paymentUrl;
     },
     onError: (err: Error) => toast.error(err.message),
   });

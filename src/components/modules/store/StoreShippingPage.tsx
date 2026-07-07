@@ -18,6 +18,7 @@ const defaultShipping: StoreShippingConfig = {
   deliveryPolicy: "",
   insideRate: undefined,
   outsideRate: undefined,
+  freeShippingMin: undefined,
 };
 
 export default function StoreShippingPage() {
@@ -32,6 +33,7 @@ export default function StoreShippingPage() {
         deliveryPolicy: s.deliveryPolicy ?? "",
         insideRate: s.insideRate,
         outsideRate: s.outsideRate,
+        freeShippingMin: s.freeShippingMin,
       });
     }
   }, [store]);
@@ -48,6 +50,9 @@ export default function StoreShippingPage() {
             : {}),
           ...(form.outsideRate !== undefined && form.outsideRate !== null
             ? { outsideRate: Number(form.outsideRate) }
+            : {}),
+          ...(form.freeShippingMin !== undefined && form.freeShippingMin !== null
+            ? { freeShippingMin: Number(form.freeShippingMin) }
             : {}),
         },
       });
@@ -93,7 +98,7 @@ export default function StoreShippingPage() {
       <StoreSection
         eyebrow="Rates"
         title="Delivery rates (optional)"
-        description="For future checkout integration. Not used on checkout yet."
+        description="Rates apply at checkout based on the customer's country vs your store country."
       >
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
@@ -130,6 +135,26 @@ export default function StoreShippingPage() {
                 setForm((f) => ({
                   ...f,
                   outsideRate: e.target.value === "" ? undefined : Number(e.target.value),
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="freeShippingMin">
+              Free shipping above ({store?.currency ?? "USD"})
+            </Label>
+            <Input
+              id="freeShippingMin"
+              type="number"
+              min="0"
+              step="0.01"
+              className="h-10"
+              placeholder="Optional minimum subtotal"
+              value={form.freeShippingMin ?? ""}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  freeShippingMin: e.target.value === "" ? undefined : Number(e.target.value),
                 }))
               }
             />

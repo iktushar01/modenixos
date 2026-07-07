@@ -378,7 +378,11 @@ export default function OrdersPage() {
               {filteredOrders.map((order) => (
                 <TableRow key={order.id}>
                   {visibleColumns.orderNumber && (
-                    <TableCell className="align-top font-medium">{order.orderNumber}</TableCell>
+                    <TableCell className="align-top font-medium">
+                      <Link href={`/dashboard/orders/${order.id}`} className="hover:underline">
+                        {order.orderNumber}
+                      </Link>
+                    </TableCell>
                   )}
                   {visibleColumns.customer && (
                     <TableCell className="align-top">
