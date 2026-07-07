@@ -29,7 +29,7 @@ function StorefrontPageContent({
     <>
       <AnnouncementBar theme={activeTheme} />
       <StoreHeader store={store} theme={activeTheme} categories={categories} />
-      {children}
+      <div className="sf-inner-pages">{children}</div>
       <StoreFooter store={store} theme={activeTheme} categories={categories} />
     </>
   );

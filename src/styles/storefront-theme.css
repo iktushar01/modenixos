@@ -1675,3 +1675,113 @@
   cursor: not-allowed;
 }
 
+/* =========================
+   Theme-specific inner pages
+   (cart, checkout, shop filters, account, policies, etc.)
+========================= */
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-editorial-card {
+  border-radius: 1.35rem;
+  border-color: color-mix(in srgb, var(--sf-border) 78%, var(--sf-fg));
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--sf-fg) 9%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-editorial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 52px color-mix(in srgb, var(--sf-fg) 14%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-input {
+  border-radius: 0.9rem;
+  border-color: color-mix(in srgb, var(--sf-border) 70%, var(--sf-fg));
+  background: color-mix(in srgb, var(--sf-card) 88%, var(--sf-muted));
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-btn-primary {
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-btn-outline {
+  border-radius: 999px;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-filter-pill {
+  border-radius: 999px;
+  border-style: dashed;
+}
+
+.storefront-theme[data-storefront-theme="theme2"] .sf-inner-pages .sf-filter-pill-active {
+  border-style: solid;
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages {
+  background:
+    radial-gradient(circle at 2% 0%, color-mix(in srgb, var(--sf-primary) 14%, transparent), transparent 35%),
+    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--sf-accent) 14%, transparent), transparent 40%);
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-section {
+  max-width: 78rem;
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-editorial-card {
+  border-radius: 1.5rem;
+  border-color: color-mix(in srgb, var(--sf-primary) 22%, var(--sf-border));
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--sf-card) 92%, var(--sf-primary) 8%),
+      color-mix(in srgb, var(--sf-card) 90%, var(--sf-accent) 10%)
+    );
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--sf-primary) 18%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-editorial-card:hover {
+  transform: translateY(-5px) scale(1.005);
+  box-shadow: 0 28px 66px color-mix(in srgb, var(--sf-primary) 24%, transparent);
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-display-lg {
+  letter-spacing: -0.02em;
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-eyebrow {
+  letter-spacing: 0.18em;
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-input {
+  border-radius: 999px;
+  border-color: color-mix(in srgb, var(--sf-primary) 24%, var(--sf-border));
+  background: color-mix(in srgb, var(--sf-card) 75%, var(--sf-bg));
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-btn-primary,
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages button.sf-btn-primary,
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages [data-slot="button"].sf-btn-primary {
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--sf-primary) 45%, transparent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--sf-primary) 24%, transparent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-btn-outline {
+  border-radius: 999px;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--sf-accent) 45%, var(--sf-border));
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-filter-pill {
+  border-radius: 999px;
+  border-color: color-mix(in srgb, var(--sf-accent) 45%, var(--sf-border));
+  background: color-mix(in srgb, var(--sf-card) 80%, var(--sf-bg));
+}
+
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages .sf-filter-pill-active,
+.storefront-theme[data-storefront-theme="theme3"] .sf-inner-pages button.sf-filter-pill-active {
+  border-color: color-mix(in srgb, var(--sf-primary) 60%, transparent);
+  background: color-mix(in srgb, var(--sf-primary) 12%, var(--sf-card));
+}
+
