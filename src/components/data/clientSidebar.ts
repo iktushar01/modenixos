@@ -29,6 +29,7 @@ export const clientSidebarData: SidebarData = {
       items: [
         { label: "Orders", icon: "ShoppingCart", href: "/dashboard/orders" },
         { label: "Customers", icon: "Users", href: "/dashboard/customers" },
+        { label: "Newsletter", icon: "Mail", href: "/dashboard/marketing/newsletter" },
         { label: "Reviews", icon: "Star", href: "/dashboard/reviews" },
         { label: "Coupons", icon: "Ticket", href: "/dashboard/coupons" },
       ],
