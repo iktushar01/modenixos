@@ -97,3 +97,8 @@ export function storePaymentCancelledPath(slug: string, params?: { order?: strin
   const qs = search.toString();
   return qs ? `${storeBasePath(slug)}/payment/cancelled?${qs}` : `${storeBasePath(slug)}/payment/cancelled`;
 }
+
+export function getPublicInvoiceApiUrl(slug: string, orderNumber: string, email: string) {
+  const params = new URLSearchParams({ email });
+  return `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/orders/${encodeURIComponent(orderNumber)}/invoice?${params}`;
+}

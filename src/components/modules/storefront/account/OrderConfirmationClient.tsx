@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Category, Order, Store } from "@/types/store.types";
-import { getPublicInvoiceUrl } from "@/actions/catalog.actions";
+import { getPublicInvoiceApiUrl } from "@/lib/storePaths";
 import { formatPrice } from "@/lib/storefrontTheme";
 import { formatOrderDate } from "@/lib/storefront/orderTracking";
 import { StorefrontPageShell } from "@/components/modules/storefront/StorefrontPageShell";
@@ -72,7 +72,7 @@ export default function OrderConfirmationClient({
               </Button>
               <Button asChild variant="outline" className="sf-btn-outline flex-1 rounded-full">
                 <a
-                  href={getPublicInvoiceUrl(store.slug, order.orderNumber, order.customerEmail)}
+                  href={getPublicInvoiceApiUrl(store.slug, order.orderNumber, order.customerEmail)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

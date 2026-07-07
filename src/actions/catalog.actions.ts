@@ -566,11 +566,6 @@ export async function getCheckoutOptionsAction(slug: string) {
   };
 }
 
-export function getPublicInvoiceUrl(slug: string, orderNumber: string, email: string) {
-  const params = new URLSearchParams({ email });
-  return `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/orders/${encodeURIComponent(orderNumber)}/invoice?${params}`;
-}
-
 export async function validateCouponAction(slug: string, code: string, subtotal: number) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/coupons/validate`, {
     method: "POST",
