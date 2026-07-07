@@ -17,8 +17,8 @@ export function AnalyticsUpgradePanel() {
         <div className="max-w-md space-y-2">
           <h3 className="text-lg font-semibold tracking-tight">Unlock advanced analytics</h3>
           <p className="text-sm text-muted-foreground">
-            Conversion funnel, 90-day ranges, and visitor insights are available on Growth and
-            Scale plans.
+            Conversion funnel, 90-day ranges, and visitor insights are available on Pro+ and
+            Ultra Pro+ plans.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2">

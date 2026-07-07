@@ -26,9 +26,11 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const planLabels: Record<string, string> = {
-  FREE: "Starter",
-  PRO: "Growth",
-  ENTERPRISE: "Scale",
+  FREE: "Free",
+  PRO: "Pro",
+  PRO_PLUS: "Pro+",
+  ULTRA: "Ultra Pro+",
+  ENTERPRISE: "Ultra Pro+",
 };
 
 type SubscriptionRow = {
@@ -69,7 +71,7 @@ export default function AdminSubscriptionsPage() {
   });
 
   const overrideMutation = useMutation({
-    mutationFn: ({ storeId, plan }: { storeId: string; plan: "FREE" | "PRO" | "ENTERPRISE" }) =>
+    mutationFn: ({ storeId, plan }: { storeId: string; plan: "FREE" | "PRO" | "PRO_PLUS" | "ULTRA" | "ENTERPRISE" }) =>
       overrideStorePlanAction(storeId, plan),
     onSuccess: () => {
       toast.success("Plan updated");
@@ -188,7 +190,7 @@ export default function AdminSubscriptionsPage() {
                         onValueChange={(plan) =>
                           overrideMutation.mutate({
                             storeId: sub.store.id,
-                            plan: plan as "FREE" | "PRO" | "ENTERPRISE",
+                            plan: plan as "FREE" | "PRO" | "PRO_PLUS" | "ULTRA" | "ENTERPRISE",
                           })
                         }
                       >
@@ -196,9 +198,10 @@ export default function AdminSubscriptionsPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="FREE">Starter</SelectItem>
-                          <SelectItem value="PRO">Growth</SelectItem>
-                          <SelectItem value="ENTERPRISE">Scale</SelectItem>
+                          <SelectItem value="FREE">Free</SelectItem>
+                          <SelectItem value="PRO">Pro</SelectItem>
+                          <SelectItem value="PRO_PLUS">Pro+</SelectItem>
+                          <SelectItem value="ULTRA">Ultra Pro+</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>

@@ -51,7 +51,9 @@ export default function AnalyticsPage() {
   const { data: store } = useMyStore();
   const currency = store?.currency ?? "USD";
   const advancedAnalytics =
-    store?.plan === "PRO" || store?.plan === "ENTERPRISE";
+    store?.plan === "PRO_PLUS" ||
+    store?.plan === "ULTRA" ||
+    store?.plan === "ENTERPRISE";
 
   const { data: overview, isPending: overviewPending } = useDashboardQuery({
     queryKey: ["analytics-overview", range],

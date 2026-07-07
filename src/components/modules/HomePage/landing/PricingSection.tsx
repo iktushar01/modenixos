@@ -45,7 +45,7 @@ export default function PricingSection() {
           </button>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {pricingPlans.map((plan, i) => (
             <AnimatedContent key={plan.name} distance={50} duration={0.75} delay={i * 0.1}>
               <PricingCard plan={plan} yearly={yearly} />

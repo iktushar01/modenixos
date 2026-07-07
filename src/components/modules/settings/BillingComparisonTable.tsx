@@ -11,13 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type {
-  BillingInterval,
-  BillingOverview,
-  ComparisonRow,
-  PaidPlanId,
-} from "@/actions/billing.actions";
-import { cn } from "@/lib/utils";
+import type { BillingOverview, ComparisonRow, PaidPlanId } from "@/actions/billing.actions";
 
 const PLAN_COLUMNS: Array<{ id: "FREE" | "PRO" | "PRO_PLUS" | "ULTRA"; label: string }> = [
   { id: "FREE", label: "Free" },
@@ -29,7 +23,6 @@ const PLAN_COLUMNS: Array<{ id: "FREE" | "PRO" | "PRO_PLUS" | "ULTRA"; label: st
 interface BillingComparisonTableProps {
   rows: ComparisonRow[];
   overview: BillingOverview;
-  interval: BillingInterval;
   yearly: boolean;
   onUpgrade: (plan: PaidPlanId) => void;
   upgradingPlan: PaidPlanId | null;
@@ -47,39 +40,27 @@ function CellValue({ value }: { value: string | boolean }) {
   return <span className="text-sm">{value}</span>;
 }
 
+function rowPriceMonthly(plan: "PRO" | "PRO_PLUS" | "ULTRA" | "FREE") {
+  if (plan === "FREE") return "$0";
+  const map = { PRO: "$1", PRO_PLUS: "$3", ULTRA: "$5" };
+  return map[plan];
+}
+
+function rowPriceYearly(plan: "PRO" | "PRO_PLUS" | "ULTRA" | "FREE") {
+  if (plan === "FREE") return "$0";
+  const map = { PRO: "$10", PRO_PLUS: "$30", ULTRA: "$50" };
+  return map[plan];
+}
+
 export function BillingComparisonTable({
   rows,
   overview,
-  interval,
   yearly,
   onUpgrade,
   upgradingPlan,
   paymentReady,
 }: BillingComparisonTableProps) {
   const currentPlan = overview.entitlements.plan;
-
-  const priceForPlan = (planId: "FREE" | "PRO" | "PRO_PLUS" | "ULTRA") => {
-    if (planId === "FREE") return "$0";
-    const plan = overview.comparisonRows.length
-      ? null
-      : null;
-    const limits = overview.limits;
-    void plan;
-    const fromPlans = {
-      PRO: overview.entitlements.limits,
-    };
-    void fromPlans;
-
-    const plansMap = {
-      PRO: { monthlyUsd: 1, yearlyUsd: 10 },
-      PRO_PLUS: { monthlyUsd: 3, yearlyUsd: 30 },
-      ULTRA: { monthlyUsd: 5, yearlyUsd: 50 },
-    } as const;
-
-    if (planId === "FREE") return "$0";
-    const p = plansMap[planId];
-    return yearly ? `$${p.yearlyUsd}/yr` : `$${p.monthlyUsd}/mo`;
-  };
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border/60">
@@ -113,16 +94,10 @@ export function BillingComparisonTable({
             </TableRow>
           ))}
           <TableRow>
-            <TableCell className="font-medium">
-              {yearly ? "Yearly price" : "Monthly price"}
-            </TableCell>
+            <TableCell className="font-medium">{yearly ? "Yearly price" : "Monthly price"}</TableCell>
             {PLAN_COLUMNS.map((col) => (
               <TableCell key={col.id} className="text-center text-sm font-semibold">
-                {col.id === "FREE"
-                  ? "$0"
-                  : yearly
-                    ? rowPriceYearly(col.id)
-                    : rowPriceMonthly(col.id)}
+                {yearly ? rowPriceYearly(col.id) : rowPriceMonthly(col.id)}
               </TableCell>
             ))}
           </TableRow>
@@ -153,16 +128,4 @@ export function BillingComparisonTable({
       </Table>
     </div>
   );
-}
-
-function rowPriceMonthly(plan: "PRO" | "PRO_PLUS" | "ULTRA" | "FREE") {
-  if (plan === "FREE") return "$0";
-  const map = { PRO: "$1", PRO_PLUS: "$3", ULTRA: "$5" };
-  return map[plan];
-}
-
-function rowPriceYearly(plan: "PRO" | "PRO_PLUS" | "ULTRA" | "FREE") {
-  if (plan === "FREE") return "$0";
-  const map = { PRO: "$10", PRO_PLUS: "$30", ULTRA: "$50" };
-  return map[plan];
 }

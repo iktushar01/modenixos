@@ -12,7 +12,7 @@ export interface Store {
   isPublished: boolean;
   isSuspended: boolean;
   isPreview?: boolean;
-  plan: "FREE" | "PRO" | "ENTERPRISE";
+  plan: "FREE" | "PRO" | "PRO_PLUS" | "ULTRA";
   theme?: Record<string, unknown> | null;
   shipping?: Record<string, unknown> | null;
   payments?: Record<string, unknown> | null;
