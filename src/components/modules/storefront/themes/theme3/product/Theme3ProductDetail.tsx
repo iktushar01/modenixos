@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
-import { ProductBreadcrumbs } from "../../theme2/product/ProductBreadcrumbs";
-import { ProductGallery } from "../../theme2/product/ProductGallery";
-import { ProductPurchasePanel } from "../../theme2/product/ProductPurchasePanel";
-import { ProductInfoTabs } from "../../theme2/product/ProductInfoTabs";
-import { ProductReviews } from "../../theme2/product/ProductReviews";
-import { RelatedProducts } from "../../theme2/product/RelatedProducts";
+import { ProductBreadcrumbs } from "../../theme1/product/ProductBreadcrumbs";
+import { ProductGallery } from "../../theme1/product/ProductGallery";
+import { ProductPurchasePanel } from "../../theme1/product/ProductPurchasePanel";
+import { ProductInfoTabs } from "../../theme1/product/ProductInfoTabs";
+import { ProductReviews } from "../../theme1/product/ProductReviews";
+import { RelatedProducts } from "../../theme1/product/RelatedProducts";
 
 export interface Theme3ProductDetailProps {
   store: Store;

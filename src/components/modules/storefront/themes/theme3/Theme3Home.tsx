@@ -6,21 +6,19 @@ import { Collection, Category, Product, Review, Store } from "@/types/store.type
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { hasShopFilters, parseShopFilters } from "@/lib/shopFilters";
 import { StorefrontThemeShell, useStorefrontTheme } from "../../StorefrontThemeShell";
-import { AnnouncementBar } from "../theme2/AnnouncementBar";
-import { StoreHeader } from "../theme2/StoreHeader";
-import {
-  BrandStorySection,
-  CategoriesSection,
-  CollectionsSection,
-  Footer,
-  NewsletterSection,
-  PromoSection,
-  QuickViewModal,
-  ReviewsSection,
-  ShopSection,
-  TrendingSection,
-} from "../theme2/sections";
-import { Theme2Hero } from "../theme2/Theme2Hero";
+import { AnnouncementBar } from "../theme1/AnnouncementBar";
+import { StoreHeader } from "../theme1/StoreHeader";
+import { Theme1Hero } from "../theme1/Theme1Hero";
+import { CategoriesGrid } from "../../CategoriesGrid";
+import { CollectionsGrid } from "../../CollectionsGrid";
+import { ShopSection } from "../../ShopSection";
+import { TrendingScroll } from "../../TrendingScroll";
+import { PromoBanner } from "../../PromoBanner";
+import { BrandStory } from "../../BrandStory";
+import { ReviewsCarousel } from "../../ReviewsCarousel";
+import { NewsletterSection } from "../../NewsletterSection";
+import { StoreFooter } from "../../StoreFooter";
+import { QuickViewModal } from "../../QuickViewModal";
 
 export interface Theme3HomeProps {
   store: Store;
@@ -108,16 +106,16 @@ function Theme3HomeContent({
       <AnnouncementBar theme={activeTheme} />
       <StoreHeader store={store} theme={activeTheme} categories={categories} />
 
-      {!isShopFiltered && <Theme2Hero store={store} theme={activeTheme} />}
+      {!isShopFiltered && <Theme1Hero store={store} theme={activeTheme} />}
       {!isShopFiltered && (
         <Theme3Highlights productCount={catalog.length} categoryCount={categories.length} />
       )}
 
       {activeTheme.sections.collections && !isShopFiltered && (
-        <CollectionsSection slug={store.slug} collections={collections} />
+        <CollectionsGrid slug={store.slug} collections={collections} />
       )}
       {activeTheme.sections.categories && !isShopFiltered && (
-        <CategoriesSection slug={store.slug} categories={categories} />
+        <CategoriesGrid slug={store.slug} categories={categories} />
       )}
 
       {activeTheme.sections.featured && (
@@ -130,11 +128,12 @@ function Theme3HomeContent({
           ratings={ratings}
           onQuickView={setQuickViewProduct}
           showFilters={isShopFiltered}
+          layout={isShopFiltered ? "grid" : "grid"}
         />
       )}
 
       {activeTheme.sections.trending && !isShopFiltered && trendingProducts.length > 0 && (
-        <TrendingSection
+        <TrendingScroll
           store={store}
           products={trendingProducts}
           theme={activeTheme}
@@ -144,18 +143,18 @@ function Theme3HomeContent({
       )}
 
       {activeTheme.sections.promo && !isShopFiltered && (
-        <PromoSection slug={store.slug} theme={activeTheme} fallbackText={promoFallback} />
+        <PromoBanner slug={store.slug} theme={activeTheme} fallbackText={promoFallback} />
       )}
 
-      {activeTheme.sections.reviews && !isShopFiltered && <ReviewsSection reviews={reviews} />}
+      {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
       {activeTheme.sections.brandStory && !isShopFiltered && (
-        <BrandStorySection theme={activeTheme} slug={store.slug} brandName={store.brandName} />
+        <BrandStory theme={activeTheme} slug={store.slug} brandName={store.brandName} />
       )}
       {activeTheme.sections.newsletter && !isShopFiltered && (
         <NewsletterSection brandName={store.brandName} theme={activeTheme} />
       )}
 
-      <Footer store={store} theme={activeTheme} categories={categories} />
+      <StoreFooter store={store} theme={activeTheme} categories={categories} />
 
       <QuickViewModal
         key={quickViewProduct?.id ?? "closed"}
