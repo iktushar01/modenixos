@@ -5,6 +5,67 @@ import { httpClient } from "@/lib/axios/httpClient";
 import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, AnalyticsCharts, Store } from "@/types/store.types";
 import { revalidatePath, revalidateTag } from "next/cache";
 
+const MEDIA_FIELDS = new Set([
+  "image",
+  "images",
+  "logo",
+  "logoDark",
+  "logoLight",
+  "brandStoryImage",
+  "heroSlides",
+  "avatar",
+  "favicon",
+]);
+
+function getApiOrigin(): string {
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!base) return "";
+  try {
+    return new URL(base).origin;
+  } catch {
+    return "";
+  }
+}
+
+function resolveMediaUrl(value: string, apiOrigin: string): string {
+  if (!value) return value;
+  if (/^(https?:)?\/\//i.test(value) || value.startsWith("data:") || value.startsWith("blob:")) {
+    return value;
+  }
+  if (!apiOrigin) return value;
+  if (value.startsWith("/")) return `${apiOrigin}${value}`;
+  if (value.startsWith("uploads/")) return `${apiOrigin}/${value}`;
+  return value;
+}
+
+function normalizeMediaUrls<T>(input: T): T {
+  const apiOrigin = getApiOrigin();
+  if (!apiOrigin || input == null) return input;
+
+  const walk = (value: unknown, parentKey?: string): unknown => {
+    if (typeof value === "string") {
+      if (!parentKey || !MEDIA_FIELDS.has(parentKey)) return value;
+      return resolveMediaUrl(value, apiOrigin);
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => walk(item, parentKey));
+    }
+    if (!value || typeof value !== "object") return value;
+
+    const next: Record<string, unknown> = {};
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      if (MEDIA_FIELDS.has(key)) {
+        next[key] = walk(child, key);
+      } else {
+        next[key] = walk(child, key);
+      }
+    }
+    return next;
+  };
+
+  return walk(input) as T;
+}
+
 async function revalidateStorefront() {
   try {
     const res = await httpClient.get<Store>("/stores/me");
@@ -356,7 +417,7 @@ async function fetchPublicStore(slug: string, cookieHeader?: string) {
   });
   if (!res.ok) return null;
   const json = await res.json();
-  return json.data;
+  return normalizeMediaUrls(json.data);
 }
 
 export const getPublicStoreAction = cache(async (slug: string) => {
@@ -381,7 +442,8 @@ export async function getPublicProductsAction(slug: string, params?: Record<stri
       tags: [`store-products-${slug}`, `store-products-${slug}-${JSON.stringify(params ?? {})}`],
     });
     if (!res.ok) return { data: [], meta: null };
-    return res.json();
+    const json = await res.json();
+    return normalizeMediaUrls(json);
   } catch {
     return { data: [], meta: null };
   }
@@ -394,7 +456,7 @@ export const getPublicProductAction = cache(async (slug: string, id: string) => 
     });
     if (!res.ok) return null;
     const json = await res.json();
-    return json.data;
+    return normalizeMediaUrls(json.data);
   } catch {
     return null;
   }
@@ -406,7 +468,8 @@ export async function getPublicCollectionsAction(slug: string, params?: Record<s
     tags: [`store-collections-${slug}`],
   });
   if (!res.ok) return { data: [], meta: null };
-  return res.json();
+  const json = await res.json();
+  return normalizeMediaUrls(json);
 }
 
 export async function getPublicCategoriesAction(slug: string, params?: Record<string, string>) {
@@ -415,7 +478,8 @@ export async function getPublicCategoriesAction(slug: string, params?: Record<st
     tags: [`store-categories-${slug}`],
   });
   if (!res.ok) return { data: [], meta: null };
-  return res.json();
+  const json = await res.json();
+  return normalizeMediaUrls(json);
 }
 
 export async function getPublicReviewsAction(slug: string, params?: Record<string, string>) {
@@ -425,7 +489,8 @@ export async function getPublicReviewsAction(slug: string, params?: Record<strin
     tags: [`store-reviews-${slug}`],
   });
   if (!res.ok) return { data: [], meta: null };
-  return res.json();
+  const json = await res.json();
+  return normalizeMediaUrls(json);
 }
 
 export async function placeOrderAction(slug: string, data: Record<string, unknown>) {

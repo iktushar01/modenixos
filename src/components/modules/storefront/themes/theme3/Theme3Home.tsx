@@ -1,24 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Collection, Category, Product, Review, Store } from "@/types/store.types";
 import { StorefrontThemeConfig } from "@/lib/storefront";
 import { hasShopFilters, parseShopFilters } from "@/lib/shopFilters";
+import { formatPrice } from "@/lib/currency";
+import { storeCategoryPath, storeCollectionPath, storeProductPath, storeShopPath } from "@/lib/storePaths";
 import { StorefrontThemeShell, useStorefrontTheme } from "../../StorefrontThemeShell";
-import { AnnouncementBar } from "../theme1/AnnouncementBar";
-import { StoreHeader } from "../theme1/StoreHeader";
-import { Theme1Hero } from "../theme1/Theme1Hero";
-import { CategoriesGrid } from "../../CategoriesGrid";
-import { CollectionsGrid } from "../../CollectionsGrid";
-import { ShopSection } from "../../ShopSection";
-import { TrendingScroll } from "../../TrendingScroll";
-import { PromoBanner } from "../../PromoBanner";
-import { BrandStory } from "../../BrandStory";
-import { ReviewsCarousel } from "../../ReviewsCarousel";
-import { NewsletterSection } from "../../NewsletterSection";
-import { StoreFooter } from "../../StoreFooter";
-import { QuickViewModal } from "../../QuickViewModal";
+import { StorefrontNavLink } from "../../StorefrontNavLink";
+import { AnnouncementBar } from "./AnnouncementBar";
+import { StoreHeader } from "./StoreHeader";
+import { Footer } from "./Footer";
 
 export interface Theme3HomeProps {
   store: Store;
@@ -27,55 +21,6 @@ export interface Theme3HomeProps {
   collections: Collection[];
   reviews: Review[];
   theme: StorefrontThemeConfig;
-}
-
-function buildRatingsMap(reviews: Review[]): Record<string, number> {
-  const sums: Record<string, { total: number; count: number }> = {};
-  for (const r of reviews) {
-    if (!sums[r.productId]) sums[r.productId] = { total: 0, count: 0 };
-    sums[r.productId].total += r.rating;
-    sums[r.productId].count += 1;
-  }
-  const out: Record<string, number> = {};
-  for (const [id, { total, count }] of Object.entries(sums)) {
-    out[id] = total / count;
-  }
-  return out;
-}
-
-function buildPromoFallback(products: Product[]): string | undefined {
-  let maxPct = 0;
-  for (const p of products) {
-    if (p.discountPrice && p.discountPrice < p.price) {
-      const pct = Math.round((1 - p.discountPrice / p.price) * 100);
-      if (pct > maxPct) maxPct = pct;
-    }
-  }
-  return maxPct > 0 ? `Save up to ${maxPct}% on selected drops this week` : undefined;
-}
-
-function Theme3Highlights({ productCount, categoryCount }: { productCount: number; categoryCount: number }) {
-  return (
-    <section className="sf-section py-6 sm:py-8">
-      <div className="grid gap-3 rounded-2xl border sf-border bg-card p-4 sm:grid-cols-3 sm:gap-4 sm:p-6">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Catalog</p>
-          <p className="mt-1 text-2xl font-semibold">{productCount}</p>
-          <p className="text-sm text-muted-foreground">Products curated for this season</p>
-        </div>
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Collections</p>
-          <p className="mt-1 text-2xl font-semibold">{categoryCount}</p>
-          <p className="text-sm text-muted-foreground">Departments to browse quickly</p>
-        </div>
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Delivery</p>
-          <p className="mt-1 text-2xl font-semibold">48H</p>
-          <p className="text-sm text-muted-foreground">Express shipping on featured picks</p>
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function Theme3HomeContent({
@@ -87,12 +32,10 @@ function Theme3HomeContent({
 }: Omit<Theme3HomeProps, "theme">) {
   const { activeTheme } = useStorefrontTheme();
   const searchParams = useSearchParams();
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const ratings = useMemo(() => buildRatingsMap(reviews), [reviews]);
   const filters = useMemo(() => parseShopFilters(searchParams), [searchParams]);
   const isShopFiltered = hasShopFilters(filters);
-  const trendingProducts = useMemo(() => catalog.slice(0, 8), [catalog]);
-  const promoFallback = buildPromoFallback(catalog);
+  const featured = useMemo(() => catalog.slice(0, 8), [catalog]);
+  const heroImage = store.banner || featured[0]?.images?.[0] || null;
 
   useEffect(() => {
     if (!isShopFiltered || typeof window === "undefined" || window.location.hash !== "#shop") return;
@@ -106,63 +49,107 @@ function Theme3HomeContent({
       <AnnouncementBar theme={activeTheme} />
       <StoreHeader store={store} theme={activeTheme} categories={categories} />
 
-      {!isShopFiltered && <Theme1Hero store={store} theme={activeTheme} />}
       {!isShopFiltered && (
-        <Theme3Highlights productCount={catalog.length} categoryCount={categories.length} />
+        <section className="sf-section grid gap-5 py-8 md:grid-cols-[1.2fr_1fr] md:py-10">
+          <div className="rounded-3xl border sf-border bg-card p-6 md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Theme 3 Signature</p>
+            <h1 className="mt-3 text-3xl font-semibold leading-tight md:text-5xl">{activeTheme.heroHeadline || store.brandName}</h1>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+              {activeTheme.heroSubtext || store.description || "A bold storefront designed around editorial product moments."}
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <StorefrontNavLink href={storeShopPath(store.slug)} className="rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground">
+                Explore catalog
+              </StorefrontNavLink>
+              <StorefrontNavLink
+                href={collections[0] ? storeCollectionPath(store.slug, collections[0].slug) : storeShopPath(store.slug)}
+                className="rounded-full border sf-border px-6 py-2 text-sm font-semibold"
+              >
+                Featured collection
+              </StorefrontNavLink>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-3xl border sf-border bg-card">
+            {heroImage ? (
+              <Image src={heroImage} alt={store.brandName} width={900} height={700} className="h-full min-h-[260px] w-full object-cover" unoptimized />
+            ) : (
+              <div className="grid h-full min-h-[260px] place-items-center text-sm text-muted-foreground">No hero image</div>
+            )}
+          </div>
+        </section>
       )}
 
-      {activeTheme.sections.collections && !isShopFiltered && (
-        <CollectionsGrid slug={store.slug} collections={collections} />
-      )}
-      {activeTheme.sections.categories && !isShopFiltered && (
-        <CategoriesGrid slug={store.slug} categories={categories} />
-      )}
-
-      {activeTheme.sections.featured && (
-        <ShopSection
-          store={store}
-          theme={activeTheme}
-          catalog={catalog}
-          categories={categories}
-          collections={collections}
-          ratings={ratings}
-          onQuickView={setQuickViewProduct}
-          showFilters={isShopFiltered}
-          layout={isShopFiltered ? "grid" : "grid"}
-        />
-      )}
-
-      {activeTheme.sections.trending && !isShopFiltered && trendingProducts.length > 0 && (
-        <TrendingScroll
-          store={store}
-          products={trendingProducts}
-          theme={activeTheme}
-          ratings={ratings}
-          onQuickView={setQuickViewProduct}
-        />
+      {!isShopFiltered && categories.length > 0 && (
+        <section className="sf-section pb-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Shop by category</h2>
+            <StorefrontNavLink href={storeShopPath(store.slug)} className="text-sm text-muted-foreground hover:underline">View all</StorefrontNavLink>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {categories.slice(0, 12).map((cat) => (
+              <StorefrontNavLink
+                key={cat.id}
+                href={storeCategoryPath(store.slug, cat.slug)}
+                className="rounded-full border sf-border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+              >
+                {cat.name}
+              </StorefrontNavLink>
+            ))}
+          </div>
+        </section>
       )}
 
-      {activeTheme.sections.promo && !isShopFiltered && (
-        <PromoBanner slug={store.slug} theme={activeTheme} fallbackText={promoFallback} />
+      <section id="shop" className="sf-section py-8">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold">{isShopFiltered ? "Filtered results" : "Curated picks"}</h2>
+          <StorefrontNavLink href={storeShopPath(store.slug)} className="text-sm text-muted-foreground hover:underline">Open full shop</StorefrontNavLink>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {featured.map((product) => {
+            const image = product.images[0] || store.banner || "";
+            const sale = product.discountPrice && product.discountPrice < product.price ? product.discountPrice : null;
+            return (
+              <StorefrontNavLink
+                key={product.id}
+                href={storeProductPath(store.slug, product.id)}
+                className="group overflow-hidden rounded-2xl border sf-border bg-card"
+              >
+                <div className="aspect-[3/4] overflow-hidden bg-muted/30">
+                  {image ? (
+                    <Image src={image} alt={product.name} width={500} height={700} className="h-full w-full object-cover transition group-hover:scale-105" unoptimized />
+                  ) : (
+                    <div className="grid h-full place-items-center text-xs text-muted-foreground">No image</div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <p className="line-clamp-1 text-sm font-semibold">{product.name}</p>
+                  <div className="mt-2 flex items-center gap-2 text-sm">
+                    <span className="font-semibold">{formatPrice(sale ?? product.price, store.currency)}</span>
+                    {sale && <span className="text-xs text-muted-foreground line-through">{formatPrice(product.price, store.currency)}</span>}
+                  </div>
+                </div>
+              </StorefrontNavLink>
+            );
+          })}
+        </div>
+      </section>
+
+      {!isShopFiltered && reviews.length > 0 && (
+        <section className="sf-section pb-8">
+          <h2 className="text-xl font-semibold">Customer voices</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {reviews.slice(0, 3).map((review) => (
+              <article key={review.id} className="rounded-2xl border sf-border bg-card p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Rating {review.rating}/5</p>
+                <p className="mt-2 line-clamp-4 text-sm">{review.comment}</p>
+                <p className="mt-3 text-xs text-muted-foreground">{review.customerName || "Verified customer"}</p>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
 
-      {activeTheme.sections.reviews && !isShopFiltered && <ReviewsCarousel reviews={reviews} />}
-      {activeTheme.sections.brandStory && !isShopFiltered && (
-        <BrandStory theme={activeTheme} slug={store.slug} brandName={store.brandName} />
-      )}
-      {activeTheme.sections.newsletter && !isShopFiltered && (
-        <NewsletterSection brandName={store.brandName} theme={activeTheme} />
-      )}
-
-      <StoreFooter store={store} theme={activeTheme} categories={categories} />
-
-      <QuickViewModal
-        key={quickViewProduct?.id ?? "closed"}
-        product={quickViewProduct}
-        store={store}
-        theme={activeTheme}
-        onClose={() => setQuickViewProduct(null)}
-      />
+      <Footer store={store} theme={activeTheme} categories={categories} />
     </>
   );
 }
