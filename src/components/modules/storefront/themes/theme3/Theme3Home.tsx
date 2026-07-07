@@ -142,7 +142,7 @@ function Theme3HomeContent({
               <article key={review.id} className="rounded-2xl border sf-border bg-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Rating {review.rating}/5</p>
                 <p className="mt-2 line-clamp-4 text-sm">{review.comment}</p>
-                <p className="mt-3 text-xs text-muted-foreground">{review.customerName || "Verified customer"}</p>
+                <p className="mt-3 text-xs text-muted-foreground">{review.guestName || "Verified customer"}</p>
               </article>
             ))}
           </div>

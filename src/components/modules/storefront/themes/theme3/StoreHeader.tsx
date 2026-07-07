@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Menu, Phone, Search, ShoppingBag, X } from "lucide-react";
 import { Category, Store } from "@/types/store.types";
 import { StorefrontThemeConfig, resolveStoreLogo, resolveStorefrontNavLinks } from "@/lib/storefront";
@@ -24,6 +25,7 @@ interface StoreHeaderProps {
 }
 
 export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [search, setSearch] = useState("");
   const { colorMode } = useStorefrontTheme();
@@ -43,7 +45,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const href = buildShopHref(store.slug, search.trim() ? { search: search.trim() } : undefined);
-    storefrontNav ? storefrontNav.navigate(href) : (window.location.href = href);
+    storefrontNav ? storefrontNav.navigate(href) : router.push(href);
     setMobileOpen(false);
   };
 

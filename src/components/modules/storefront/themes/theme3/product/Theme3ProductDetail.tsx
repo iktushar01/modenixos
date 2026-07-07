@@ -129,7 +129,7 @@ export function Theme3ProductDetail({
         </aside>
       </div>
 
-      <section className="mt-10 grid gap-6 md:grid-cols-2">
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
         <div className="rounded-2xl border sf-border bg-card p-5">
           <h2 className="text-lg font-semibold">Details</h2>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
@@ -144,7 +144,7 @@ export function Theme3ProductDetail({
           <div className="mt-3 space-y-3">
             {reviews.slice(0, 2).map((review) => (
               <article key={review.id} className="rounded-xl border sf-border p-3">
-                <p className="text-xs text-muted-foreground">{review.customerName || "Customer"} • {review.rating}/5</p>
+                <p className="text-xs text-muted-foreground">{review.guestName || "Customer"} • {review.rating}/5</p>
                 <p className="mt-1 text-sm">{review.comment}</p>
               </article>
             ))}
