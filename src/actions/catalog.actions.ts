@@ -2,7 +2,7 @@
 
 import { cache } from "react";
 import { httpClient } from "@/lib/axios/httpClient";
-import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, AnalyticsCharts, Store } from "@/types/store.types";
+import { Category, Collection, Product, Coupon, Order, Customer, Review, AnalyticsOverview, AnalyticsCharts, AnalyticsRangeKey, Store } from "@/types/store.types";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 const MEDIA_FIELDS = new Set([
@@ -354,13 +354,13 @@ export async function deleteCouponAction(id: string) {
 }
 
 // Analytics
-export async function getAnalyticsOverviewAction() {
-  const res = await httpClient.get<AnalyticsOverview>("/analytics/overview");
+export async function getAnalyticsOverviewAction(range: AnalyticsRangeKey = "30d") {
+  const res = await httpClient.get<AnalyticsOverview>("/analytics/overview", { params: { range } });
   return res.data;
 }
 
-export async function getAnalyticsChartsAction() {
-  const res = await httpClient.get<AnalyticsCharts>("/analytics/charts");
+export async function getAnalyticsChartsAction(range: AnalyticsRangeKey = "30d") {
+  const res = await httpClient.get<AnalyticsCharts>("/analytics/charts", { params: { range } });
   return res.data;
 }
 

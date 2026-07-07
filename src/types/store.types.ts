@@ -263,15 +263,67 @@ export interface Coupon {
   isActive: boolean;
 }
 
+export type AnalyticsRangeKey = "today" | "7d" | "30d" | "90d";
+
 export interface AnalyticsPeriodMetrics {
   label: string;
+  days?: number;
   revenue: number;
   orders: number;
   newCustomers: number;
   aov: number;
+  visitors?: number;
+  conversionRate?: number | null;
+}
+
+export interface AnalyticsTopCustomer {
+  email: string;
+  name: string;
+  orderCount: number;
+  revenue: number;
+  lastOrderAt: string;
+}
+
+export interface AnalyticsPaymentBreakdown {
+  method: string;
+  count: number;
+  revenue: number;
+}
+
+export interface AnalyticsGeoBreakdown {
+  country: string;
+  orders: number;
+  revenue: number;
+}
+
+export interface AnalyticsMarketingStats {
+  couponRedemptions: number;
+  couponDiscountTotal: number;
+  newsletterSubscribersNew: number;
+  newsletterCampaignsSent: number;
+  newsletterSubscribersTotal: number;
+  newsletterCampaignsTotal: number;
+}
+
+export interface AnalyticsFulfillmentStats {
+  shippedOrders: number;
+  avgHoursToShip: number | null;
+}
+
+export interface AnalyticsFunnel {
+  visitors: number;
+  productViews: number;
+  addToCart: number;
+  checkoutStarted: number;
+  purchases: number;
+  conversionRate: number | null;
+  addToCartRate: number | null;
+  checkoutRate: number | null;
 }
 
 export interface AnalyticsOverview {
+  range: AnalyticsRangeKey;
+  capabilities: { advancedAnalytics: boolean };
   revenue: number;
   orders: number;
   products: number;
@@ -285,6 +337,7 @@ export interface AnalyticsOverview {
     revenue: number;
     share: number;
   }>;
+  today: AnalyticsPeriodMetrics;
   period: AnalyticsPeriodMetrics;
   previousPeriod: AnalyticsPeriodMetrics;
   changes: {
@@ -292,8 +345,16 @@ export interface AnalyticsOverview {
     orders: number | null;
     newCustomers: number | null;
     aov: number | null;
+    visitors?: number | null;
+    conversionRate?: number | null;
   };
   orderStatusBreakdown: Array<{ status: Order["status"]; count: number }>;
+  topCustomers: AnalyticsTopCustomer[];
+  paymentMethodBreakdown: AnalyticsPaymentBreakdown[];
+  geoBreakdown: AnalyticsGeoBreakdown[];
+  marketing: AnalyticsMarketingStats;
+  fulfillment: AnalyticsFulfillmentStats;
+  funnel: AnalyticsFunnel | null;
 }
 
 export interface AnalyticsCharts {

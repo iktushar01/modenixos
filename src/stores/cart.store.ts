@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { OrderItem } from "@/types/store.types";
+import { trackStorefrontEvent } from "@/lib/storefrontAnalytics";
 
 interface CartItem extends OrderItem {
   storeId: string;
@@ -51,6 +52,9 @@ export const useCartStore = create<CartState>()(
           });
         } else {
           set({ items: [...get().items, item] });
+        }
+        if (item.storeSlug) {
+          trackStorefrontEvent(item.storeSlug, "add_to_cart", { productId: item.productId });
         }
       },
       removeItem: (productId, storeId, size, color) => {
