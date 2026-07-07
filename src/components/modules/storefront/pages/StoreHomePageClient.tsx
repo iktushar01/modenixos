@@ -11,6 +11,7 @@ import { useStorefront } from "@/components/modules/storefront/StorefrontContext
 import { StorefrontHomeClient } from "@/components/modules/storefront/StorefrontHomeClient";
 import { StorefrontHomeSkeleton } from "@/components/modules/storefront/skeletons";
 import { Collection, Product, Review } from "@/types/store.types";
+import { StorefrontTemplateId } from "@/lib/storefront";
 
 import {
   parseShopFilters,
@@ -42,6 +43,27 @@ export default function StoreHomePageClient({
   const filterKey = useMemo(() => searchParams.toString(), [searchParams]);
   const filteredShop = useMemo(() => hasActiveShopFiltersFromParams(searchParams), [searchParams]);
   const homeFilters = useMemo(() => parseShopFilters(searchParams), [searchParams]);
+  const previewTheme = searchParams.get("previewTheme");
+
+  const resolvedStore = useMemo(() => {
+    if (!store) return null;
+    if (
+      previewTheme !== "theme1" &&
+      previewTheme !== "theme2" &&
+      previewTheme !== "theme3"
+    ) {
+      return store;
+    }
+
+    const theme = (store.theme ?? {}) as Record<string, unknown>;
+    return {
+      ...store,
+      theme: {
+        ...theme,
+        templateId: previewTheme as StorefrontTemplateId,
+      },
+    };
+  }, [store, previewTheme]);
 
   useEffect(() => {
     if (!storeReady || !store) return;
@@ -79,7 +101,7 @@ export default function StoreHomePageClient({
     };
   }, [slug, store, storeReady, filterKey, filteredShop, homeFilters]);
 
-  if (!storeReady || !store) {
+  if (!storeReady || !resolvedStore) {
     return <StorefrontHomeSkeleton />;
   }
 
@@ -90,7 +112,7 @@ export default function StoreHomePageClient({
   return (
     <div className={isRefreshing ? "pointer-events-none opacity-95 transition-opacity duration-200" : undefined}>
       <StorefrontHomeClient
-        store={store}
+        store={resolvedStore}
         catalog={catalog}
         categories={categories}
         collections={collections}

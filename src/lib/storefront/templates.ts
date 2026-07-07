@@ -1,5 +1,5 @@
 import { StorefrontTemplateId } from "./types";
-import { DEMO_STORE_PATH } from "@/lib/app-config";
+import { THEME_DEMO_PATHS } from "@/lib/app-config";
 
 export interface StorefrontTemplateOption {
   id: StorefrontTemplateId;
@@ -10,9 +10,9 @@ export interface StorefrontTemplateOption {
 }
 
 const TEMPLATE_DEMO_PATHS: Record<StorefrontTemplateId, string> = {
-  theme1: process.env.NEXT_PUBLIC_THEME1_DEMO_PATH ?? DEMO_STORE_PATH,
-  theme2: process.env.NEXT_PUBLIC_THEME2_DEMO_PATH ?? DEMO_STORE_PATH,
-  theme3: process.env.NEXT_PUBLIC_THEME3_DEMO_PATH ?? DEMO_STORE_PATH,
+  theme1: process.env.NEXT_PUBLIC_THEME1_DEMO_PATH ?? THEME_DEMO_PATHS.theme1,
+  theme2: process.env.NEXT_PUBLIC_THEME2_DEMO_PATH ?? THEME_DEMO_PATHS.theme2,
+  theme3: process.env.NEXT_PUBLIC_THEME3_DEMO_PATH ?? THEME_DEMO_PATHS.theme3,
 };
 
 export const STOREFRONT_TEMPLATES: StorefrontTemplateOption[] = [

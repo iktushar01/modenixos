@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { DEMO_STORE_PATH } from "@/lib/app-config";
+import { THEME_DEMO_PATHS } from "@/lib/app-config";
 
 export default function DemoRedirectPage() {
-  redirect(DEMO_STORE_PATH);
+  redirect(THEME_DEMO_PATHS.theme1);
 }
