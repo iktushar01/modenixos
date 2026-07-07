@@ -4,7 +4,7 @@ export interface StorefrontBrandingConfig {
   logoMode: StorefrontLogoMode;
 }
 
-export type StorefrontTemplateId = "theme1" | "theme2";
+export type StorefrontTemplateId = "theme1" | "theme2" | "theme3";
 export type StorefrontColorMode = "light" | "dark";
 export type StorefrontNavSource = "manual" | "categories" | "both";
 

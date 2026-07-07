@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, LayoutTemplate, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Check, LayoutTemplate } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { STOREFRONT_TEMPLATES, StorefrontTemplateId } from "@/lib/storefront";
@@ -31,34 +32,11 @@ function ThemePreviewMock({ active }: { active?: boolean }) {
   );
 }
 
-function ComingSoonCard() {
-  return (
-    <div
-      className="flex flex-col rounded-xl border border-dashed border-border bg-muted/20 p-4 text-left opacity-70"
-      aria-disabled
-    >
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
-          <Sparkles className="h-4 w-4" />
-        </div>
-        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-          Coming soon
-        </Badge>
-      </div>
-      <ThemePreviewMock />
-      <h3 className="mt-3 text-sm font-medium text-muted-foreground">New theme</h3>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-        More storefront layouts are on the way.
-      </p>
-    </div>
-  );
-}
-
 export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Choose the layout for your public shop. Additional themes will be added here soon.
+        Choose the layout for your public shop and preview each theme before selecting it.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -66,10 +44,8 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
           const isActive = value === template.id;
 
           return (
-            <button
+            <div
               key={template.id}
-              type="button"
-              onClick={() => onChange(template.id)}
               className={cn(
                 "flex flex-col rounded-xl border bg-card p-4 text-left transition-colors",
                 isActive
@@ -77,29 +53,51 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
                   : "border-border hover:bg-muted/50",
               )}
             >
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                  <LayoutTemplate className="h-4 w-4" />
+              <button type="button" onClick={() => onChange(template.id)} className="text-left">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                    <LayoutTemplate className="h-4 w-4" />
+                  </div>
+                  {isActive ? (
+                    <Badge variant="secondary" className="gap-1 text-[10px] px-1.5 py-0">
+                      <Check className="h-3 w-3" />
+                      Active
+                    </Badge>
+                  ) : null}
                 </div>
-                {isActive ? (
-                  <Badge variant="secondary" className="gap-1 text-[10px] px-1.5 py-0">
-                    <Check className="h-3 w-3" />
-                    Active
-                  </Badge>
-                ) : null}
+
+                <ThemePreviewMock active={isActive} />
+
+                <h3 className="mt-3 text-sm font-medium tracking-tight">{template.label}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {template.description}
+                </p>
+              </button>
+
+              <div className="mt-3 flex items-center justify-between">
+                <Link
+                  href={template.demoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  Demo website
+                </Link>
+                {!isActive ? (
+                  <button
+                    type="button"
+                    onClick={() => onChange(template.id)}
+                    className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    Use theme
+                  </button>
+                ) : (
+                  <span className="text-xs font-medium text-muted-foreground">Selected</span>
+                )}
               </div>
-
-              <ThemePreviewMock active={isActive} />
-
-              <h3 className="mt-3 text-sm font-medium tracking-tight">{template.label}</h3>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                {template.description}
-              </p>
-            </button>
+            </div>
           );
         })}
-
-        <ComingSoonCard />
       </div>
     </div>
   );

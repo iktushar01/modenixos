@@ -9,6 +9,8 @@ import { AnnouncementBar as Theme2AnnouncementBar } from "./theme2/AnnouncementB
 import { StoreHeader as Theme2StoreHeader } from "./theme2/StoreHeader";
 import { Theme2Home } from "./theme2";
 import { Theme2ProductDetail } from "./theme2/product/Theme2ProductDetail";
+import { Theme3Home } from "./theme3";
+import { Theme3ProductDetail } from "./theme3/product/Theme3ProductDetail";
 import { StoreFooter as Theme1StoreFooter } from "../StoreFooter";
 import { Footer as Theme2Footer } from "./theme2/sections/Footer";
 
@@ -56,16 +58,23 @@ const THEME_SHELL: Record<StorefrontTemplateId, ThemeShellComponents> = {
     StoreHeader: Theme2StoreHeader,
     StoreFooter: Theme2Footer,
   },
+  theme3: {
+    AnnouncementBar: Theme2AnnouncementBar,
+    StoreHeader: Theme2StoreHeader,
+    StoreFooter: Theme2Footer,
+  },
 };
 
 const THEME_HOME: Record<StorefrontTemplateId, ComponentType<ThemeHomeProps>> = {
   theme1: Theme1Home,
   theme2: Theme2Home,
+  theme3: Theme3Home,
 };
 
 const THEME_PRODUCT_DETAIL: Record<StorefrontTemplateId, ComponentType<ThemeProductDetailProps>> = {
   theme1: Theme1ProductDetail,
   theme2: Theme2ProductDetail,
+  theme3: Theme3ProductDetail,
 };
 
 export function resolveThemeShell(templateId: StorefrontTemplateId): ThemeShellComponents {
