@@ -61,3 +61,39 @@ export function storeContactUsPath(slug: string) {
 export function storeTrackPath(slug: string) {
   return `${storeBasePath(slug)}/track`;
 }
+
+export function storeCheckoutPath(slug: string) {
+  return `${storeBasePath(slug)}/checkout`;
+}
+
+export function storeCartPath(slug: string) {
+  return `${storeBasePath(slug)}/cart`;
+}
+
+export function storeOrderConfirmationPath(
+  slug: string,
+  params: { order: string; email: string; tranId?: string },
+) {
+  const search = new URLSearchParams({
+    order: params.order,
+    email: params.email,
+  });
+  if (params.tranId) search.set("tran_id", params.tranId);
+  return `${storeBasePath(slug)}/orders/confirmation?${search.toString()}`;
+}
+
+export function storePaymentFailedPath(slug: string, params?: { order?: string; tranId?: string }) {
+  const search = new URLSearchParams();
+  if (params?.order) search.set("order", params.order);
+  if (params?.tranId) search.set("tran_id", params.tranId);
+  const qs = search.toString();
+  return qs ? `${storeBasePath(slug)}/payment/failed?${qs}` : `${storeBasePath(slug)}/payment/failed`;
+}
+
+export function storePaymentCancelledPath(slug: string, params?: { order?: string; tranId?: string }) {
+  const search = new URLSearchParams();
+  if (params?.order) search.set("order", params.order);
+  if (params?.tranId) search.set("tran_id", params.tranId);
+  const qs = search.toString();
+  return qs ? `${storeBasePath(slug)}/payment/cancelled?${qs}` : `${storeBasePath(slug)}/payment/cancelled`;
+}
