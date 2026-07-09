@@ -39,7 +39,7 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
         Choose the layout for your public shop and preview each theme before selecting it.
       </p>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {STOREFRONT_TEMPLATES.map((template) => {
           const isActive = value === template.id;
 
@@ -53,7 +53,7 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
                   : "border-border hover:bg-muted/50",
               )}
             >
-              <button type="button" onClick={() => onChange(template.id)} className="text-left">
+              <button type="button" onClick={() => onChange(template.id)} className="text-left p-2">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
                     <LayoutTemplate className="h-4 w-4" />
@@ -68,8 +68,8 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
 
                 <ThemePreviewMock active={isActive} />
 
-                <h3 className="mt-3 text-sm font-medium tracking-tight">{template.label}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                <h3 className="mt-3 text-sm md:text-base font-medium tracking-tight">{template.label}</h3>
+                <p className="mt-1 text-xs md:text-sm leading-relaxed text-muted-foreground">
                   {template.description}
                 </p>
               </button>
@@ -79,7 +79,7 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
                   href={template.demoUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                  className="text-xs md:text-sm font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Demo website
                 </Link>
@@ -87,12 +87,12 @@ export function StoreThemePicker({ value, onChange }: StoreThemePickerProps) {
                   <button
                     type="button"
                     onClick={() => onChange(template.id)}
-                    className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                    className="text-xs md:text-sm font-medium text-muted-foreground hover:text-foreground"
                   >
                     Use theme
                   </button>
                 ) : (
-                  <span className="text-xs font-medium text-muted-foreground">Selected</span>
+                  <span className="text-xs md:text-sm font-medium text-muted-foreground">Selected</span>
                 )}
               </div>
             </div>
