@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { CurrencySelect } from "@/components/shared/CurrencySelect";
 import { createStoreAction } from "@/actions/store.actions";
 import { APP_NAME } from "@/lib/app-config";
@@ -54,13 +56,23 @@ export default function CreateBrandForm() {
   };
 
   return (
-    <Card className="mx-auto max-w-lg">
-      <CardHeader>
-        <CardTitle>Create your brand</CardTitle>
-        <CardDescription>Welcome to {APP_NAME}. Set up your fashion brand to get started.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <main className="relative flex min-h-screen w-full items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
+      <nav className="absolute top-4 left-4 z-20">
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="group gap-1 text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            Back
+          </Button>
+        </Link>
+      </nav>
+
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <CardTitle>Create your brand</CardTitle>
+          <CardDescription>Welcome to {APP_NAME}. Set up your fashion brand to get started.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="brandName">Brand Name</Label>
             <Input
@@ -99,8 +111,9 @@ export default function CreateBrandForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Creating..." : "Create Brand"}
           </Button>
-        </form>
-      </CardContent>
-    </Card>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
   );
 }
