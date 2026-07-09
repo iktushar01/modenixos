@@ -262,7 +262,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   alt={store.brandName}
                   width={180}
                   height={56}
-                  className="mx-auto h-7 w-auto max-w-full object-contain sm:h-8 md:h-9"
+                  className="mx-auto h-9 w-auto max-w-full object-contain sm:h-11 md:h-12"
                   unoptimized
                 />
               ) : (

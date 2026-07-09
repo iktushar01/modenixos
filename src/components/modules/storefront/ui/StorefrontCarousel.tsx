@@ -84,7 +84,7 @@ export function StorefrontCarousel({ children, className }: StorefrontCarouselPr
   return (
     <Carousel
       opts={{ align: "start", containScroll: "trimSnaps" }}
-      className={cn("w-full", className)}
+      className={cn("w-full overflow-hidden", className)}
     >
       {children}
     </Carousel>
@@ -105,7 +105,7 @@ export function StorefrontCarouselTrack({
   return (
     <div
       className={cn(
-        "sf-section sf-carousel-fade-left sf-carousel-fade-right mt-6 w-full max-w-full overflow-hidden sm:mt-8",
+        "sf-section sf-carousel-fade-left sf-carousel-fade-right mt-6 w-full max-w-full overflow-visible sm:mt-8 [&>[data-slot='carousel-content']]:overflow-visible",
         className,
       )}
     >
