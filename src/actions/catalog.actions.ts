@@ -520,8 +520,29 @@ export async function placeOrderAction(slug: string, data: Record<string, unknow
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.message ?? "Failed to place order");
+
+  // Read raw response for improved logging in production environments
+  const text = await res.text();
+  let json: any = null;
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch (e) {
+    json = { message: text };
+  }
+
+  if (!res.ok) {
+    // Log request/response details to server logs for debugging
+    // This will appear in Vercel/Next server logs when running in production
+    // eslint-disable-next-line no-console
+    console.error("placeOrderAction failed", {
+      status: res.status,
+      url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/public/stores/${slug}/orders`,
+      requestBody: data,
+      responseBody: json,
+    });
+    throw new Error(json?.message ?? "Failed to place order");
+  }
+
   return json.data as Order;
 }
 
