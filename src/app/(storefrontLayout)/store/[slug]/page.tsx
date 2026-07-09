@@ -9,8 +9,8 @@ import {
 } from "@/actions/catalog.actions";
 import { Collection, Product, Review } from "@/types/store.types";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const store = await getPublicStoreAction(slug);
   const title = store?.brandName ?? "Store";
   const description = store?.description ?? undefined;
@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function StorePage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   const [catalogRes, collectionsRes, reviewsRes] = await Promise.all([
     getPublicProductsAction(slug, { limit: "36", sortBy: "sortOrder", sortOrder: "asc" }),

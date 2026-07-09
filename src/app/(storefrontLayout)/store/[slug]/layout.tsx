@@ -12,15 +12,16 @@ import { ReactNode } from "react";
 
 type PageProps = {
     children: ReactNode;
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 };
 
 export async function generateMetadata({
   params,
 }: Omit<PageProps, "children">): Promise<Metadata> {
-  const store = await getPublicStoreAction(params.slug);
+  const { slug } = await params;
+  const store = await getPublicStoreAction(slug);
   return {
     icons: {
       icon: store?.favicon ?? STORE_FAVICON,
@@ -32,7 +33,7 @@ export default async function StoreSlugLayout({
   children,
   params,
 }: PageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const cookieStore = await cookies();
   const initialColorMode = readColorModeFromCookie(cookieStore, slug);
 
