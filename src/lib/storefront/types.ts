@@ -2,6 +2,7 @@ export type StorefrontLogoMode = "single" | "dual";
 
 export interface StorefrontBrandingConfig {
   logoMode: StorefrontLogoMode;
+  favicon: string | null;
 }
 
 export type StorefrontTemplateId = "theme1" | "theme2" | "theme3";

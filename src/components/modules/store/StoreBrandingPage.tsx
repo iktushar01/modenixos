@@ -48,6 +48,8 @@ export default function StoreBrandingPage() {
   const [clearLogoDark, setClearLogoDark] = useState(false);
   const [heroSlides, setHeroSlides] = useState<HeroSlideItem[]>([]);
   const [slidesDirty, setSlidesDirty] = useState(false);
+  const [faviconFile, setFaviconFile] = useState<File | null>(null);
+  const [clearFavicon, setClearFavicon] = useState(false);
 
   const savedLogoMode = useMemo<StorefrontLogoMode>(() => {
     if (!store) return "single";
@@ -68,7 +70,14 @@ export default function StoreBrandingPage() {
   const logoModeDirty = logoMode !== savedLogoMode;
 
   const hasPendingChanges = Boolean(
-    logoFile || clearLogo || logoDarkFile || clearLogoDark || slidesDirty || logoModeDirty,
+    logoFile ||
+      clearLogo ||
+      logoDarkFile ||
+      clearLogoDark ||
+      slidesDirty ||
+      logoModeDirty ||
+      faviconFile ||
+      clearFavicon,
   );
 
   useEffect(() => {
@@ -115,6 +124,16 @@ export default function StoreBrandingPage() {
         fd.append("logo", "");
       }
 
+      if (faviconFile) {
+        if (faviconFile.size === 0) {
+          toast.error("Favicon file is empty — try cropping again");
+          return;
+        }
+        fd.append("favicon", faviconFile, faviconFile.name);
+      } else if (clearFavicon) {
+        fd.append("favicon", "");
+      }
+
       if (logoMode === "dual") {
         if (logoDarkFile) {
           if (logoDarkFile.size === 0) {
@@ -156,6 +175,8 @@ export default function StoreBrandingPage() {
       setLogoDarkFile(null);
       setClearLogoDark(false);
       setSlidesDirty(false);
+      setFaviconFile(null);
+      setClearFavicon(false);
       await refetch();
     } catch (err) {
       console.error("Branding save failed:", err);
@@ -183,6 +204,32 @@ export default function StoreBrandingPage() {
           ) : undefined
         }
       />
+
+      <StoreSection
+        eyebrow="Identity"
+        title="Favicon"
+        description="A small icon that appears in the browser tab."
+      >
+        <ImageCropUpload
+          label="Favicon"
+          description="A square image that appears in the browser tab."
+          defaultAspect={1}
+          ratioOptions={[{ label: "1:1", value: 1 }]}
+          allowShapeSelection={false}
+          existingUrl={clearFavicon ? null : store?.favicon}
+          outputFileName="favicon.png"
+          previewClassName="aspect-square h-[64px] w-[64px] shrink-0"
+          dropzoneClassName="aspect-square h-[64px] w-[64px] shrink-0"
+          onCroppedFile={(file) => {
+            setFaviconFile(file);
+            if (file) setClearFavicon(false);
+          }}
+          onClear={() => {
+            setClearFavicon(true);
+            setFaviconFile(null);
+          }}
+        />
+      </StoreSection>
 
       <StoreSection
         eyebrow="Identity"

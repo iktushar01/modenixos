@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { Metadata } from "next";
 import { StorefrontContextProvider } from "@/components/modules/storefront/StorefrontContext";
 import { StorefrontInnerLayout } from "@/components/modules/storefront/StorefrontInnerLayout";
 import { StorefrontLayoutClient } from "@/components/modules/storefront/StorefrontLayoutClient";
@@ -6,15 +7,29 @@ import { StorefrontAnalyticsTracker } from "@/components/modules/storefront/Stor
 import { readColorModeFromCookie } from "@/lib/storefront/colorModeStorage";
 import { getPublicStoreAction, getPublicCategoriesAction } from "@/actions/catalog.actions";
 import { Category, Store } from "@/types/store.types";
+import { STORE_FAVICON } from "@/lib/app-config";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const store = await getPublicStoreAction(params.slug);
+  return {
+    icons: {
+      icon: store?.favicon ?? STORE_FAVICON,
+    },
+  };
+}
 
 export default async function StoreSlugLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
   const cookieStore = await cookies();
   const initialColorMode = readColorModeFromCookie(cookieStore, slug);
 

@@ -218,6 +218,7 @@ export function parseStorefrontTheme(store: Store): StorefrontThemeConfig {
       brandingRaw.logoMode === "dual" || (store.logoDark && brandingRaw.logoMode !== "single")
         ? ("dual" as const)
         : ("single" as const),
+    favicon: store.favicon ?? null,
   };
 
   return {
