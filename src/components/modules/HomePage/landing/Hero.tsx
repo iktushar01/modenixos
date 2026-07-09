@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
-import { motion, useReducedMotion, AnimatePresence } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME, DEMO_STORE_PATH } from "@/lib/app-config";
@@ -28,25 +28,6 @@ export default function Hero() {
   return (
     <section className="mkt-hero relative overflow-hidden border-b border-border/60 pb-20 pt-14 md:pb-28 md:pt-20">
       <div className="homepage-grid pointer-events-none absolute inset-0 opacity-40" aria-hidden />
-
-      {/* ambient floating gradient blobs — signature slow drift */}
-      {!reduceMotion && (
-        <>
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute -top-24 left-[8%] h-72 w-72 rounded-full bg-primary/10 blur-[110px]"
-            animate={{ x: [0, 30, -12, 0], y: [0, -22, 10, 0] }}
-            transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute bottom-[-4rem] right-[6%] h-80 w-80 rounded-full bg-primary/[0.06] blur-[130px]"
-            animate={{ x: [0, -26, 14, 0], y: [0, 16, -14, 0] }}
-            transition={{ duration: 23, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </>
-      )}
-
       <div className="mkt-section relative grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div className="text-center lg:text-left">
           <motion.div {...fade} transition={{ duration: 0.5 }}>
@@ -62,17 +43,7 @@ export default function Hero() {
             className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]"
           >
             One platform to power your{" "}
-            <motion.span
-              className="homepage-gradient-text inline-block bg-[length:200%_auto] bg-clip-text"
-              animate={
-                reduceMotion
-                  ? undefined
-                  : { backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }
-              }
-              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-            >
-              entire commerce operation
-            </motion.span>
+            <span className="homepage-gradient-text">entire commerce operation</span>
           </motion.h1>
 
           <motion.p
@@ -89,27 +60,10 @@ export default function Hero() {
             transition={{ duration: 0.55, delay: 0.18 }}
             className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start"
           >
-            <Button
-              asChild
-              size="lg"
-              className={cn(heroBtnClass, "group relative gap-2 overflow-hidden shadow-lg shadow-primary/15")}
-            >
+            <Button asChild size="lg" className={`${heroBtnClass} gap-2 shadow-lg shadow-primary/15`}>
               <StartFreeLink>
-                <span className="relative z-10 flex items-center gap-2">
-                  Start free
-                  <ArrowRight
-                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
-                    aria-hidden
-                  />
-                </span>
-                {!reduceMotion && (
-                  <motion.span
-                    aria-hidden
-                    className="absolute inset-y-0 left-0 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                    animate={{ x: ["-140%", "260%"] }}
-                    transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.6, ease: "easeInOut" }}
-                  />
-                )}
+                Start free
+                <ArrowRight className="h-4 w-4" aria-hidden />
               </StartFreeLink>
             </Button>
             <Button asChild size="lg" variant="outline" className={`${heroBtnClass} gap-2 homepage-glass`}>
@@ -135,37 +89,23 @@ export default function Hero() {
             role="tablist"
             aria-label="Preview industry"
           >
-            {industries.map((ind) => {
-              const isActive = activeIndustry.id === ind.id;
-              return (
-                <button
-                  key={ind.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActiveIndustry(ind)}
-                  className={cn(
-                    "relative rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-200",
-                    isActive
-                      ? "border-primary/40 text-primary shadow-sm"
-                      : "border-border/60 bg-background/50 text-muted-foreground hover:border-border hover:text-foreground"
-                  )}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="hero-industry-tab"
-                      className="absolute inset-0 rounded-full bg-primary/10"
-                      transition={
-                        reduceMotion
-                          ? { duration: 0 }
-                          : { type: "spring", stiffness: 420, damping: 34 }
-                      }
-                    />
-                  )}
-                  <span className="relative z-10">{ind.label}</span>
-                </button>
-              );
-            })}
+            {industries.map((ind) => (
+              <button
+                key={ind.id}
+                type="button"
+                role="tab"
+                aria-selected={activeIndustry.id === ind.id}
+                onClick={() => setActiveIndustry(ind)}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs font-medium transition-all duration-200",
+                  activeIndustry.id === ind.id
+                    ? "border-primary/40 bg-primary/10 text-primary shadow-sm"
+                    : "border-border/60 bg-background/50 text-muted-foreground hover:border-border hover:text-foreground"
+                )}
+              >
+                {ind.label}
+              </button>
+            ))}
           </motion.div>
         </div>
 

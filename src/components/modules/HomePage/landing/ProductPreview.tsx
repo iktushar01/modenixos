@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, LayoutDashboard, Package, ShoppingCart, Store, TrendingUp } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import AnimatedContent from "@/components/AnimatedContent";
 import { cn } from "@/lib/utils";
@@ -20,13 +20,14 @@ function DashboardPanel({ industry }: { industry: IndustryPreview }) {
       key={industry.id}
       initial={reduceMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
       transition={{ duration: 0.35 }}
       className="space-y-3"
     >
       <div className="grid gap-3 sm:grid-cols-3">
-        <RevenueCard label="Revenue" value={industry.revenue} trend={industry.revenueTrend} icon={TrendingUp} />
-        <RevenueCard label="Orders" value={industry.orders} trend={industry.ordersTrend} icon={ShoppingCart} />
-        <RevenueCard label="Products" value={industry.products} trend="Active" icon={Package} />
+        <RevenueCard index={0} label="Revenue" value={industry.revenue} trend={industry.revenueTrend} icon={TrendingUp} />
+        <RevenueCard index={1} label="Orders" value={industry.orders} trend={industry.ordersTrend} icon={ShoppingCart} />
+        <RevenueCard index={2} label="Products" value={industry.products} trend="Active" icon={Package} />
       </div>
       <div className="mkt-glass-card rounded-xl p-4">
         <div className="mb-2 flex items-center justify-between text-xs">
@@ -58,6 +59,7 @@ function StorefrontPanel({ industry }: { industry: IndustryPreview }) {
       key={`store-${industry.id}`}
       initial={reduceMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
       transition={{ duration: 0.35 }}
       className="space-y-3"
     >
@@ -70,14 +72,21 @@ function StorefrontPanel({ industry }: { industry: IndustryPreview }) {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {industry.storefrontProducts.map((product) => (
-          <div key={product.name} className="overflow-hidden rounded-xl border border-border/50 bg-card/80">
-            <div className={cn("aspect-[4/5] bg-gradient-to-br", product.gradient)} />
+        {industry.storefrontProducts.map((product, i) => (
+          <motion.div
+            key={product.name}
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: reduceMotion ? 0 : 0.08 + i * 0.05 }}
+            whileHover={reduceMotion ? undefined : { y: -3 }}
+            className="group overflow-hidden rounded-xl border border-border/50 bg-card/80 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/10"
+          >
+            <div className={cn("aspect-[4/5] bg-gradient-to-br transition-transform duration-500 ease-out group-hover:scale-105", product.gradient)} />
             <div className="p-2.5">
               <p className="truncate text-[11px] font-medium">{product.name}</p>
               <p className="text-[10px] text-muted-foreground">{product.price}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>
@@ -89,10 +98,16 @@ const viewTabs = [
   { id: "storefront" as const, label: "Customer storefront", icon: Store },
 ];
 
+const descriptions: Record<"dashboard" | "storefront", string> = {
+  dashboard: "Manage products, orders, customers, and revenue from a single command center designed for operators.",
+  storefront: "Deliver a premium shopping experience with collections, product pages, cart, and secure checkout.",
+};
+
 export default function ProductPreview() {
   const [industryId, setIndustryId] = useState<IndustryPreview["id"]>("fashion");
   const [view, setView] = useState<"dashboard" | "storefront">("dashboard");
   const industry = industries.find((i) => i.id === industryId) ?? industries[0]!;
+  const reduceMotion = useReducedMotion();
 
   return (
     <section id="product-tour" className="scroll-mt-28 border-b border-border/60 py-20 md:py-28">
@@ -107,41 +122,59 @@ export default function ProductPreview() {
 
         <AnimatedContent distance={40} duration={0.75} delay={0.1}>
           <div className="mt-10 flex flex-wrap justify-center gap-2">
-            {industries.map((ind) => (
-              <button
-                key={ind.id}
-                type="button"
-                onClick={() => setIndustryId(ind.id)}
-                className={cn(
-                  "rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200",
-                  industryId === ind.id
-                    ? "border-primary/40 bg-primary text-primary-foreground shadow-md"
-                    : "border-border/60 bg-background/60 text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {ind.label}
-              </button>
-            ))}
+            {industries.map((ind) => {
+              const isActive = industryId === ind.id;
+              return (
+                <button
+                  key={ind.id}
+                  type="button"
+                  onClick={() => setIndustryId(ind.id)}
+                  className={cn(
+                    "relative rounded-full border px-4 py-1.5 text-sm font-medium transition-colors duration-200",
+                    isActive
+                      ? "border-primary/40 text-primary-foreground shadow-md"
+                      : "border-border/60 bg-background/60 text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="product-preview-industry-pill"
+                      className="absolute inset-0 -z-10 rounded-full bg-primary"
+                      transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
+                    />
+                  )}
+                  {ind.label}
+                </button>
+              );
+            })}
           </div>
 
           <div className="mkt-glass-panel mt-8 overflow-hidden rounded-2xl">
             <div className="flex flex-col gap-1 border-b border-border/50 bg-muted/20 p-2 sm:flex-row">
-              {viewTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setView(tab.id)}
-                  className={cn(
-                    "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
-                    view === tab.id
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <tab.icon className="h-4 w-4" aria-hidden />
-                  {tab.label}
-                </button>
-              ))}
+              {viewTabs.map((tab) => {
+                const isActive = view === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setView(tab.id)}
+                    className={cn(
+                      "relative flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200",
+                      isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="product-preview-view-tab"
+                        className="absolute inset-0 -z-10 rounded-xl bg-background shadow-sm"
+                        transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
+                      />
+                    )}
+                    <tab.icon className="h-4 w-4" aria-hidden />
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
@@ -149,27 +182,42 @@ export default function ProductPreview() {
                 <p className="mkt-label mb-2">{industry.label}</p>
                 <h3 className="text-2xl font-semibold tracking-tight">{industry.storeName}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{industry.tagline}</p>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {view === "dashboard"
-                    ? "Manage products, orders, customers, and revenue from a single command center designed for operators."
-                    : "Deliver a premium shopping experience with collections, product pages, cart, and secure checkout."}
-                </p>
-                <Button asChild className="mt-6 w-fit gap-2 rounded-xl">
+                <div className="relative mt-4 min-h-[2.5rem]">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.p
+                      key={view}
+                      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+                      transition={{ duration: 0.25 }}
+                      className="text-sm leading-relaxed text-muted-foreground"
+                    >
+                      {descriptions[view]}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
+                <Button asChild className="group mt-6 w-fit gap-2 rounded-xl">
                   {view === "storefront" ? (
                     <Link href={DEMO_STORE_PATH} target="_blank">
                       View live demo
-                      <ArrowRight className="h-4 w-4" aria-hidden />
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
                     </Link>
                   ) : (
                     <StartFreeLink>
                       Start free
-                      <ArrowRight className="h-4 w-4" aria-hidden />
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
                     </StartFreeLink>
                   )}
                 </Button>
               </div>
               <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 backdrop-blur-sm">
-                {view === "dashboard" ? <DashboardPanel industry={industry} /> : <StorefrontPanel industry={industry} />}
+                <AnimatePresence mode="wait" initial={false}>
+                  {view === "dashboard" ? (
+                    <DashboardPanel key="dashboard" industry={industry} />
+                  ) : (
+                    <StorefrontPanel key="storefront" industry={industry} />
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
