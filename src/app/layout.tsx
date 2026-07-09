@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: "Full-stack project starter with role-based auth",
+  description: "ModenixOS - The operating system for modern commerce",
   icons: {
     icon: LOGO_LIGHT,
     apple: LOGO_LIGHT,
