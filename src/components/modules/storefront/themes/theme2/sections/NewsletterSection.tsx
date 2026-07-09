@@ -51,7 +51,7 @@ export function NewsletterSection({ brandName, storeSlug, theme }: NewsletterSec
             placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="sf-t2-newsletter-input sf-input h-12 flex-1 rounded-none border-0 bg-transparent"
+            className="sf-t2-newsletter-input sf-input h-12 flex-1 rounded-none border sm:border-0 bg-transparent"
           />
           <button type="submit" disabled={loading} className="sf-t2-btn-primary h-12 shrink-0 px-8">
             {loading ? "Joining…" : "Join"}

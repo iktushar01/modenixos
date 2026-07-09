@@ -39,7 +39,7 @@ export function Footer({ store, theme, categories = [] }: FooterProps) {
   return (
     <footer className="sf-t2-footer border-t sf-border">
       <div className="sf-section py-14 md:py-16">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
           <div className="lg:col-span-2">
             {logoUrl ? (
               <Image

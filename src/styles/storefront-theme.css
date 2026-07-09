@@ -1410,6 +1410,15 @@
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
+@media (max-width: 1023px) {
+  .storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-actions {
+    opacity: 1;
+    transform: translateY(0);
+    background: color-mix(in srgb, var(--sf-bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+}
+
 .storefront-theme[data-storefront-theme="theme2"] .sf-t2-product-card:hover .sf-t2-product-actions {
   opacity: 1;
   transform: translateY(0);

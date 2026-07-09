@@ -105,7 +105,7 @@ function ProductCardInner({ product, store, rating, onQuickView, layout = "grid"
                 <Button
                   size="sm"
                   variant="outline"
-                  className="sf-btn-outline sf-btn-interactive sf-touch-target h-10 w-10 shrink-0 rounded-full px-0"
+                  className="sf-btn-outline sf-btn-interactive sf-touch-target hidden sm:inline-flex h-10 w-10 shrink-0 rounded-full px-0"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

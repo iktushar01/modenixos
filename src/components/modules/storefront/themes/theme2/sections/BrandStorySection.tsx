@@ -22,7 +22,7 @@ export function BrandStorySection({ theme, slug, brandName }: BrandStorySectionP
         <div className="mx-auto max-w-3xl text-center">
           <p className="sf-t2-label">About</p>
           <h2 className="sf-t2-section-title mt-3">{theme.brandStoryTitle}</h2>
-          <p className="sf-t2-brand-copy mt-6">{theme.brandStoryContent}</p>
+          <p className="sf-t2-brand-copy mt-6 text-sm sm:text-base">{theme.brandStoryContent}</p>
           <StorefrontNavLink href={shopHref} className="sf-t2-link-underline mt-8 inline-flex">
             Discover the collection
           </StorefrontNavLink>

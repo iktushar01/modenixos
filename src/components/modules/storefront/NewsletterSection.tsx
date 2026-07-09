@@ -60,7 +60,7 @@ export function NewsletterSection({ brandName, storeSlug, theme }: NewsletterSec
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="sf-input h-12 flex-1 border-0 bg-transparent sm:rounded-full"
+              className="sf-input h-12 flex-1 border sm:border-0 bg-transparent sm:rounded-full"
             />
             <Button
               type="submit"

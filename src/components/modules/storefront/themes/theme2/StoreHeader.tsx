@@ -214,7 +214,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                 unoptimized
               />
             ) : (
-              <span className="sf-display-lg text-base sm:text-lg">{store.brandName}</span>
+              <span className="sf-display-lg text-base sm:text-lg block truncate max-w-[45vw] sm:max-w-xs">{store.brandName}</span>
             )}
           </StorefrontNavLink>
 

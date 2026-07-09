@@ -66,9 +66,9 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
           <StorefrontNavLink href={base} className="shrink-0">
             {logoUrl ? (
-              <Image src={logoUrl} alt={store.brandName} width={160} height={48} className="h-8 w-auto object-contain" unoptimized />
+              <Image src={logoUrl} alt={store.brandName} width={160} height={48} className="h-8 w-auto object-contain max-w-[45vw] sm:max-w-[160px]" unoptimized />
             ) : (
-              <span className="text-lg font-semibold tracking-[0.08em] uppercase">{store.brandName}</span>
+              <span className="text-lg font-semibold tracking-[0.08em] uppercase block truncate max-w-[45vw] sm:max-w-xs">{store.brandName}</span>
             )}
           </StorefrontNavLink>
 

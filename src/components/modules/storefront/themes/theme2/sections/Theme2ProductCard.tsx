@@ -116,10 +116,10 @@ function Theme2ProductCardInner({
           </div>
         </StorefrontNavLink>
         <div className="sf-t2-product-actions">
-          <button type="button" className="sf-t2-btn-primary w-full" onClick={handleAddToCart}>
+          <button type="button" className="sf-t2-btn-primary w-full text-xs py-1.5 sm:py-2" onClick={handleAddToCart}>
             Add to bag
           </button>
-          <button type="button" className="sf-t2-btn-ghost w-full" onClick={() => onQuickView(product)}>
+          <button type="button" className="sf-t2-btn-ghost w-full hidden sm:block" onClick={() => onQuickView(product)}>
             Quick view
           </button>
         </div>

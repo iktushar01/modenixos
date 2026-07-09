@@ -61,7 +61,7 @@ export function StoreFooter({ store, theme, categories = [] }: StoreFooterProps)
   return (
     <footer className="sf-border sf-footer border-t">
       <div className="sf-section w-full py-14 md:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-10 xl:gap-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-12 lg:gap-10 xl:gap-14">
           {/* Brand column */}
           <div className="lg:pr-4">
             {logoUrl ? (

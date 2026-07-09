@@ -49,7 +49,7 @@ export function BrandStory({ theme, slug, brandName }: BrandStoryProps) {
           <div className="flex flex-col justify-center px-6 py-8 sm:px-8 sm:py-10 md:px-12 md:py-14 lg:px-14">
             <p className="sf-eyebrow">Our story</p>
             <h2 className="sf-display-lg mt-3 max-w-lg">{theme.brandStoryTitle}</h2>
-            <p className="sf-muted-fg sf-body-lg mt-6 max-w-xl leading-relaxed">
+            <p className="sf-muted-fg sf-body-lg mt-6 max-w-xl leading-relaxed text-sm sm:text-base md:text-lg">
               {theme.brandStoryContent}
             </p>
             <div className="mt-8">

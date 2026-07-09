@@ -36,17 +36,17 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
 
   return (
     <section className="sf-theme2-hero sf-section w-full border-b sf-border">
-      <div className="grid min-h-[min(78vh,720px)] gap-0 lg:grid-cols-2">
-        <div className="flex flex-col justify-center px-6 py-12 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
-          <p className="sf-eyebrow mb-4">{store.brandName}</p>
+      <div className="grid min-h-[min(70vh,720px)] gap-0 lg:grid-cols-2">
+        <div className="flex flex-col justify-center px-4 py-10 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
+          <p className="sf-eyebrow mb-3 sm:mb-4">{store.brandName}</p>
           <h1 className="sf-display-xl max-w-xl">{theme.heroHeadline}</h1>
-          <p className="sf-body-lg sf-muted-fg mt-5 max-w-md leading-relaxed">{theme.heroSubtext}</p>
+          <p className="sf-body-lg sf-muted-fg mt-4 sm:mt-5 max-w-md leading-relaxed text-sm sm:text-base md:text-lg">{theme.heroSubtext}</p>
           <Link
             href={shopHref}
-            className="sf-btn-primary mt-8 inline-flex w-fit items-center gap-2 px-6 py-3 text-sm font-medium"
+            className="sf-btn-primary mt-6 sm:mt-8 inline-flex w-fit items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium"
           >
             Shop collection
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </Link>
           {slides.length > 1 && (
             <div className="mt-10 flex gap-2">
