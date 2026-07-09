@@ -8,12 +8,18 @@ import { readColorModeFromCookie } from "@/lib/storefront/colorModeStorage";
 import { getPublicStoreAction, getPublicCategoriesAction } from "@/actions/catalog.actions";
 import { Category, Store } from "@/types/store.types";
 import { STORE_FAVICON } from "@/lib/app-config";
+import { ReactNode } from "react";
+
+type PageProps = {
+    children: ReactNode;
+    params: {
+        slug: string;
+    };
+};
 
 export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+}: Omit<PageProps, "children">): Promise<Metadata> {
   const store = await getPublicStoreAction(params.slug);
   return {
     icons: {
@@ -25,10 +31,7 @@ export async function generateMetadata({
 export default async function StoreSlugLayout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: { slug: string };
-}) {
+}: PageProps) {
   const { slug } = params;
   const cookieStore = await cookies();
   const initialColorMode = readColorModeFromCookie(cookieStore, slug);
