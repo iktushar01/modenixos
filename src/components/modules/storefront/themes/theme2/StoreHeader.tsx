@@ -290,8 +290,8 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
       </header>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-sheet-safe w-full max-w-md border-r p-0">
-          <div className="flex h-full min-h-0 flex-col">
+        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-sheet-safe h-full w-full max-w-md border-r p-0 overflow-hidden">
+          <div className="flex h-full min-h-0 flex-col overflow-hidden">
             <div className="sf-sheet-sticky top-0 z-20 border-b sf-border bg-inherit px-6 py-5">
               <div className="flex items-center justify-between">
                 <span className="sf-display-lg text-2xl">{store.brandName}</span>
@@ -311,7 +311,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             </div>
 
             <div className="sf-sheet-scrollable min-h-0 flex-1 overflow-y-auto px-6 py-4">
-              <nav className="flex flex-col gap-1">
+              <nav className="flex min-h-full flex-col gap-1">
               {menuItems.map((item) =>
                 item.type === "group" ? (
                   <div key={item.label} className="border-b sf-border py-2">
