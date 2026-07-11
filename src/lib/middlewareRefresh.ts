@@ -38,18 +38,20 @@ export const applyAuthCookies = (
     response: NextResponse,
     tokens: RefreshedTokens,
 ): void => {
+    const isProduction = process.env.NODE_ENV === "production";
+
     response.cookies.set("accessToken", tokens.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         path: "/",
         maxAge: getTokenMaxAge(tokens.accessToken, 60 * 60 * 24),
     });
 
     response.cookies.set("refreshToken", tokens.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         path: "/",
         maxAge: getTokenMaxAge(tokens.refreshToken, 7 * 24 * 60 * 60),
     });
@@ -57,11 +59,21 @@ export const applyAuthCookies = (
     if (tokens.sessionToken) {
         response.cookies.set("better-auth.session_token", tokens.sessionToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             path: "/",
             maxAge: 24 * 60 * 60,
         });
+
+        if (isProduction) {
+            response.cookies.set("__Secure-better-auth.session_token", tokens.sessionToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                path: "/",
+                maxAge: 24 * 60 * 60,
+            });
+        }
     }
 };
 

@@ -2,6 +2,24 @@
 
 import { cookies } from "next/headers";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const getCookieConfig = (maxAgeInSeconds: number, httpOnly = true) => ({
+    httpOnly,
+    secure: isProduction,
+    sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+    path: "/",
+    maxAge: maxAgeInSeconds,
+});
+
+const getCookieNames = (name: string) => {
+    if (name === "better-auth.session_token" && isProduction) {
+        return [name, "__Secure-better-auth.session_token"] as const;
+    }
+
+    return [name] as const;
+};
+
 /**
  * Sets a secure cookie in the browser
  */
@@ -12,14 +30,11 @@ export const setCookie = async (
     httpOnly : boolean = true
 ) => {
     const cookieStore = await cookies();
+    const config = getCookieConfig(maxAgeInSeconds, httpOnly);
 
-    cookieStore.set(name, value, {
-        httpOnly : httpOnly,
-        secure : process.env.NODE_ENV === "production", // Better for local dev
-        sameSite : "lax",
-        path : "/",
-        maxAge : maxAgeInSeconds,
-    });
+    for (const cookieName of getCookieNames(name)) {
+        cookieStore.set(cookieName, value, config);
+    }
 };
 
 /**
@@ -27,7 +42,15 @@ export const setCookie = async (
  */
 export const getCookie = async (name : string) => {
     const cookieStore = await cookies();
-    return cookieStore.get(name)?.value;
+
+    for (const cookieName of getCookieNames(name)) {
+        const value = cookieStore.get(cookieName)?.value;
+        if (value) {
+            return value;
+        }
+    }
+
+    return undefined;
 };
 
 /**
@@ -35,5 +58,8 @@ export const getCookie = async (name : string) => {
  */
 export const deleteCookie = async (name : string) => {
     const cookieStore = await cookies();
-    cookieStore.delete(name);
+
+    for (const cookieName of getCookieNames(name)) {
+        cookieStore.delete(cookieName);
+    }
 };
