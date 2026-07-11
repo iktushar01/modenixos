@@ -64,11 +64,11 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             <Menu className="h-5 w-5" />
           </Button>
 
-          <StorefrontNavLink href={base} className="shrink-0">
+          <StorefrontNavLink href={base} className="group shrink-0 cursor-pointer">
             {logoUrl ? (
-              <Image src={logoUrl} alt={store.brandName} width={160} height={48} className="h-8 w-auto object-contain max-w-[45vw] sm:max-w-[160px]" unoptimized />
+              <Image src={logoUrl} alt={store.brandName} width={160} height={48} className="h-8 w-auto max-w-[45vw] object-contain transition-opacity group-hover:opacity-80 sm:max-w-[160px]" unoptimized />
             ) : (
-              <span className="text-lg font-semibold tracking-[0.08em] uppercase block truncate max-w-[45vw] sm:max-w-xs">{store.brandName}</span>
+              <span className="text-lg font-semibold uppercase tracking-[0.08em] block max-w-[45vw] truncate transition-opacity group-hover:opacity-80 sm:max-w-xs">{store.brandName}</span>
             )}
           </StorefrontNavLink>
 

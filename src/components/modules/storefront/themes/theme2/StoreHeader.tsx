@@ -203,18 +203,18 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             <Menu className="h-5 w-5" />
           </Button>
 
-          <StorefrontNavLink href={base} className="shrink-0">
+          <StorefrontNavLink href={base} className="group shrink-0 cursor-pointer">
             {logoUrl ? (
               <Image
                 src={logoUrl}
                 alt={store.brandName}
                 width={140}
                 height={44}
-                className="h-7 w-auto max-w-[140px] object-contain sm:h-8"
+                className="h-7 w-auto max-w-[140px] object-contain transition-opacity group-hover:opacity-80 sm:h-8"
                 unoptimized
               />
             ) : (
-              <span className="sf-display-lg text-base sm:text-lg block truncate max-w-[45vw] sm:max-w-xs">{store.brandName}</span>
+              <span className="sf-display-lg sm:text-lg block max-w-[45vw] truncate text-base transition-opacity group-hover:opacity-80 sm:max-w-xs">{store.brandName}</span>
             )}
           </StorefrontNavLink>
 

@@ -254,7 +254,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             {/* Center: logo (absolute — does not affect row height) */}
             <StorefrontNavLink
               href={base}
-              className="absolute left-1/2 top-1/2 z-[5] max-w-[42vw] -translate-x-1/2 -translate-y-1/2 sm:max-w-[220px] md:max-w-[260px]"
+              className="group absolute left-1/2 top-1/2 z-[5] max-w-[42vw] -translate-x-1/2 -translate-y-1/2 cursor-pointer sm:max-w-[220px] md:max-w-[260px]"
             >
               {logoUrl ? (
                 <Image
@@ -262,11 +262,11 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
                   alt={store.brandName}
                   width={180}
                   height={56}
-                  className="mx-auto h-9 w-auto max-w-full object-contain sm:h-11 md:h-12"
+                  className="mx-auto h-9 w-auto max-w-full object-contain transition-opacity group-hover:opacity-80 sm:h-11 md:h-12"
                   unoptimized
                 />
               ) : (
-                <span className="sf-display-lg block truncate text-center text-base sm:text-lg md:text-xl">
+                <span className="sf-display-lg block truncate text-center text-base transition-opacity group-hover:opacity-80 sm:text-lg md:text-xl">
                   {store.brandName}
                 </span>
               )}
