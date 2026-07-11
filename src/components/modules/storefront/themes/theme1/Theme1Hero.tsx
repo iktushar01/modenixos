@@ -39,27 +39,28 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
 
   return (
     <section className="relative w-full overflow-hidden">
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={activeSrc}
-          initial={{ opacity: 0, scale: 1.02 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full"
-        >
-          <Image
-            src={activeSrc}
-            alt=""
-            width={1600}
-            height={900}
-            priority
-            sizes="100vw"
-            className="w-full h-auto object-contain md:object-cover"
-            unoptimized
-          />
-        </motion.div>
-      </AnimatePresence>
+      <div className="relative w-full aspect-[16/9] overflow-hidden">
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={activeSrc}
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={activeSrc}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-contain md:object-cover"
+              unoptimized
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {slides.length > 1 && (
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1 sm:gap-2 md:bottom-6">
