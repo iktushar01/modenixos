@@ -312,91 +312,92 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
             <div className="sf-sheet-scrollable min-h-0 flex-1 overflow-y-auto px-6 py-4">
               <nav className="flex min-h-full flex-col gap-1">
-              {menuItems.map((item) =>
-                item.type === "group" ? (
-                  <div key={item.label} className="border-b sf-border py-2">
+                {menuItems.map((item) =>
+                  item.type === "group" ? (
+                    <div key={item.label} className="border-b sf-border py-2">
+                      <StorefrontNavLink
+                        href={item.href}
+                        className="block py-2 text-sm font-medium"
+                        onNavigate={() => setMobileOpen(false)}
+                      >
+                        {item.label}
+                      </StorefrontNavLink>
+                      <div className="ml-3 space-y-1 border-l pl-3 sf-border">
+                        {item.children.map((child) => (
+                          <StorefrontNavLink
+                            key={child.href}
+                            href={child.href}
+                            className="block py-2 text-sm sf-muted-fg"
+                            onNavigate={() => setMobileOpen(false)}
+                          >
+                            {child.label}
+                          </StorefrontNavLink>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
                     <StorefrontNavLink
+                      key={`m-${item.label}-${item.href}`}
                       href={item.href}
-                      className="block py-2 text-sm font-medium"
+                      className="border-b sf-border py-4 text-sm"
                       onNavigate={() => setMobileOpen(false)}
                     >
                       {item.label}
                     </StorefrontNavLink>
-                    <div className="ml-3 space-y-1 border-l pl-3 sf-border">
-                      {item.children.map((child) => (
-                        <StorefrontNavLink
-                          key={child.href}
-                          href={child.href}
-                          className="block py-2 text-sm sf-muted-fg"
-                          onNavigate={() => setMobileOpen(false)}
-                        >
-                          {child.label}
-                        </StorefrontNavLink>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <StorefrontNavLink
-                    key={`m-${item.label}-${item.href}`}
-                    href={item.href}
-                    className="border-b sf-border py-4 text-sm"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </StorefrontNavLink>
-                ),
+                  ),
+                )}
+              </nav>
+
+              {theme.header.showSearch && (
+                <form onSubmit={handleSearch} className="mt-6 flex gap-2">
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search..."
+                    className="sf-input flex-1"
+                  />
+                  <Button type="submit" size="icon" className="sf-btn-secondary shrink-0">
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </form>
               )}
-            </nav>
-
-            {theme.header.showSearch && (
-              <form onSubmit={handleSearch} className="mt-6 flex gap-2">
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search..."
-                  className="sf-input flex-1"
-                />
-                <Button type="submit" size="icon" className="sf-btn-secondary shrink-0">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </form>
-            )}
-
             </div>
+
             <div className="sf-sheet-sticky-bottom bottom-0 z-20 border-t sf-border bg-inherit px-6 py-4">
               <div className="space-y-4">
                 {isLoggedIn && customerCtx?.customer ? (
-                <>
-                  <p className="text-sm font-medium">{customerCtx.customer.name}</p>
+                  <>
+                    <p className="text-sm font-medium">{customerCtx.customer.name}</p>
+                    <StorefrontNavLink
+                      href={`${base}/account/orders`}
+                      className="block text-sm sf-link"
+                      onNavigate={() => setMobileOpen(false)}
+                    >
+                      Orders
+                    </StorefrontNavLink>
+                    <button
+                      type="button"
+                      className="block text-left text-sm sf-link"
+                      onClick={async () => {
+                        setMobileOpen(false);
+                        await customerCtx.logout();
+                        router.push(base);
+                      }}
+                    >
+                      Log out
+                    </button>
+                  </>
+                ) : (
                   <StorefrontNavLink
-                    href={`${base}/account/orders`}
+                    href={`${base}/account/login`}
                     className="block text-sm sf-link"
                     onNavigate={() => setMobileOpen(false)}
                   >
-                    Orders
+                    Log in
                   </StorefrontNavLink>
-                  <button
-                    type="button"
-                    className="block text-left text-sm sf-link"
-                    onClick={async () => {
-                      setMobileOpen(false);
-                      await customerCtx.logout();
-                      router.push(base);
-                    }}
-                  >
-                    Log out
-                  </button>
-                </>
-              ) : (
-                <StorefrontNavLink
-                  href={`${base}/account/login`}
-                  className="block text-sm sf-link"
-                  onNavigate={() => setMobileOpen(false)}
-                >
-                  Log in
-                </StorefrontNavLink>
-              )}
-              <StorefrontThemeToggle />
+                )}
+                <StorefrontThemeToggle />
+              </div>
             </div>
           </div>
         </StorefrontSheetContent>
