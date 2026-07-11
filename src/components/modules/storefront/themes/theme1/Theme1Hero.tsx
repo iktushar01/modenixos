@@ -32,41 +32,34 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
   }, [slides.length]);
 
   if (slides.length === 0) {
-    return <section className="sf-muted sf-hero-height w-full" aria-hidden />;
+    return <section className="sf-muted w-full" aria-hidden />;
   }
 
   const activeSrc = slides[index]!;
 
   return (
-    <section
-      className="relative w-full overflow-hidden h-[35vh] sm:h-[45vh] md:h-[65vh] lg:h-[85vh]"
-    >
-      <div className="absolute inset-0">
-        <AnimatePresence mode="sync">
-          <motion.div
-            key={activeSrc}
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={activeSrc}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className={cn(
-                "object-contain object-center md:object-cover",
-                slides.length > 1 && "sf-hero-ken-burns",
-              )}
-              unoptimized
-            />
-          </motion.div>
-        </AnimatePresence>
-        <div className="sf-hero-overlay pointer-events-none absolute inset-0" />
-      </div>
+    <section className="relative w-full overflow-hidden">
+      <AnimatePresence mode="sync">
+        <motion.div
+          key={activeSrc}
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full"
+        >
+          <Image
+            src={activeSrc}
+            alt=""
+            width={1600}
+            height={900}
+            priority
+            sizes="100vw"
+            className="w-full h-auto object-contain md:object-cover"
+            unoptimized
+          />
+        </motion.div>
+      </AnimatePresence>
 
       {slides.length > 1 && (
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1 sm:gap-2 md:bottom-6">

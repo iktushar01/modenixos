@@ -71,9 +71,9 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
           )}
         </div>
 
-        <div className="relative h-[35vh] sm:h-[45vh] md:h-[65vh] lg:h-[85vh] overflow-hidden">
+        <div className="relative overflow-hidden w-full">
           {slides.length === 0 ? (
-            <div className="sf-muted absolute inset-0" aria-hidden />
+            <div className="sf-muted w-full" aria-hidden />
           ) : (
             <>
               <AnimatePresence mode="sync">
@@ -83,20 +83,20 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0"
+                  className="w-full"
                 >
                   <Image
                     src={slides[index]!}
                     alt=""
-                    fill
+                    width={1600}
+                    height={900}
                     priority
                     sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-contain object-center md:object-cover"
+                    className="w-full h-auto object-contain md:object-cover"
                     unoptimized
                   />
                 </motion.div>
               </AnimatePresence>
-              <div className="sf-hero-overlay pointer-events-none absolute inset-0" />
             </>
           )}
         </div>
