@@ -3,10 +3,12 @@
 import { StorefrontNavLink } from "@/components/modules/storefront/StorefrontNavLink";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Category, Store } from "@/types/store.types";
 import { useCartStore } from "@/stores/cart.store";
+import { toast } from "sonner";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
 import { useStoreCartItems, useStoreCartTotal } from "@/hooks/useStoreCart";
 import { formatPrice } from "@/lib/storefrontTheme";
@@ -19,6 +21,47 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
   const total = useStoreCartTotal(store.id);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
+
+  const [productStocks, setProductStocks] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    const ids = Array.from(new Set(items.map((i) => i.productId)));
+    if (ids.length === 0) {
+      setProductStocks({});
+      return;
+    }
+
+    (async () => {
+      try {
+        const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+        const results = await Promise.all(
+          ids.map(async (id) => {
+            try {
+              const res = await fetch(`${base}/public/stores/${store.slug}/products/${id}`);
+              if (!res.ok) return [id, null] as const;
+              const json = await res.json();
+              return [id, Number(json?.data?.stock ?? null)] as const;
+            } catch {
+              return [id, null] as const;
+            }
+          }),
+        );
+        if (cancelled) return;
+        const map: Record<string, number> = {};
+        for (const [id, stock] of results) {
+          if (stock != null) map[id] = stock;
+        }
+        setProductStocks(map);
+      } catch {
+        // ignore
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items, store.slug]);
 
   const itemCount = items.reduce((n, i) => n + i.quantity, 0);
   const base = `/store/${store.slug}`;
@@ -139,9 +182,14 @@ export default function CartClient({ store, categories = [] }: { store: Store; c
                           variant="ghost"
                           size="icon"
                           className="h-9 w-9 rounded-full"
-                          onClick={() =>
-                            updateQuantity(item.productId, store.id, item.quantity + 1, item.size, item.color)
-                          }
+                          onClick={() => {
+                            const stock = productStocks[item.productId];
+                            if (typeof stock === "number" && item.quantity + 1 > stock) {
+                              toast.error("Not enough stock");
+                              return;
+                            }
+                            updateQuantity(item.productId, store.id, item.quantity + 1, item.size, item.color);
+                          }}
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </Button>
