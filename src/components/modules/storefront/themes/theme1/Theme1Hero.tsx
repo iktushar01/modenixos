@@ -39,8 +39,7 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
 
   return (
     <section
-      className="sf-hero-height relative w-full overflow-hidden"
-      style={{ "--sf-hero-h": heroHeight } as CSSProperties}
+      className="relative w-full overflow-hidden h-[35vh] sm:h-[45vh] md:h-[65vh] lg:h-[85vh]"
     >
       <div className="absolute inset-0">
         <AnimatePresence mode="sync">
@@ -58,7 +57,10 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
               fill
               priority
               sizes="100vw"
-              className={cn("object-cover", slides.length > 1 && "sf-hero-ken-burns")}
+              className={cn(
+                "object-contain object-center md:object-cover",
+                slides.length > 1 && "sf-hero-ken-burns",
+              )}
               unoptimized
             />
           </motion.div>

@@ -71,7 +71,7 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
           )}
         </div>
 
-        <div className="relative min-h-[280px] overflow-hidden sm:min-h-[360px] lg:min-h-0">
+        <div className="relative h-[35vh] sm:h-[45vh] md:h-[65vh] lg:h-[85vh] overflow-hidden">
           {slides.length === 0 ? (
             <div className="sf-muted absolute inset-0" aria-hidden />
           ) : (
@@ -91,7 +91,7 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
+                    className="object-contain object-center md:object-cover"
                     unoptimized
                   />
                 </motion.div>
