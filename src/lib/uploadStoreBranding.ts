@@ -7,18 +7,12 @@ interface ApiPayload {
 }
 
 /**
- * Upload store branding (logo / hero slides) directly from the browser.
- * Avoids Next.js Server Action multipart corruption on v15.5+.
+ * Upload store branding through a same-origin API route so the request
+ * inherits the server-side auth cookies and multipart uploads work reliably.
  */
 export async function uploadStoreBranding(storeId: string, formData: FormData): Promise<Store> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (!baseUrl) {
-    throw new Error("API base URL is not configured");
-  }
-
-  const response = await fetch(`${baseUrl}/stores/${storeId}`, {
+  const response = await fetch(`/api/stores/${storeId}`, {
     method: "PATCH",
-    credentials: "include",
     body: formData,
   });
 
