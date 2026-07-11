@@ -132,11 +132,11 @@ export function ShopSection({
           {activeCount > 0 && <span className="ml-2 sf-t2-label">{activeCount}</span>}
         </Button>
       </SheetTrigger>
-      <StorefrontSheetContent side="left" className="w-[min(100%,360px)] overflow-y-auto">
-        <SheetHeader>
+      <StorefrontSheetContent side="left" className="w-[min(100%,360px)]">
+        <SheetHeader className="sf-sheet-sticky top-0 z-20 border-b sf-border bg-inherit px-4 py-4">
           <SheetTitle>Filters</SheetTitle>
         </SheetHeader>
-        <div className="mt-6">
+        <div className="sf-sheet-scrollable min-h-0 flex-1 overflow-y-auto px-4 py-4">
           <ShopFilterSidebar {...sidebarProps} />
         </div>
       </StorefrontSheetContent>

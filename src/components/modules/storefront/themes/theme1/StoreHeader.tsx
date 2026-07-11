@@ -229,7 +229,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               </Button>
 
               {theme.header.showSearch && (
-                <form onSubmit={handleSearch} className="hidden min-w-0 lg:block lg:max-w-[15rem] xl:max-w-[18rem]">
+                <form onSubmit={handleSearch} className="hidden min-w-0 lg:block lg:max-w-60 xl:max-w-[18rem]">
                   <div className="sf-header-search">
                     <Input
                       value={searchQuery}
@@ -254,7 +254,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
             {/* Center: logo (absolute — does not affect row height) */}
             <StorefrontNavLink
               href={base}
-              className="group absolute left-1/2 top-1/2 z-[5] max-w-[42vw] -translate-x-1/2 -translate-y-1/2 cursor-pointer sm:max-w-[220px] md:max-w-[260px]"
+              className="group absolute left-1/2 top-1/2 z-5 max-w-[42vw] -translate-x-1/2 -translate-y-1/2 cursor-pointer sm:max-w-55 md:max-w-65"
             >
               {logoUrl ? (
                 <Image
@@ -341,135 +341,140 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
       </header>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-safe-bottom w-full max-w-md border-r p-0">
-          <div className="flex h-full flex-col px-6 py-8">
-            <div className="mb-10 flex items-center justify-between">
-              <span className="sf-display-lg text-2xl">{store.brandName}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5" />
-              </Button>
+        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-sheet-safe w-full max-w-md border-r p-0">
+          <div className="flex h-full min-h-0 flex-col">
+            <div className="sf-sheet-sticky top-0 z-20 border-b sf-border bg-inherit px-6 py-5">
+              <div className="flex items-center justify-between">
+                <span className="sf-display-lg text-2xl">{store.brandName}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              {theme.header.tagline && (
+                <p className="sf-body-lg sf-muted-fg mt-3">{theme.header.tagline}</p>
+              )}
             </div>
 
-            {theme.header.tagline && (
-              <p className="sf-body-lg sf-muted-fg mb-8">{theme.header.tagline}</p>
-            )}
-
-            <nav className="flex flex-col gap-1">
-              {menuItems.map((item) =>
-                item.type === "group" ? (
-                  <div key={item.label} className="border-b sf-border py-2">
+            <div className="sf-sheet-scrollable min-h-0 flex-1 overflow-y-auto px-6 py-4">
+              <nav className="flex flex-col gap-1">
+                {menuItems.map((item) =>
+                  item.type === "group" ? (
+                    <div key={item.label} className="border-b sf-border py-2">
+                      <StorefrontNavLink
+                        href={item.href}
+                        className="sf-eyebrow block py-2 text-sm transition-opacity hover:opacity-70"
+                        onNavigate={() => setMobileOpen(false)}
+                      >
+                        {item.label}
+                      </StorefrontNavLink>
+                      <div className="ml-3 space-y-1 border-l pl-3 sf-border">
+                        {item.children.map((child) => (
+                          <StorefrontNavLink
+                            key={child.href}
+                            href={child.href}
+                            className="block py-2 text-sm sf-muted-fg transition-opacity hover:opacity-70"
+                            onNavigate={() => setMobileOpen(false)}
+                          >
+                            {child.label}
+                          </StorefrontNavLink>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
                     <StorefrontNavLink
+                      key={`m-${item.label}-${item.href}`}
                       href={item.href}
-                      className="sf-eyebrow block py-2 text-sm transition-opacity hover:opacity-70"
+                      className="sf-eyebrow border-b sf-border py-4 text-sm transition-opacity hover:opacity-70"
                       onNavigate={() => setMobileOpen(false)}
                     >
                       {item.label}
                     </StorefrontNavLink>
-                    <div className="ml-3 space-y-1 border-l pl-3 sf-border">
-                      {item.children.map((child) => (
-                        <StorefrontNavLink
-                          key={child.href}
-                          href={child.href}
-                          className="block py-2 text-sm sf-muted-fg transition-opacity hover:opacity-70"
-                          onNavigate={() => setMobileOpen(false)}
-                        >
-                          {child.label}
-                        </StorefrontNavLink>
-                      ))}
-                    </div>
-                  </div>
+                  ),
+                )}
+              </nav>
+
+              {theme.header.showSearch && (
+                <form onSubmit={handleSearch} className="mt-8 flex gap-2">
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search for products..."
+                    className="sf-input flex-1"
+                  />
+                  <Button type="submit" size="icon" className="sf-btn-secondary shrink-0">
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </form>
+              )}
+            </div>
+
+            <div className="sf-sheet-sticky-bottom bottom-0 z-20 border-t sf-border bg-inherit px-6 py-4">
+              <div className="space-y-4">
+                {isLoggedIn && customerCtx?.customer ? (
+                  <>
+                    <p className="text-sm font-medium">{customerCtx.customer.name}</p>
+                    <p className="text-xs sf-muted-fg">{customerCtx.customer.email}</p>
+                    <StorefrontNavLink
+                      href={`${base}/account/orders`}
+                      className="block text-sm sf-link"
+                      onNavigate={() => setMobileOpen(false)}
+                    >
+                      Orders
+                    </StorefrontNavLink>
+                    <StorefrontNavLink
+                      href={`${base}/account/wishlist`}
+                      className="block text-sm sf-link"
+                      onNavigate={() => setMobileOpen(false)}
+                    >
+                      Wishlist
+                    </StorefrontNavLink>
+                    <StorefrontNavLink
+                      href={`${base}/track`}
+                      className="block text-sm sf-link"
+                      onNavigate={() => setMobileOpen(false)}
+                    >
+                      Track order
+                    </StorefrontNavLink>
+                    <button
+                      type="button"
+                      className="block text-left text-sm sf-link"
+                      onClick={async () => {
+                        setMobileOpen(false)
+                        await customerCtx.logout()
+                        router.push(base)
+                      }}
+                    >
+                      Log out
+                    </button>
+                  </>
                 ) : (
-                  <StorefrontNavLink
-                    key={`m-${item.label}-${item.href}`}
-                    href={item.href}
-                    className="sf-eyebrow border-b sf-border py-4 text-sm transition-opacity hover:opacity-70"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </StorefrontNavLink>
-                ),
-              )}
-            </nav>
-
-            {theme.header.showSearch && (
-              <form onSubmit={handleSearch} className="mt-8 flex gap-2">
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for products..."
-                  className="sf-input flex-1"
-                />
-                <Button type="submit" size="icon" className="sf-btn-secondary shrink-0">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </form>
-            )}
-
-            <div className="mt-auto space-y-4 border-t sf-border pt-6">
-              {isLoggedIn && customerCtx?.customer ? (
-                <>
-                  <p className="text-sm font-medium">{customerCtx.customer.name}</p>
-                  <p className="text-xs sf-muted-fg">{customerCtx.customer.email}</p>
-                  <StorefrontNavLink
-                    href={`${base}/account/orders`}
-                    className="block text-sm sf-link"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    Orders
-                  </StorefrontNavLink>
-                  <StorefrontNavLink
-                    href={`${base}/account/wishlist`}
-                    className="block text-sm sf-link"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    Wishlist
-                  </StorefrontNavLink>
-                  <StorefrontNavLink
-                    href={`${base}/track`}
-                    className="block text-sm sf-link"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    Track order
-                  </StorefrontNavLink>
-                  <button
-                    type="button"
-                    className="block text-left text-sm sf-link"
-                    onClick={async () => {
-                      setMobileOpen(false);
-                      await customerCtx.logout();
-                      router.push(base);
-                    }}
-                  >
-                    Log out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <StorefrontNavLink
-                    href={`${base}/account/login`}
-                    className="block text-sm sf-link"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    Log in
-                  </StorefrontNavLink>
-                  <StorefrontNavLink
-                    href={`${base}/account/register`}
-                    className="block text-sm sf-link"
-                    onNavigate={() => setMobileOpen(false)}
-                  >
-                    Create account
-                  </StorefrontNavLink>
-                </>
-              )}
-              <div className="flex items-center gap-3">
-                <span className="sf-eyebrow">Theme</span>
-                <StorefrontThemeToggle />
+                  <>
+                    <StorefrontNavLink
+                      href={`${base}/account/login`}
+                      className="block text-sm sf-link"
+                      onNavigate={() => setMobileOpen(false)}
+                    >
+                      Log in
+                    </StorefrontNavLink>
+                    <StorefrontNavLink
+                      href={`${base}/account/register`}
+                      className="block text-sm sf-link"
+                      onNavigate={() => setMobileOpen(false)}
+                    >
+                      Create account
+                    </StorefrontNavLink>
+                  </>
+                )}
+                <div className="flex items-center gap-3">
+                  <span className="sf-eyebrow">Theme</span>
+                  <StorefrontThemeToggle />
+                </div>
               </div>
             </div>
           </div>

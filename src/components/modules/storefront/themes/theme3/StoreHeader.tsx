@@ -66,7 +66,7 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
 
           <StorefrontNavLink href={base} className="group shrink-0 cursor-pointer">
             {logoUrl ? (
-              <Image src={logoUrl} alt={store.brandName} width={160} height={48} className="h-8 w-auto max-w-[45vw] object-contain transition-opacity group-hover:opacity-80 sm:max-w-[160px]" unoptimized />
+              <Image src={logoUrl} alt={store.brandName} width={160} height={48} className="h-8 w-auto max-w-[45vw] object-contain transition-opacity group-hover:opacity-80 sm:max-w-40" unoptimized />
             ) : (
               <span className="text-lg font-semibold uppercase tracking-[0.08em] block max-w-[45vw] truncate transition-opacity group-hover:opacity-80 sm:max-w-xs">{store.brandName}</span>
             )}
@@ -123,51 +123,57 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
       </header>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <StorefrontSheetContent side="left" showCloseButton={false} className="w-full max-w-sm p-0">
-          <div className="flex h-full flex-col p-6">
-            <div className="mb-6 flex items-center justify-between">
-              <span className="text-lg font-semibold tracking-[0.08em] uppercase">{store.brandName}</span>
-              <Button type="button" size="icon" variant="ghost" onClick={() => setMobileOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
+        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-sheet-safe w-full max-w-sm p-0">
+          <div className="flex h-full min-h-0 flex-col">
+            <div className="sf-sheet-sticky top-0 z-20 border-b sf-border bg-inherit px-6 py-4">
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-semibold tracking-[0.08em] uppercase">{store.brandName}</span>
+                <Button type="button" size="icon" variant="ghost" onClick={() => setMobileOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
-            <form onSubmit={onSearch} className="mb-6 flex gap-2">
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products" className="flex-1" />
-              <Button type="submit" size="icon"><Search className="h-4 w-4" /></Button>
-            </form>
+            <div className="sf-sheet-scrollable min-h-0 flex-1 overflow-y-auto px-6 py-4">
+              <form onSubmit={onSearch} className="mb-6 flex gap-2">
+                <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products" className="flex-1" />
+                <Button type="submit" size="icon"><Search className="h-4 w-4" /></Button>
+              </form>
 
-            <nav className="space-y-2">
-              <StorefrontNavLink href={base} className="block rounded-lg border sf-border px-3 py-2 text-sm" onNavigate={() => setMobileOpen(false)}>Home</StorefrontNavLink>
-              {navLinks.map((link) => (
-                <StorefrontNavLink
-                  key={`m-${link.label}-${link.href}`}
-                  href={link.href}
-                  className="block rounded-lg border sf-border px-3 py-2 text-sm"
-                  onNavigate={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </StorefrontNavLink>
-              ))}
-            </nav>
+              <nav className="space-y-2">
+                <StorefrontNavLink href={base} className="block rounded-lg border sf-border px-3 py-2 text-sm" onNavigate={() => setMobileOpen(false)}>Home</StorefrontNavLink>
+                {navLinks.map((link) => (
+                  <StorefrontNavLink
+                    key={`m-${link.label}-${link.href}`}
+                    href={link.href}
+                    className="block rounded-lg border sf-border px-3 py-2 text-sm"
+                    onNavigate={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </StorefrontNavLink>
+                ))}
+              </nav>
+            </div>
 
-            <div className="mt-auto space-y-2 pt-6">
-              {isLoggedIn ? (
-                <button
-                  type="button"
-                  className="w-full rounded-lg border sf-border px-3 py-2 text-left text-sm"
-                  onClick={async () => {
-                    setMobileOpen(false);
-                    await customerCtx?.logout();
-                  }}
-                >
-                  Log out
-                </button>
-              ) : (
-                <StorefrontNavLink href={`${base}/account/login`} className="block rounded-lg border sf-border px-3 py-2 text-sm" onNavigate={() => setMobileOpen(false)}>
-                  Log in
-                </StorefrontNavLink>
-              )}
+            <div className="sf-sheet-sticky-bottom bottom-0 z-20 border-t sf-border bg-inherit px-6 py-4">
+              <div className="space-y-2">
+                {isLoggedIn ? (
+                  <button
+                    type="button"
+                    className="w-full rounded-lg border sf-border px-3 py-2 text-left text-sm"
+                    onClick={async () => {
+                      setMobileOpen(false)
+                      await customerCtx?.logout()
+                    }}
+                  >
+                    Log out
+                  </button>
+                ) : (
+                  <StorefrontNavLink href={`${base}/account/login`} className="block rounded-lg border sf-border px-3 py-2 text-sm" onNavigate={() => setMobileOpen(false)}>
+                    Log in
+                  </StorefrontNavLink>
+                )}
+              </div>
             </div>
           </div>
         </StorefrontSheetContent>

@@ -181,6 +181,43 @@
     line-height: 1.5;
   }
 
+  body.sf-sheet-open {
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+  }
+
+  @supports (height: 100dvh) {
+    body.sf-sheet-open {
+      min-height: 100dvh;
+    }
+  }
+
+  .sf-sheet-scrollable {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sf-sheet-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: inherit;
+  }
+
+  .sf-sheet-sticky-bottom {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background: inherit;
+  }
+
+  .sf-sheet-safe {
+    padding-top: env(safe-area-inset-top, 1rem);
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
   h1,
   h2,
   h3,

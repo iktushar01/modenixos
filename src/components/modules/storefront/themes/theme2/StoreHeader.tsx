@@ -290,26 +290,28 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
       </header>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-safe-bottom w-full max-w-md border-r p-0">
-          <div className="flex h-full flex-col px-6 py-8">
-            <div className="mb-8 flex items-center justify-between">
-              <span className="sf-display-lg text-2xl">{store.brandName}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5" />
-              </Button>
+        <StorefrontSheetContent side="left" showCloseButton={false} className="sf-sheet-safe w-full max-w-md border-r p-0">
+          <div className="flex h-full min-h-0 flex-col">
+            <div className="sf-sheet-sticky top-0 z-20 border-b sf-border bg-inherit px-6 py-5">
+              <div className="flex items-center justify-between">
+                <span className="sf-display-lg text-2xl">{store.brandName}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              {theme.header.tagline && (
+                <p className="sf-body-lg sf-muted-fg mt-3">{theme.header.tagline}</p>
+              )}
             </div>
 
-            {theme.header.tagline && (
-              <p className="sf-body-lg sf-muted-fg mb-6">{theme.header.tagline}</p>
-            )}
-
-            <nav className="flex flex-col gap-1">
+            <div className="sf-sheet-scrollable min-h-0 flex-1 overflow-y-auto px-6 py-4">
+              <nav className="flex flex-col gap-1">
               {menuItems.map((item) =>
                 item.type === "group" ? (
                   <div key={item.label} className="border-b sf-border py-2">
@@ -360,8 +362,10 @@ export function StoreHeader({ store, theme, categories }: StoreHeaderProps) {
               </form>
             )}
 
-            <div className="mt-auto space-y-4 border-t sf-border pt-6">
-              {isLoggedIn && customerCtx?.customer ? (
+            </div>
+            <div className="sf-sheet-sticky-bottom bottom-0 z-20 border-t sf-border bg-inherit px-6 py-4">
+              <div className="space-y-4">
+                {isLoggedIn && customerCtx?.customer ? (
                 <>
                   <p className="text-sm font-medium">{customerCtx.customer.name}</p>
                   <StorefrontNavLink
