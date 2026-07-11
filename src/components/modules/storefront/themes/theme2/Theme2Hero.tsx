@@ -91,7 +91,7 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-contain md:object-cover"
+                    className="object-cover object-center"
                     unoptimized
                   />
                 </motion.div>

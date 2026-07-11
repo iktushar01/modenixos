@@ -55,7 +55,7 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
               fill
               priority
               sizes="100vw"
-              className="object-contain md:object-cover"
+              className="object-cover object-center"
               unoptimized
             />
           </motion.div>
