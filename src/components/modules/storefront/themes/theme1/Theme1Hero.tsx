@@ -39,7 +39,7 @@ export function Theme1Hero({ store, theme }: Theme1HeroProps) {
 
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="relative w-full aspect-[16/9] overflow-hidden">
+      <div className="relative w-full aspect-[16/9] overflow-hidden lg:aspect-auto lg:h-[60vh] lg:max-h-[720px]">
         <AnimatePresence mode="sync">
           <motion.div
             key={activeSrc}

@@ -36,7 +36,7 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
 
   return (
     <section className="sf-theme2-hero sf-section w-full border-b sf-border">
-      <div className="grid min-h-[min(70vh,720px)] gap-0 lg:grid-cols-2">
+      <div className="grid min-h-[min(60vh,720px)] gap-0 lg:grid-cols-2">
         <div className="flex flex-col justify-center px-4 py-10 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
           <p className="sf-eyebrow mb-3 sm:mb-4">{store.brandName}</p>
           <h1 className="sf-display-xl max-w-xl">{theme.heroHeadline}</h1>
@@ -75,7 +75,7 @@ export function Theme2Hero({ store, theme }: Theme2HeroProps) {
           {slides.length === 0 ? (
             <div className="sf-muted w-full" aria-hidden />
           ) : (
-            <div className="relative w-full aspect-[16/9] overflow-hidden">
+            <div className="relative w-full aspect-[16/9] overflow-hidden lg:aspect-auto lg:h-[60vh] lg:max-h-[720px]">
               <AnimatePresence mode="sync">
                 <motion.div
                   key={slides[index]}
