@@ -470,7 +470,7 @@ export function StoreColorPaletteEditor({
         <div className="space-y-1">
           <Label className="text-sm font-medium">Default storefront mode</Label>
           <p className="text-[11px] text-muted-foreground">What visitors see first</p>
-          <div className="flex rounded-lg border p-1">
+          <div className="flex rounded-lg border p-1.5">
             <Button
               type="button"
               size="sm"
@@ -497,7 +497,7 @@ export function StoreColorPaletteEditor({
         <div className="space-y-1">
           <Label className="text-sm font-medium">Preview mode</Label>
           <p className="text-[11px] text-muted-foreground">Edit &amp; preview without changing default</p>
-          <div className="flex rounded-lg border p-1">
+          <div className="flex rounded-lg border p-1.5">
             <Button
               type="button"
               size="sm"
