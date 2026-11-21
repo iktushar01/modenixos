@@ -419,3 +419,154 @@ export const faqs = [
     a: "Absolutely. Change plans as your business grows. Upgrades take effect immediately; downgrades apply at the end of your billing period.",
   },
 ];
+
+/* ------------------------------------------------------------------
+ * Bento Grid — "Product capabilities" section metadata.
+ * Additive: all existing exports above are preserved unchanged.
+ * Each item maps to one of the 12 existing features with a distinct
+ * visual treatment (size, accent variant, mini UI preview).
+ * ------------------------------------------------------------------ */
+
+export type FeaturePreviewType = "none" | "chart" | "stat" | "list" | "product" | "badge";
+
+export type FeatureBentoItem = {
+  id: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  size: "default" | "wide" | "tall" | "large";
+  variant: "violet" | "emerald" | "amber" | "rose" | "indigo" | "cyan";
+  preview: FeaturePreviewType;
+  previewLabel?: string;
+  previewValue?: string;
+};
+
+export const featuresBento: FeatureBentoItem[] = [
+  {
+    id: "storefronts",
+    title: "Beautiful storefronts",
+    description: "Launch a polished, mobile-ready storefront with your branding, collections, and product pages.",
+    icon: Store,
+    size: "large",
+    variant: "violet",
+    preview: "badge",
+    previewLabel: "Published",
+    previewValue: "Luxe Threads",
+  },
+  {
+    id: "inventory",
+    title: "Smart inventory",
+    description: "Track stock, variants, and SKUs across categories. Know what's selling and what needs restocking.",
+    icon: Boxes,
+    size: "default",
+    variant: "emerald",
+    preview: "stat",
+    previewLabel: "In stock",
+    previewValue: "2,840",
+  },
+  {
+    id: "variants",
+    title: "Product variants",
+    description: "Sizes, colors, options — handle complex catalogs without spreadsheets or custom code.",
+    icon: Layers,
+    size: "default",
+    variant: "indigo",
+    preview: "list",
+    previewLabel: "Variants",
+  },
+  {
+    id: "customers",
+    title: "Customer management",
+    description: "View purchase history, contact details, and lifetime value. Build relationships that drive repeat sales.",
+    icon: Users,
+    size: "wide",
+    variant: "violet",
+    preview: "list",
+    previewLabel: "Customers",
+  },
+  {
+    id: "checkout",
+    title: "Secure checkout",
+    description: "Guest checkout, order confirmation, and payment-ready flows that customers trust.",
+    icon: Shield,
+    size: "default",
+    variant: "emerald",
+    preview: "badge",
+    previewLabel: "PCI compliant",
+  },
+  {
+    id: "fulfillment",
+    title: "Order fulfillment",
+    description: "Manage orders from pending to delivered. Keep customers informed at every step.",
+    icon: Truck,
+    size: "tall",
+    variant: "amber",
+    preview: "stat",
+    previewLabel: "Orders this week",
+    previewValue: "124",
+  },
+  {
+    id: "coupons",
+    title: "Coupons & promotions",
+    description: "Run campaigns with discount codes and limited-time offers to boost conversion.",
+    icon: Tag,
+    size: "default",
+    variant: "rose",
+    preview: "badge",
+    previewLabel: "SUMMER20",
+    previewValue: "Active",
+  },
+  {
+    id: "analytics",
+    title: "Sales analytics",
+    description: "Revenue, orders, top products, and trends — the metrics that matter for growth.",
+    icon: BarChart3,
+    size: "large",
+    variant: "violet",
+    preview: "chart",
+    previewLabel: "Revenue trend",
+  },
+  {
+    id: "seo",
+    title: "SEO optimization",
+    description: "Clean URLs, structured product pages, and fast load times that search engines reward.",
+    icon: Search,
+    size: "default",
+    variant: "indigo",
+    preview: "stat",
+    previewLabel: "Avg load time",
+    previewValue: "840 ms",
+  },
+  {
+    id: "mobile",
+    title: "Mobile responsive",
+    description: "Every storefront and dashboard screen adapts beautifully to phones, tablets, and desktops.",
+    icon: Smartphone,
+    size: "default",
+    variant: "cyan",
+    preview: "product",
+    previewLabel: "Storefront",
+    previewValue: "Mobile preview",
+  },
+  {
+    id: "performance",
+    title: "Fast performance",
+    description: "Built for speed with modern architecture. Your store loads fast — customers stay longer.",
+    icon: Zap,
+    size: "default",
+    variant: "emerald",
+    preview: "stat",
+    previewLabel: "Performance score",
+    previewValue: "98",
+  },
+  {
+    id: "catalog",
+    title: "Multi-category catalog",
+    description: "Fashion, electronics, furniture, grocery, beauty — one platform for any product type.",
+    icon: Globe,
+    size: "wide",
+    variant: "amber",
+    preview: "list",
+    previewLabel: "Categories",
+  },
+];

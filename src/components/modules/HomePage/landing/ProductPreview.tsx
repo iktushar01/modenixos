@@ -121,25 +121,27 @@ export default function ProductPreview() {
         </AnimatedContent>
 
         <AnimatedContent distance={40} duration={0.75} delay={0.1}>
-          <div className="mt-10 flex flex-wrap justify-center gap-2">
+          <div className="mt-10 flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide lg:flex-wrap lg:overflow-visible lg:pb-2" role="tablist" aria-label="Preview industry">
             {industries.map((ind) => {
               const isActive = industryId === ind.id;
               return (
                 <button
                   key={ind.id}
                   type="button"
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setIndustryId(ind.id)}
                   className={cn(
-                    "relative rounded-full border px-4 py-1.5 text-sm font-medium transition-colors duration-200",
+                    "relative rounded-full border px-5 py-2 text-sm font-medium transition-all duration-300 shrink-0",
                     isActive
-                      ? "border-primary/40 text-primary-foreground shadow-md"
-                      : "border-border/60 bg-background/60 text-muted-foreground hover:text-foreground"
+                      ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                      : "border-border/60 bg-background/60 text-muted-foreground hover:border-border hover:text-foreground hover:bg-background"
                   )}
                 >
                   {isActive && (
                     <motion.span
                       layoutId="product-preview-industry-pill"
-                      className="absolute inset-0 -z-10 rounded-full bg-primary"
+                      className="absolute -bottom-px left-1/2 -translate-x-1/2 h-[2px] w-8 bg-primary rounded-full"
                       transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
                     />
                   )}

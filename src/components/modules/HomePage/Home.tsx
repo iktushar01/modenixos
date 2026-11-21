@@ -33,7 +33,7 @@ const ProductPreviewSection = dynamic(() => import("./landing/ProductPreview"), 
 const HowItWorks = dynamic(() => import("./HowItWorksSection"), {
   loading: () => <SectionFallback />,
 });
-const Features = dynamic(() => import("./landing/FeaturesSection"), {
+const FeaturesBento = dynamic(() => import("./landing/FeaturesBento"), {
   loading: () => <SectionFallback />,
 });
 const Testimonials = dynamic(() => import("./TestimonialsSection"), {
@@ -78,7 +78,7 @@ export default function Home() {
       <StatsSection />
       <ProductPreviewSection />
       <HowItWorks />
-      <Features />
+      <FeaturesBento />
       <Testimonials />
       <Pricing />
       <FAQ />

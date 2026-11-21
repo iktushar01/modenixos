@@ -5,6 +5,7 @@ import Logo from "@/components/shared/logo/logo";
 import { APP_NAME, DEMO_STORE_PATH } from "@/lib/app-config";
 import { StartFreeLink } from "./StartFreeLink";
 import { Github, Linkedin, Twitter } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const footerColumns = {
   product: [
@@ -47,8 +48,8 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <p className="mkt-label">{title}</p>
-      <ul className="mt-4 space-y-2.5">
+      <p className="mkt-label mb-1">{title}</p>
+      <ul className="mt-2 space-y-2.5">
         {links.map((link) => (
           <li key={link.label}>
             {link.href === "/register" ? (
@@ -73,12 +74,15 @@ function FooterColumn({
 
 function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-background">
-      <div className="mkt-section w-full py-16">
+    <footer className="relative border-t border-border/60 bg-background overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,color-mix(in_oklch,var(--primary)_8%,transparent),transparent)]" aria-hidden />
+      <div className="mkt-section relative z-10 py-16 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-6">
           <div className="lg:col-span-2">
-            <Logo />
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            <div className="flex items-center gap-2 mb-4">
+              <Logo />
+            </div>
+            <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">
               {APP_NAME} is the operating system for modern commerce. Launch storefronts, manage
               operations, and scale revenue — from one beautifully designed platform.
             </p>
@@ -107,10 +111,10 @@ function Footer() {
             <FooterColumn title="Legal" links={footerColumns.legal} />
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-border/60 pt-8 text-xs text-muted-foreground md:flex-row">
-          <p>
-            &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
-          </p>
+
+        <Separator className="my-10 border-border/60" />
+        <div className="flex flex-col items-center justify-between gap-2 border-t border-t border-border/60 pt-8 text-xs text-muted-foreground md:flex-row md:pt-10">
+          <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
           <p>Build. Sell. Scale.</p>
         </div>
       </div>
